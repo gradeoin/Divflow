@@ -263,6 +263,7 @@ function seatGuestsOnTable(tableNum) {
   }
 }
 
+
 function settleAndClearCurrentTable() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
   const tableOrders = orders.filter(o => o.table == activeSelectedTable);
@@ -272,18 +273,19 @@ function settleAndClearCurrentTable() {
   // Reset Table State to Vacant
   setTableState(activeSelectedTable, { status: 'Vacant', guestName: '' });
 
-  // Broadcast
+  // Broadcast CLEAR_TABLE event so customer phones reset active bill session
   try {
     fetch('https://ntfy.sh/' + SYNC_TOPIC, {
       method: 'POST',
-      body: JSON.stringify({ type: 'UPDATE_STATUS', table: activeSelectedTable, status: 'Paid' })
+      body: JSON.stringify({ type: 'CLEAR_TABLE', table: activeSelectedTable, status: 'Paid' })
     }).catch(() => {});
   } catch(e) {}
 
   renderFloorPlan();
   selectInspectorTable(activeSelectedTable);
-  showToast('Table ' + activeSelectedTable + ' marked as Paid & Released (VACANT)!');
+  showToast('Table ' + activeSelectedTable + ' marked as Paid & Session Reset (VACANT)!');
 }
+
 
 function renderMenuEditor() {
   const grid = document.getElementById('menuEditorGrid');
@@ -690,7 +692,7 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-window.onload = init;
+window.onload = () => { init(); setInterval(loadOrdersInitial, 2500); };
 
 function printStandeesClean() {
   switchTab('qr');
