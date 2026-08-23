@@ -1,0 +1,19 @@
+# Environment & Secrets
+.env
+*.env.local
+credentials.json
+
+# Local n8n data
+.n8n/
+n8n_data/
+*.sqlite
+
+# Logs & OS Files
+*.log
+logs/
+.DS_Store
+Thumbs.db
+
+# Node dependencies
+node_modules/
+npm-debug.log*
