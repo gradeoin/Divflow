@@ -262,18 +262,17 @@ function validateTableSecurity() {
   document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
 }
 
-function init() {
-  validateTableSecurity();
-  const urlParams = new URLSearchParams(window.location.search);
-  const tableParam = urlParams.get('table') || urlParams.get('t');
 
-  if (tableParam) {
-    currentTable = tableParam.replace('tbl_', '');
-    localStorage.setItem('divflow_current_table', currentTable);
-  } else {
-    const saved = localStorage.getItem('divflow_current_table');
-    if (saved) currentTable = saved;
+function init() {
+  try {
+    validateTableSecurity();
+  } catch(e) {
+    console.error('Security validation error:', e);
   }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const tableParam = urlParams.get('table');
+  const tokenParam = urlParams.get('t');
 
   // Pre-fill guest details if previously saved
   const savedName = localStorage.getItem('divflow_guest_name');
@@ -281,9 +280,8 @@ function init() {
   if (savedName && document.getElementById('guestNameInput')) document.getElementById('guestNameInput').value = savedName;
   if (savedPhone && document.getElementById('guestPhoneInput')) document.getElementById('guestPhoneInput').value = savedPhone;
 
-  document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
-  document.getElementById('tableSelectPicker').value = currentTable;
-  document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
+  if (document.getElementById('tableNumberDisplay')) document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
+  if (document.getElementById('drawerTableNumber')) document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
 
   renderMenu();
   loadOrdersInitial();
@@ -299,16 +297,30 @@ function switchTableFromPicker(val) {
   updateOrderStatusBanner();
 }
 
+
+function getActiveMenuData() {
+  const custom = localStorage.getItem('divflow_custom_menu_v1');
+  if (custom) {
+    try {
+      const parsed = JSON.parse(custom);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch(e) {}
+  }
+  return MENU_DATA;
+}
+
 function renderMenu() {
   const grid = document.getElementById('menuGrid');
+  if (!grid) return;
   grid.innerHTML = '';
 
-  const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+  const activeMenu = getActiveMenuData();
+  const searchVal = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
 
-  const filtered = MENU_DATA.filter(item => {
+  const filtered = activeMenu.filter(item => {
     if (currentCategory !== 'all' && item.category !== currentCategory) return false;
     if (isVegOnly && !item.isVeg) return false;
-    if (searchVal && !item.name.toLowerCase().includes(searchVal) && !item.desc.toLowerCase().includes(searchVal)) return false;
+    if (searchVal && !item.name.toLowerCase().includes(searchVal) && !item.desc?.toLowerCase().includes(searchVal)) return false;
     return true;
   });
 
@@ -319,16 +331,18 @@ function renderMenu() {
 
   filtered.forEach(item => {
     const qty = cart[item.id] ? cart[item.id].qty : 0;
+    const isSoldOut = item.inStock === false;
     const card = document.createElement('div');
-    card.className = 'food-card';
+    card.className = 'food-card' + (isSoldOut ? ' sold-out' : '');
     card.innerHTML = `
       <div class="food-img-frame">
-        <img src="${item.img}" alt="${item.name}" loading="lazy" class="food-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+        <img src="${item.img || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'}" alt="${item.name}" loading="lazy" class="food-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
         <div class="food-badge-overlay">
           <span class="fssai-indicator ${item.isVeg ? 'veg' : 'nonveg'}">
             <span class="fssai-dot"></span>
           </span>
           ${item.signature ? '<span class="signature-tag">SIGNATURE</span>' : ''}
+          ${isSoldOut ? '<span class="signature-tag" style="background:#ef4444; color:#fff;">SOLD OUT</span>' : ''}
         </div>
       </div>
       <div class="food-body">
@@ -336,10 +350,12 @@ function renderMenu() {
           <h3 class="food-title">${item.name}</h3>
           <span class="food-price">₹${item.price}</span>
         </div>
-        <p class="food-desc">${item.desc}</p>
+        <p class="food-desc">${item.desc || 'Prepared fresh with signature spices by our executive master chefs.'}</p>
         
         <div class="food-footer">
-          ${qty === 0 ? `
+          ${isSoldOut ? `
+            <span style="font-size:0.75rem; font-weight:800; color:#ef4444;">OUT OF STOCK</span>
+          ` : (qty === 0 ? `
             <button class="btn-add-item" onclick="addToCart('${item.id}')">
               <span>ADD TO ORDER</span>
             </button>
@@ -349,7 +365,7 @@ function renderMenu() {
               <span class="qty-value">${qty}</span>
               <button class="qty-btn" onclick="increaseQty('${item.id}')">+</button>
             </div>
-          `}
+          `)}
         </div>
       </div>
     `;
@@ -376,6 +392,8 @@ function handleSearch() {
 }
 
 function addToCart(id) {
+  const activeMenu = getActiveMenuData();
+  const item = activeMenu.find(i => i.id === id);
   const item = MENU_DATA.find(i => i.id === id);
   if (!item) return;
   cart[id] = { item, qty: 1 };
