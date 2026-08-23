@@ -25,10 +25,21 @@ sessionStorage.setItem('divflow_current_session_id', currentSessionId);
 
 function init() {
  const urlParams = new URLSearchParams(window.location.search);
- const tableParam = urlParams.get('table') || urlParams.get('t');
- if (tableParam) {
- currentTable = tableParam.replace(/[^0-9]/g, '') || '4';
- }
+ const tableParam = urlParams.get('table');
+  const tokenParam = urlParams.get('t');
+  if (tableParam) {
+    currentTable = tableParam.replace(/[^0-9]/g, '') || '4';
+  } else if (tokenParam) {
+    const match = tokenParam.match(/^T?(\d+)(?:_.*)?$/i);
+    if (match && match[1]) {
+      currentTable = match[1];
+    } else {
+      currentTable = '4';
+    }
+  } else {
+    currentTable = '4';
+  }
+}
 
  if (document.getElementById('tableNumberDisplay')) document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
  if (document.getElementById('drawerTableNumber')) document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
