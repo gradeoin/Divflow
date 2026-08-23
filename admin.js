@@ -4,7 +4,7 @@ const LOCAL_STORAGE_ORDERS = 'divflow_realtime_orders_v2';
 const LOCAL_STORAGE_MENU = 'divflow_custom_menu_v1';
 const LOCAL_STORAGE_TABLE_STATES = 'divflow_table_states_v1';
 
-let activeSelectedTable = '4';
+let activeSelectedTable = '1';
 let currentMenu = [];
 let activeFloorFilter = 'all';
 
@@ -24,12 +24,13 @@ function init() {
   loadOrdersInitial();
   setupRealtimeSSE();
   renderAdminStandees();
+  inspectTableOnRightSidebar(activeSelectedTable);
   setInterval(loadOrdersInitial, 2500);
 }
 
 function switchView(viewId, btnElement) {
-  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.pos-view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item-btn').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.pos-tab-view').forEach(el => el.classList.remove('active'));
 
   if (btnElement) btnElement.classList.add('active');
   const target = document.getElementById('view' + viewId.charAt(0).toUpperCase() + viewId.slice(1));
@@ -38,7 +39,7 @@ function switchView(viewId, btnElement) {
 
 function filterFloorTables(filterState, btnElement) {
   activeFloorFilter = filterState;
-  document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.bold-chip').forEach(el => el.classList.remove('active'));
   if (btnElement) btnElement.classList.add('active');
   renderFloorPlan();
 }
@@ -125,21 +126,22 @@ function renderFloorPlan() {
     if (activeFloorFilter === 'cooking' && state !== 'Cooking') continue;
     if (activeFloorFilter === 'served' && state !== 'Served') continue;
 
+    const isSelected = String(i) === activeSelectedTable;
     const card = document.createElement('div');
-    card.className = `dark-table-card state-${state}`;
-    card.onclick = () => openTableCheckoutDrawer(i);
+    card.className = `table-pos-card state-${state} ${isSelected ? 'selected-active-table' : ''}`;
+    card.onclick = () => inspectTableOnRightSidebar(i);
     card.innerHTML = `
-      <div class="card-top-bar">
-        <span class="table-id-text">TABLE ${i < 10 ? '0' + i : i}</span>
-        <span class="table-status-pill">${state.toUpperCase()}</span>
+      <div class="card-head-row">
+        <span class="table-name-txt">TABLE ${i < 10 ? '0' + i : i}</span>
+        <span class="card-status-badge badge-${state.toLowerCase()}">${state.toUpperCase()}</span>
       </div>
-      <div class="card-middle-content">
-        <div class="card-guest-title">${guestName}</div>
-        <div class="card-order-summary">${info}</div>
+      <div class="card-center-row">
+        <div class="guest-label-txt">${guestName}</div>
+        <div class="order-desc-txt">${info}</div>
       </div>
-      <div class="card-bottom-bar">
-        <span class="card-running-total">${total > 0 ? '₹' + total : (state === 'Occupied' ? 'SEATED' : 'FREE')}</span>
-        <span class="card-settle-cue">Settle / View ➔</span>
+      <div class="card-foot-row">
+        <span class="bill-amount-txt">${total > 0 ? '₹' + total : (state === 'Occupied' ? 'SEATED' : 'FREE')}</span>
+        <span class="action-cue-txt">View Bill ➔</span>
       </div>
     `;
     grid.appendChild(card);
@@ -155,8 +157,10 @@ function renderFloorPlan() {
   if (document.getElementById('floorTodaySales')) document.getElementById('floorTodaySales').innerText = '₹' + todaySales;
 }
 
-function openTableCheckoutDrawer(tableNum) {
+function inspectTableOnRightSidebar(tableNum) {
   activeSelectedTable = String(tableNum);
+  renderFloorPlan();
+
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
   const tableStateMap = getTableStateMap();
   const customState = tableStateMap[activeSelectedTable] || { status: 'Vacant', guestName: '' };
@@ -174,23 +178,23 @@ function openTableCheckoutDrawer(tableNum) {
 
   if (tableOrders.length > 0) {
     const isAllServed = tableOrders.every(o => o.status === 'Served');
-    statusText = isAllServed ? 'FOOD SERVED' : 'COOKING IN KITCHEN';
+    statusText = isAllServed ? 'FOOD SERVED' : 'IN KITCHEN';
     guestName = tableOrders[0].customerName || 'Guest';
     guestPhone = tableOrders[0].customerPhone || 'N/A';
 
     tableOrders.forEach(o => {
       subtotal += o.subtotal;
       const orderBox = document.createElement('div');
-      orderBox.className = 'stream-order-card';
+      orderBox.className = 'itemized-order-box';
       orderBox.innerHTML = `
-        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#60a5fa; font-weight:700; margin-bottom:6px;">
+        <div class="order-header-line">
           <span>#${o.id} • ${o.timestamp}</span>
           <span style="color:${o.status === 'Served' ? '#4ade80' : '#fbbf24'};">${o.status.toUpperCase()}</span>
         </div>
         ${o.items.map(i => `
-          <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin:2px 0;">
+          <div class="order-dish-line">
             <span>${i.qty}x ${i.name}</span>
-            <span>₹${i.price * i.qty}</span>
+            <strong>₹${i.price * i.qty}</strong>
           </div>
         `).join('')}
       `;
@@ -198,14 +202,14 @@ function openTableCheckoutDrawer(tableNum) {
     });
   } else if (customState.status === 'Occupied') {
     statusText = 'OCCUPIED';
-    list.innerHTML = '<div style="text-align:center; padding:50px 20px; color:#f87171; font-size:0.9rem; font-weight:700;">🪑 Table is occupied. Guests are currently seated.</div>';
+    list.innerHTML = '<div style="text-align:center; padding:40px 14px; color:#f87171; font-size:0.9rem; font-weight:700;">🪑 Table is occupied. Guests are seated.</div>';
   } else {
     statusText = 'VACANT';
     list.innerHTML = `
-      <div style="text-align:center; padding:40px 20px; color:#94a3b8; font-size:0.9rem;">
+      <div style="text-align:center; padding:30px 14px; color:#94a3b8; font-size:0.85rem;">
         Table is currently vacant.
-        <button class="btn-action-primary" style="margin-top:14px; width:100%;" onclick="seatGuestsOnTable('${activeSelectedTable}')">
-          🪑 Seat Guests Here (Mark Occupied)
+        <button class="btn-bold-primary" style="margin-top:14px; width:100%;" onclick="seatGuestsOnTable('${activeSelectedTable}')">
+          🪑 Seat Guests Here
         </button>
       </div>
     `;
@@ -213,19 +217,11 @@ function openTableCheckoutDrawer(tableNum) {
 
   const statusTag = document.getElementById('sheetStatusTag');
   statusTag.innerText = statusText;
-  if (statusText === 'VACANT') {
-    statusTag.style.background = 'rgba(34, 197, 94, 0.2)';
-    statusTag.style.color = '#4ade80';
-  } else if (statusText === 'OCCUPIED') {
-    statusTag.style.background = 'rgba(239, 68, 68, 0.25)';
-    statusTag.style.color = '#f87171';
-  } else if (statusText === 'FOOD SERVED') {
-    statusTag.style.background = 'rgba(59, 130, 246, 0.25)';
-    statusTag.style.color = '#60a5fa';
-  } else {
-    statusTag.style.background = 'rgba(245, 158, 11, 0.25)';
-    statusTag.style.color = '#fbbf24';
-  }
+  statusTag.className = 'bold-status-badge';
+  if (statusText === 'VACANT') statusTag.classList.add('badge-vacant');
+  else if (statusText === 'OCCUPIED') statusTag.classList.add('badge-occupied');
+  else if (statusText === 'FOOD SERVED') statusTag.classList.add('badge-served');
+  else statusTag.classList.add('badge-cooking');
 
   document.getElementById('sheetGuestName').innerText = guestName;
   document.getElementById('sheetGuestPhone').innerText = guestPhone;
@@ -237,12 +233,6 @@ function openTableCheckoutDrawer(tableNum) {
   document.getElementById('sheetCgst').innerText = '₹' + (tax / 2);
   document.getElementById('sheetSgst').innerText = '₹' + (tax / 2);
   document.getElementById('sheetTotal').innerText = '₹' + total;
-
-  document.getElementById('tableModalOverlay').style.display = 'flex';
-}
-
-function closeTableModal() {
-  document.getElementById('tableModalOverlay').style.display = 'none';
 }
 
 function seatGuestsOnTable(tableNum) {
@@ -250,7 +240,7 @@ function seatGuestsOnTable(tableNum) {
   if (name) {
     setTableState(tableNum, { status: 'Occupied', guestName: name, seatedAt: Date.now() });
     renderFloorPlan();
-    openTableCheckoutDrawer(tableNum);
+    inspectTableOnRightSidebar(tableNum);
     showToast('Table ' + tableNum + ' marked OCCUPIED by ' + name);
   }
 }
@@ -272,11 +262,11 @@ function settleAndClearCurrentTable() {
     }).catch(() => {});
   } catch(e) {}
 
-  closeTableModal();
   renderFloorPlan();
   renderCRM();
   renderAnalytics();
-  showToast('Table ' + activeSelectedTable + ' marked Paid & Released (VACANT)!');
+  inspectTableOnRightSidebar(activeSelectedTable);
+  showToast('Table ' + activeSelectedTable + ' marked Paid & Cleared (VACANT)!');
 }
 
 function renderMenuEditor() {
@@ -286,14 +276,14 @@ function renderMenuEditor() {
 
   currentMenu.forEach(item => {
     const card = document.createElement('div');
-    card.className = 'catalog-row-card';
+    card.className = 'menu-catalog-card';
     card.innerHTML = `
-      <img src="${item.img}" class="catalog-img-thumb" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+      <img src="${item.img}" class="menu-card-thumb" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
       <div style="flex:1;">
         <div style="font-weight:700; font-size:0.9rem; margin-bottom:2px;">${item.name}</div>
-        <span>₹ <input type="number" value="${item.price}" class="catalog-price-edit" onchange="updateItemPrice('${item.id}', this.value)"></span>
+        <span>₹ <input type="number" value="${item.price}" class="menu-price-field" onchange="updateItemPrice('${item.id}', this.value)"></span>
       </div>
-      <button class="btn-stock-toggle" style="${item.inStock ? 'color:#4ade80;' : 'color:#f87171;'}" onclick="toggleItemStock('${item.id}')">
+      <button class="btn-stock-toggle-bold" style="${item.inStock ? 'color:#4ade80;' : 'color:#f87171;'}" onclick="toggleItemStock('${item.id}')">
         ${item.inStock ? '✓ In Stock' : '✕ Sold Out'}
       </button>
     `;
@@ -315,7 +305,7 @@ function toggleItemStock(id) {
   if (item) {
     item.inStock = !item.inStock;
     saveMenuData();
-    showToast(item.name + (item.inStock ? ' In Stock' : ' Sold Out (86ed)'));
+    showToast(item.name + (item.inStock ? ' In Stock' : ' Sold Out'));
   }
 }
 
@@ -378,7 +368,7 @@ function renderCRM() {
   tbody.innerHTML = '';
 
   if (map.size === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:36px; color:#94a3b8;">No customer CRM records captured yet.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">No customer records yet.</td></tr>';
     return;
   }
 
@@ -390,7 +380,7 @@ function renderCRM() {
       <td>${g.count} visit(s)</td>
       <td><strong>₹${g.spend}</strong></td>
       <td>Table ${g.lastTable}</td>
-      <td><a href="https://wa.me/${g.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(g.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!" target="_blank" class="btn-action-primary" style="font-size:0.75rem; padding:5px 10px; text-decoration:none; display:inline-flex;">💬 WhatsApp</a></td>
+      <td><a href="https://wa.me/${g.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(g.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!" target="_blank" class="btn-bold-primary" style="font-size:0.75rem; padding:4px 8px; text-decoration:none; display:inline-flex;">💬 WhatsApp</a></td>
     `;
     tbody.appendChild(row);
   });
@@ -509,12 +499,12 @@ function renderAdminStandees() {
     const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(targetUrl)}&margin=4`;
 
     const card = document.createElement('div');
-    card.className = 'standee-print-card';
+    card.className = 'standee-card-box';
     card.innerHTML = `
-      <div style="font-weight:800; font-size:1.05rem; text-transform:uppercase;">THE GRAND ESTATE</div>
-      <div style="font-size:0.75rem; color:#64748b; margin-bottom:10px;">Digital Dining QR Standee</div>
-      <img src="${qrApiUrl}" style="width:140px; height:140px; margin-bottom:10px;">
-      <div style="background:#0f172a; color:#fff; font-weight:800; padding:6px 14px; border-radius:6px; font-size:1.05rem;">TABLE ${i}</div>
+      <div style="font-weight:800; font-size:1rem; text-transform:uppercase;">THE GRAND ESTATE</div>
+      <div style="font-size:0.75rem; color:#64748b; margin-bottom:8px;">Table Standee</div>
+      <img src="${qrApiUrl}" style="width:140px; height:140px; margin-bottom:8px;">
+      <div style="background:#0f172a; color:#fff; font-weight:800; padding:6px 12px; border-radius:6px; font-size:1rem;">TABLE ${i}</div>
     `;
     container.appendChild(card);
   }
@@ -571,6 +561,7 @@ function loadOrdersInitial() {
       renderFloorPlan();
       renderCRM();
       renderAnalytics();
+      inspectTableOnRightSidebar(activeSelectedTable);
     })
     .catch(() => {});
 }
@@ -595,6 +586,7 @@ function setupRealtimeSSE() {
           renderFloorPlan();
           renderCRM();
           renderAnalytics();
+          inspectTableOnRightSidebar(activeSelectedTable);
         }
       } catch(err) {}
     };
