@@ -17,3 +17,7 @@ Thumbs.db
 # Node dependencies
 node_modules/
 npm-debug.log*
+
+# Binaries & Executables
+*.exe
+scripts/*.exe
