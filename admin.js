@@ -153,7 +153,7 @@ function renderFloorPlan() {
   if (document.getElementById('countCooking')) document.getElementById('countCooking').innerText = cooking;
   if (document.getElementById('countServed')) document.getElementById('countServed').innerText = served;
   if (document.getElementById('activeTablesCountBadge')) document.getElementById('activeTablesCountBadge').innerText = cooking + served + occupied;
-  if (document.getElementById('floorTodaySales')) document.getElementById('floorTodaySales').innerText = '₹' + todaySales;
+  if (document.getElementById('floorTodaySales')) if (document.getElementById('floorTodaySales')) document.getElementById('floorTodaySales').innerText = '₹' + todaySales;
 }
 
 function inspectTableOnRightSidebar(tableNum) {
