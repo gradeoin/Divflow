@@ -99,6 +99,7 @@ function setTableState(tableNum, stateObj) {
   } catch(e) {}
 }
 
+
 function renderFloorPlan() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
   const tableStateMap = getTableStateMap();
@@ -106,27 +107,41 @@ function renderFloorPlan() {
   if (!grid) return;
   grid.innerHTML = '';
 
-  let vacant = 0, occupied = 0, dining = 0, todaySales = 0;
+  let vacant = 0, occupied = 0, preparing = 0, served = 0, todaySales = 0;
 
   for (let i = 1; i <= 12; i++) {
     const tableOrders = orders.filter(o => o.table == i && o.status !== 'Paid');
     const customState = tableStateMap[i] || { status: 'Vacant', guestName: '' };
     
-    let status = customState.status;
+    let status = customState.status || 'Vacant';
     let total = 0;
     let guestName = customState.guestName || 'Vacant Table';
     let itemsSummary = 'Ready for seating';
 
     if (tableOrders.length > 0) {
-      status = 'Dining';
-      dining++;
+      const hasPreparing = tableOrders.some(o => o.status === 'Preparing');
+      const allServed = tableOrders.every(o => o.status === 'Served');
+
+      if (hasPreparing) {
+        status = 'Preparing';
+        preparing++;
+        itemsSummary = '🍳 Kitchen Cooking';
+      } else if (allServed) {
+        status = 'Served';
+        served++;
+        itemsSummary = '✅ Food on Table (Served)';
+      } else {
+        status = 'Dining';
+        preparing++;
+      }
+
       guestName = tableOrders[0].customerName || 'Guest';
       let count = 0;
       tableOrders.forEach(o => {
         total += o.total;
         count += o.items ? o.items.length : 0;
       });
-      itemsSummary = count + (count === 1 ? ' item active' : ' items active');
+      itemsSummary += ' • ' + count + ' items';
     } else if (status === 'Occupied') {
       occupied++;
       itemsSummary = 'Seated (Browsing Menu)';
@@ -155,8 +170,8 @@ function renderFloorPlan() {
   orders.forEach(o => todaySales += o.total);
 
   document.getElementById('countVacant').innerText = vacant;
-  document.getElementById('countDining').innerText = dining + occupied;
-  document.getElementById('activeTablesBadge').innerText = dining + occupied;
+  document.getElementById('countDining').innerText = preparing + served + occupied;
+  document.getElementById('activeTablesBadge').innerText = preparing + served + occupied;
   document.getElementById('floorTodaySales').innerText = '₹' + todaySales;
 }
 
@@ -178,7 +193,8 @@ function selectInspectorTable(tableNum) {
   let statusText = customState.status || 'VACANT';
 
   if (tableOrders.length > 0) {
-    statusText = 'DINING';
+    const isAllServed = tableOrders.every(o => o.status === 'Served');
+    statusText = isAllServed ? 'SERVED' : 'PREPARING';
     guestName = tableOrders[0].customerName || 'Guest';
     guestPhone = tableOrders[0].customerPhone || 'N/A';
 
@@ -187,7 +203,10 @@ function selectInspectorTable(tableNum) {
       const orderBlock = document.createElement('div');
       orderBlock.style.cssText = 'background:#1e293b; padding:10px; border-radius:8px; margin-bottom:8px;';
       orderBlock.innerHTML = `
-        <div style="font-size:0.75rem; color:#60a5fa; font-weight:700; margin-bottom:4px;">#${o.id} • ${o.timestamp}</div>
+        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#60a5fa; font-weight:700; margin-bottom:4px;">
+          <span>#${o.id} • ${o.timestamp}</span>
+          <span style="color:${o.status === 'Served' ? '#4ade80' : '#fbbf24'};">${o.status.toUpperCase()}</span>
+        </div>
         ${o.items.map(i => `<div class="stream-item-row"><span>${i.qty}x ${i.name}</span><span>₹${i.price * i.qty}</span></div>`).join('')}
       `;
       stream.appendChild(orderBlock);
@@ -212,12 +231,15 @@ function selectInspectorTable(tableNum) {
   if (statusText === 'VACANT') {
     pill.style.background = 'rgba(22, 163, 74, 0.2)';
     pill.style.color = '#4ade80';
-  } else if (statusText === 'OCCUPIED') {
+  } else if (statusText === 'SERVED') {
+    pill.style.background = 'rgba(37, 99, 235, 0.25)';
+    pill.style.color = '#60a5fa';
+  } else if (statusText === 'PREPARING') {
+    pill.style.background = 'rgba(217, 119, 6, 0.25)';
+    pill.style.color = '#fbbf24';
+  } else {
     pill.style.background = 'rgba(239, 68, 68, 0.2)';
     pill.style.color = '#f87171';
-  } else {
-    pill.style.background = 'rgba(217, 119, 6, 0.2)';
-    pill.style.color = '#fbbf24';
   }
 
   document.getElementById('inspectorGuestName').innerText = guestName;

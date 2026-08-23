@@ -125,7 +125,9 @@ function loadOrdersFromStorage() {
     return;
   }
 
+  
   [...activeOrders].reverse().forEach(order => {
+    const isServed = order.status === 'Served';
     const card = document.createElement('div');
     card.className = `ticket-card status-${order.status}`;
     card.innerHTML = `
@@ -140,21 +142,21 @@ function loadOrdersFromStorage() {
             <span>₹${i.price * i.qty}</span>
           </div>
         `).join('')}
-        ${order.specialNotes !== 'None' ? `
+        ${order.specialNotes && order.specialNotes !== 'None' ? `
           <div class="ticket-notes">
             <strong>CHEF NOTES:</strong> ${order.specialNotes}
           </div>
         ` : ''}
       </div>
       <div class="ticket-foot">
-        ${order.status === 'Preparing' ? `
+        ${!isServed ? `
           <button class="ticket-action-btn btn-serve" onclick="broadcastStatusUpdate('${order.id}', 'Served')">
-            MARK SERVED
+            ✅ MARK AS SERVED
           </button>
         ` : `
-          <button class="ticket-action-btn btn-paid" onclick="broadcastStatusUpdate('${order.id}', 'Paid')">
-            MARK PAID
-          </button>
+          <div style="flex:1; text-align:center; padding:10px; font-weight:800; font-size:0.8rem; color:#4ade80; background:rgba(22,163,74,0.2); border-radius:6px;">
+            ✓ SERVED TO TABLE
+          </div>
         `}
         <button class="ticket-action-btn btn-print" onclick="printKOT('${order.id}')" title="Print KOT Slip">
           PRINT
@@ -163,6 +165,7 @@ function loadOrdersFromStorage() {
     `;
     grid.appendChild(card);
   });
+
 }
 
 function broadcastStatusUpdate(orderId, newStatus) {
