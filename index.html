@@ -1,200 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>The Grand Estate Bistro — Digital Dining</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="customer.css?v=v1787504611072">
+ <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+ <meta http-equiv="Pragma" content="no-cache">
+ <meta http-equiv="Expires" content="0">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ <title>The Grand Estate Bistro — Digital Dining</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="customer.css?v=v1787504970336">
 </head>
 <body>
 
-  <!-- Top Hospitality Header (Customer-Facing Only) -->
-  <header class="app-header">
-    <div class="header-container">
-      <div class="brand-block">
-        <div class="brand-emblem">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        </div>
-        <div class="brand-text">
-          <h1 class="hotel-title">THE GRAND ESTATE</h1>
-          <div class="table-tag">
-            <span class="status-indicator"></span>
-            <span id="tableNumberDisplay">Table 4</span>
-            
-          </div>
-        </div>
-      </div>
+ <!-- Top Hospitality Header (Customer-Facing Only) -->
+ <header class="app-header">
+ <div class="header-container">
+ <div class="brand-block">
+ <div class="brand-emblem">
+ <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+ </div>
+ <div class="brand-text">
+ <h1 class="hotel-title">THE GRAND ESTATE</h1>
+ <div class="table-tag">
+ <span class="status-indicator"></span>
+ <span id="tableNumberDisplay">Table 4</span>
+ 
+ </div>
+ </div>
+ </div>
 
-      <div class="header-actions">
-        <button class="icon-btn" onclick="callWaiter()" title="Summon Service Captain">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        </button>
-        <button class="icon-btn" onclick="toggleCart()" title="View Current Order">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-          <span class="cart-badge" id="headerCartCount">0</span>
-        </button>
-      </div>
-    </div>
-  </header>
+ <div class="header-actions">
+ <button class="icon-btn" onclick="callWaiter()" title="Summon Service Captain">
+ <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+ </button>
+ <button class="icon-btn" onclick="toggleCart()" title="View Current Order">
+ <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+ <span class="cart-badge" id="headerCartCount">0</span>
+ </button>
+ </div>
+ </div>
+ </header>
 
-  
-  <!-- Tamper-Proof Security Lock Banner -->
-  
+ 
+ <!-- Tamper-Proof Security Lock Banner -->
+ 
 
-  <!-- Live Status Bar -->
-  <div class="active-status-bar" id="orderStatusBanner" style="display:none;" onclick="openBillModal()">
-    <div class="status-left">
-      <div class="pulse-ring"></div>
-      <div>
-        <strong id="bannerStatusTitle">Order #KOT-104 in Preparation</strong>
-        <span class="status-sub">Active Running Balance: <strong id="bannerBillAmount" style="color:#0f172a;">₹0</strong></span>
-      </div>
-    </div>
-    <div class="status-right">
-      <span>VIEW BILL</span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </div>
-  </div>
+ <!-- Live Status Bar -->
+ <div class="active-status-bar" id="orderStatusBanner" style="display:none;" onclick="openBillModal()">
+ <div class="status-left">
+ <div class="pulse-ring"></div>
+ <div>
+ <strong id="bannerStatusTitle">Order #KOT-104 in Preparation</strong>
+ <span class="status-sub">Active Running Balance: <strong id="bannerBillAmount" style="color:#0f172a;">₹0</strong></span>
+ </div>
+ </div>
+ <div class="status-right">
+ <span>VIEW BILL</span>
+ <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+ </div>
+ </div>
 
-  <!-- Category Nav Tabs -->
-  <nav class="category-tabs-bar">
-    <div class="category-tabs-container">
-      <button class="cat-tab active" onclick="filterCategory('all', this)">All Selections</button>
-      <button class="cat-tab" onclick="filterCategory('starters', this)">Appetizers & Starters</button>
-      <button class="cat-tab" onclick="filterCategory('pizzas', this)">Woodfired Pizzas</button>
-      <button class="cat-tab" onclick="filterCategory('mains', this)">Main Course</button>
-      <button class="cat-tab" onclick="filterCategory('breads', this)">Tandoor Breads</button>
-      <button class="cat-tab" onclick="filterCategory('beverages', this)">Craft Beverages</button>
-      <button class="cat-tab" onclick="filterCategory('desserts', this)">Signature Desserts</button>
-    </div>
-  </nav>
+ <!-- Category Nav Tabs -->
+ <nav class="category-tabs-bar">
+ <div class="category-tabs-container">
+ <button class="cat-tab active" onclick="filterCategory('all', this)">All Selections</button>
+ <button class="cat-tab" onclick="filterCategory('starters', this)">Appetizers & Starters</button>
+ <button class="cat-tab" onclick="filterCategory('pizzas', this)">Woodfired Pizzas</button>
+ <button class="cat-tab" onclick="filterCategory('mains', this)">Main Course</button>
+ <button class="cat-tab" onclick="filterCategory('breads', this)">Tandoor Breads</button>
+ <button class="cat-tab" onclick="filterCategory('beverages', this)">Craft Beverages</button>
+ <button class="cat-tab" onclick="filterCategory('desserts', this)">Signature Desserts</button>
+ </div>
+ </nav>
 
-  <!-- Search & Filter Controls -->
-  <div class="controls-bar">
-    <div class="search-field">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="searchInput" placeholder="Search menu by dish name or ingredients..." oninput="handleSearch()">
-    </div>
-    <button class="veg-filter-btn" id="vegFilterBtn" onclick="toggleVegOnly()">
-      <span class="fssai-indicator veg"><span class="fssai-dot"></span></span>
-      <span>VEGETARIAN</span>
-    </button>
-  </div>
+ <!-- Search & Filter Controls -->
+ <div class="controls-bar">
+ <div class="search-field">
+ <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+ <input type="text" id="searchInput" placeholder="Search menu by dish name or ingredients..." oninput="handleSearch()">
+ </div>
+ <button class="veg-filter-btn" id="vegFilterBtn" onclick="toggleVegOnly()">
+ <span class="fssai-indicator veg"><span class="fssai-dot"></span></span>
+ <span>VEGETARIAN</span>
+ </button>
+ </div>
 
-  <!-- Menu Grid -->
-  <main class="menu-layout">
-    <div class="menu-items-grid" id="menuGrid">
-      <!-- Injected by customer.js -->
-    </div>
-  </main>
+ <!-- Menu Grid -->
+ <main class="menu-layout">
+ <div class="menu-items-grid" id="menuGrid">
+ <!-- Injected by customer.js -->
+ </div>
+ </main>
 
-  <!-- Sticky Bottom Order Summary Bar -->
-  <div class="sticky-order-bar" id="stickyCartBar" onclick="toggleCart()">
-    <div class="order-bar-summary">
-      <span class="order-items-count" id="fabCountText">0 ITEMS</span>
-      <span class="order-total-price" id="fabPriceText">₹0</span>
-    </div>
-    <div class="order-bar-cta">
-      <span>REVIEW ORDER</span>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </div>
-  </div>
+ <!-- Sticky Bottom Order Summary Bar -->
+ <div class="sticky-order-bar" id="stickyCartBar" onclick="toggleCart()">
+ <div class="order-bar-summary">
+ <span class="order-items-count" id="fabCountText">0 ITEMS</span>
+ <span class="order-total-price" id="fabPriceText">₹0</span>
+ </div>
+ <div class="order-bar-cta">
+ <span>REVIEW ORDER</span>
+ <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+ </div>
+ </div>
 
-  <!-- Order Review Drawer with Customer Name & Mobile -->
-  <div class="drawer-overlay" id="cartDrawerOverlay" onclick="toggleCart()"></div>
-  <aside class="order-drawer" id="cartDrawer">
-    <div class="drawer-grab-bar"></div>
-    <div class="drawer-header">
-      <h2>Table Order Review</h2>
-      <button class="close-icon-btn" onclick="toggleCart()">✕</button>
-    </div>
+ <!-- Order Review Drawer with Customer Name & Mobile -->
+ <div class="drawer-overlay" id="cartDrawerOverlay" onclick="toggleCart()"></div>
+ <aside class="order-drawer" id="cartDrawer">
+ <div class="drawer-grab-bar"></div>
+ <div class="drawer-header">
+ <h2>Table Order Review</h2>
+ <button class="close-icon-btn" onclick="toggleCart()"></button>
+ </div>
 
-    <div class="table-identifier-box">
-      <span>Service Table</span>
-      <strong id="drawerTableNumber">Table 4</strong>
-    </div>
+ <div class="table-identifier-box">
+ <span>Service Table</span>
+ <strong id="drawerTableNumber">Table 4</strong>
+ </div>
 
-    <!-- Customer Details Form -->
-    <div class="customer-details-grid">
-      <div class="drawer-input-group">
-        <label>Your Name (Optional)</label>
-        <input type="text" id="guestNameInput" placeholder="e.g. Divyansh Agarwal" >
-      </div>
-      <div class="drawer-input-group">
-        <label>Mobile Number (For Digital Receipt)</label>
-        <input type="tel" id="guestPhoneInput" placeholder="e.g. +91 98765 43210" maxlength="14">
-      </div>
-    </div>
+ <!-- Customer Details Form -->
+ <div class="customer-details-grid">
+ <div class="drawer-input-group">
+ <label>Your Name (Optional)</label>
+ <input type="text" id="guestNameInput" placeholder="e.g. Divyansh Agarwal" >
+ </div>
+ <div class="drawer-input-group">
+ <label>Mobile Number (For Digital Receipt)</label>
+ <input type="tel" id="guestPhoneInput" placeholder="e.g. +91 98765 43210" maxlength="14">
+ </div>
+ </div>
 
-    <div class="drawer-orders-list" id="drawerCartList">
-      <!-- Injected dynamically -->
-    </div>
+ <div class="drawer-orders-list" id="drawerCartList">
+ <!-- Injected dynamically -->
+ </div>
 
-    <div class="drawer-input-group">
-      <label>Chef Preparation Instructions</label>
-      <input type="text" id="orderNotesInput" placeholder="Dietary restrictions, spice adjustments, allergy notes...">
-    </div>
+ <div class="drawer-input-group">
+ <label>Chef Preparation Instructions</label>
+ <input type="text" id="orderNotesInput" placeholder="Dietary restrictions, spice adjustments, allergy notes...">
+ </div>
 
-    <div class="drawer-breakdown-card">
-      <div class="breakdown-line">
-        <span>Item Subtotal</span>
-        <span id="drawerSubtotal">₹0</span>
-      </div>
-      <div class="breakdown-line">
-        <span>GST & Service Levy (5%)</span>
-        <span id="drawerTax">₹0</span>
-      </div>
-      <div class="breakdown-line grand-total-line">
-        <strong>Total Amount</strong>
-        <strong id="drawerGrandTotal">₹0</strong>
-      </div>
-    </div>
+ <div class="drawer-breakdown-card">
+ <div class="breakdown-line">
+ <span>Item Subtotal</span>
+ <span id="drawerSubtotal">₹0</span>
+ </div>
+ <div class="breakdown-line">
+ <span>GST & Service Levy (5%)</span>
+ <span id="drawerTax">₹0</span>
+ </div>
+ <div class="breakdown-line grand-total-line">
+ <strong>Total Amount</strong>
+ <strong id="drawerGrandTotal">₹0</strong>
+ </div>
+ </div>
 
-    <button class="btn-dispatch-order" id="mainPlaceOrderBtn" onclick="placeOrder()">PLACE ORDER ➔</button>
-  </aside>
+ <button class="btn-dispatch-order" id="mainPlaceOrderBtn" onclick="placeOrder()">PLACE ORDER ></button>
+ </aside>
 
-  <!-- Billing Modal -->
-  <div class="modal-overlay" id="billModalOverlay" style="display:none;">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h2>Active Table Invoice</h2>
-        <button class="close-icon-btn" onclick="closeBillModal()">✕</button>
-      </div>
+ <!-- Billing Modal -->
+ <div class="modal-overlay" id="billModalOverlay" style="display:none;">
+ <div class="modal-dialog">
+ <div class="modal-header">
+ <h2>Active Table Invoice</h2>
+ <button class="close-icon-btn" onclick="closeBillModal()"></button>
+ </div>
 
-      <div class="modal-body" id="billOrdersList">
-        <!-- Injected orders -->
-      </div>
+ <div class="modal-body" id="billOrdersList">
+ <!-- Injected orders -->
+ </div>
 
-      <div class="drawer-breakdown-card">
-        <div class="breakdown-line">
-          <span>Subtotal</span>
-          <span id="billSubtotal">₹0</span>
-        </div>
-        <div class="breakdown-line">
-          <span>Taxes (5%)</span>
-          <span id="billTax">₹0</span>
-        </div>
-        <div class="breakdown-line grand-total-line">
-          <strong>Total Payable</strong>
-          <strong id="billTotalPayable">₹0</strong>
-        </div>
-      </div>
+ <div class="drawer-breakdown-card">
+ <div class="breakdown-line">
+ <span>Subtotal</span>
+ <span id="billSubtotal">₹0</span>
+ </div>
+ <div class="breakdown-line">
+ <span>Taxes (5%)</span>
+ <span id="billTax">₹0</span>
+ </div>
+ <div class="breakdown-line grand-total-line">
+ <strong>Total Payable</strong>
+ <strong id="billTotalPayable">₹0</strong>
+ </div>
+ </div>
 
-      <button class="btn-dispatch-order" onclick="requestFinalBill()">
-        REQUEST FINAL BILL / TERMINAL
-      </button>
-    </div>
-  </div>
+ <button class="btn-dispatch-order" onclick="requestFinalBill()">
+ REQUEST FINAL BILL / TERMINAL
+ </button>
+ </div>
+ </div>
 
-  <!-- Notification Toast -->
-  <div class="toast-card" id="toastNotification">Item added to order</div>
+ <!-- Notification Toast -->
+ <div class="toast-card" id="toastNotification">Item added to order</div>
 
-  <script src="customer.js?v=v1787504611072"></script>
+ <script src="customer.js?v=v1787504970336"></script>
 </body>
 </html>

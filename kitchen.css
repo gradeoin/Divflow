@@ -1,146 +1,146 @@
 
 :root {
-  --kds-bg: #0b0f19;
-  --kds-panel: #111827;
-  --kds-border: #1f2937;
-  --kds-text: #f9fafb;
-  --kds-muted: #9ca3af;
-  --kds-prep: #2563eb;
-  --kds-served: #16a34a;
+ --kds-bg: #0b0f19;
+ --kds-panel: #111827;
+ --kds-border: #1f2937;
+ --kds-text: #f9fafb;
+ --kds-muted: #9ca3af;
+ --kds-prep: #2563eb;
+ --kds-served: #16a34a;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background-color: var(--kds-bg);
-  color: var(--kds-text);
-  min-height: 100vh;
+ font-family: 'Plus Jakarta Sans', sans-serif;
+ background-color: var(--kds-bg);
+ color: var(--kds-text);
+ min-height: 100vh;
 }
 
 .kds-bar {
-  background: var(--kds-panel);
-  border-bottom: 1px solid var(--kds-border);
-  padding: 16px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+ background: var(--kds-panel);
+ border-bottom: 1px solid var(--kds-border);
+ padding: 16px 24px;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
 }
 .kds-title-group { display: flex; align-items: center; gap: 14px; }
 .kds-tag {
-  background: #2563eb;
-  color: #fff;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 800;
-  font-size: 0.9rem;
-  padding: 6px 12px;
-  border-radius: 6px;
+ background: #2563eb;
+ color: #fff;
+ font-family: 'JetBrains Mono', monospace;
+ font-weight: 800;
+ font-size: 0.9rem;
+ padding: 6px 12px;
+ border-radius: 6px;
 }
 .kds-title-group h1 { font-size: 1.15rem; font-weight: 800; letter-spacing: 0.05em; }
 .kds-subtitle { font-size: 0.75rem; color: var(--kds-muted); }
 .kds-actions { display: flex; gap: 10px; }
 .kds-btn {
-  background: #1f2937;
-  border: 1px solid #374151;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-decoration: none;
-  cursor: pointer;
+ background: #1f2937;
+ border: 1px solid #374151;
+ color: #fff;
+ padding: 8px 16px;
+ border-radius: 6px;
+ font-size: 0.75rem;
+ font-weight: 800;
+ letter-spacing: 0.05em;
+ text-decoration: none;
+ cursor: pointer;
 }
-.btn-audio { background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-color: #2563eb; }
-.btn-clear { background: rgba(220, 38, 38, 0.15); color: #f87171; border-color: rgba(220, 38, 38, 0.3); }
+.btn-audio { background: rgba(37, 99, 235, 0.2); color: #93c5fd; border-color: #2563eb; }
+.btn-clear { background: rgba(220, 38, 38, 0.15); color: #fca5a5; border-color: rgba(220, 38, 38, 0.3); }
 
 .kds-container { max-width: 1400px; margin: 20px auto; padding: 0 24px; }
 .kds-metrics-bar {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+ gap: 16px;
+ margin-bottom: 24px;
 }
 .metric-tile {
-  background: var(--kds-panel);
-  border: 1px solid var(--kds-border);
-  border-radius: 8px;
-  padding: 16px 20px;
+ background: var(--kds-panel);
+ border: 1px solid var(--kds-border);
+ border-radius: 8px;
+ padding: 16px 20px;
 }
 .metric-num { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 800; color: #fff; display: block; }
 .metric-label { font-size: 0.75rem; color: var(--kds-muted); font-weight: 800; letter-spacing: 0.06em; margin-top: 2px; }
 
 .kds-tickets-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+ display: grid;
+ grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+ gap: 20px;
 }
 
 .ticket-card {
-  background: var(--kds-panel);
-  border: 1px solid var(--kds-border);
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+ background: var(--kds-panel);
+ border: 1px solid var(--kds-border);
+ border-radius: 8px;
+ overflow: hidden;
+ display: flex;
+ flex-direction: column;
 }
 .ticket-card.status-Preparing { border-top: 4px solid var(--kds-prep); }
 .ticket-card.status-Served { border-top: 4px solid var(--kds-served); opacity: 0.9; }
 
 .ticket-head {
-  padding: 14px 18px;
-  background: #1a2234;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--kds-border);
+ padding: 14px 18px;
+ background: #1a2234;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ border-bottom: 1px solid var(--kds-border);
 }
 .ticket-table { font-size: 1.1rem; font-weight: 800; color: #fff; letter-spacing: 0.04em; }
 .ticket-id-badge {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  padding: 3px 8px;
-  border-radius: 4px;
-  background: #111827;
-  border: 1px solid var(--kds-border);
+ font-family: 'JetBrains Mono', monospace;
+ font-size: 0.75rem;
+ padding: 3px 8px;
+ border-radius: 4px;
+ background: #111827;
+ border: 1px solid var(--kds-border);
 }
 
 .ticket-body { padding: 18px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
 .ticket-item { display: flex; justify-content: space-between; font-size: 0.95rem; }
 .ticket-qty {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 800;
-  background: #1f2937;
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-right: 8px;
+ font-family: 'JetBrains Mono', monospace;
+ font-weight: 800;
+ background: #1f2937;
+ padding: 2px 8px;
+ border-radius: 4px;
+ margin-right: 8px;
 }
 
 .ticket-notes {
-  background: rgba(245, 158, 11, 0.1);
-  border-left: 3px solid #f59e0b;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  color: #fde68a;
-  margin-top: 8px;
+ background: rgba(245, 158, 11, 0.1);
+ border-left: 3px solid #f59e0b;
+ padding: 8px 12px;
+ font-size: 0.8rem;
+ color: #fde68a;
+ margin-top: 8px;
 }
 
 .ticket-foot {
-  padding: 14px 18px;
-  background: #0f172a;
-  border-top: 1px solid var(--kds-border);
-  display: flex;
-  gap: 8px;
+ padding: 14px 18px;
+ background: #0f172a;
+ border-top: 1px solid var(--kds-border);
+ display: flex;
+ gap: 8px;
 }
 .ticket-action-btn {
-  flex: 1;
-  padding: 10px;
-  border-radius: 6px;
-  font-weight: 800;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  border: none;
-  cursor: pointer;
-  color: #fff;
+ flex: 1;
+ padding: 10px;
+ border-radius: 6px;
+ font-weight: 800;
+ font-size: 0.8rem;
+ letter-spacing: 0.05em;
+ border: none;
+ cursor: pointer;
+ color: #fff;
 }
 .btn-serve { background: var(--kds-served); }
 .btn-paid { background: #3b82f6; }

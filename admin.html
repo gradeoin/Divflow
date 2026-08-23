@@ -1,258 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Restro-OS Enterprise POS — The Grand Estate</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=v1787504611072">
+ <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+ <meta http-equiv="Pragma" content="no-cache">
+ <meta http-equiv="Expires" content="0">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Restro-OS Enterprise POS — The Grand Estate</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="admin.css?v=v1787504970336">
 </head>
 <body>
 
-  <!-- Top Enterprise Header with Navigation Tabs -->
-  <header class="pos-top-header">
-    <div class="header-brand-group">
-      <div class="brand-emblem-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      </div>
-      <div>
-        <div class="brand-title">RESTRO-OS <span class="venue-name">• THE GRAND ESTATE</span></div>
-        <div class="sync-status-row"><span class="pulse-dot"></span> Real-Time Cloud Sync Active</div>
-      </div>
-    </div>
+ <!-- Top Enterprise Header with Navigation Tabs -->
+ <header class="pos-top-header">
+ <div class="header-brand-group">
+ <div class="brand-emblem-box">
+ <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+ </div>
+ <div>
+ <div class="brand-title">RESTRO-OS <span class="venue-name">| THE GRAND ESTATE</span></div>
+ <div class="sync-status-row"><span class="pulse-dot"></span> Real-Time Cloud Sync Active</div>
+ </div>
+ </div>
 
-    <!-- Center Navigation Tabs -->
-    <nav class="header-nav-tabs">
-      <button class="header-tab-btn active" onclick="switchView('floor', this)">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        <span>Floor & Tables</span>
-        <span class="tab-counter" id="activeTablesCountBadge">0</span>
-      </button>
+ <!-- Center Navigation Tabs -->
+ <nav class="header-nav-tabs">
+ <button class="header-tab-btn active" onclick="switchView('floor', this)">
+ <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+ <span>Floor & Tables</span>
+ <span class="tab-counter" id="activeTablesCountBadge">0</span>
+ </button>
 
-      <button class="header-tab-btn" onclick="switchView('menu', this)">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
-        <span>Menu & Prices</span>
-      </button>
+ <button class="header-tab-btn" onclick="switchView('menu', this)">
+ <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+ <span>Menu & Prices</span>
+ </button>
 
-      <button class="header-tab-btn" onclick="switchView('crm', this)">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span>Guest CRM</span>
-      </button>
+ <button class="header-tab-btn" onclick="switchView('crm', this)">
+ <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+ <span>Guest CRM</span>
+ </button>
 
-      <button class="header-tab-btn" onclick="switchView('analytics', this)">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
-        <span>Sales & Z-Report</span>
-      </button>
+ <button class="header-tab-btn" onclick="switchView('analytics', this)">
+ <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+ <span>Sales & Z-Report</span>
+ </button>
 
-      <button class="header-tab-btn" onclick="switchView('qr', this)">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM17 17h4v4h-4z"/></svg>
-        <span>Table Standees</span>
-      </button>
-    </nav>
+ <button class="header-tab-btn" onclick="switchView('qr', this)">
+ <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM17 17h4v4h-4z"/></svg>
+ <span>Table Standees</span>
+ </button>
+ </nav>
 
-    <!-- Right Summary Metric -->
-    
-  </header>
+ <!-- Right Summary Metric -->
+ 
+ </header>
 
-  <!-- App Body: Main Workspace + Fixed Right Billing Sidebar -->
-  <div class="pos-app-body">
+ <!-- App Body: Main Workspace + Fixed Right Billing Sidebar -->
+ <div class="pos-app-body">
 
-    <!-- Left/Middle Main Workspace -->
-    <main class="pos-workspace-pane">
+ <!-- Left/Middle Main Workspace -->
+ <main class="pos-workspace-pane">
 
-      <!-- VIEW 1: Floor Map -->
-      <section class="pos-content-view active" id="viewFloor">
-        <div class="floor-filter-bar">
-          <button class="solid-chip active" onclick="filterFloorTables('all', this)">All Tables (12)</button>
-          <button class="solid-chip vacant" onclick="filterFloorTables('vacant', this)">
-            <span class="dot vacant"></span> Available (<span id="countVacant">0</span>)
-          </button>
-          <button class="solid-chip occupied" onclick="filterFloorTables('occupied', this)">
-            <span class="dot occupied"></span> Occupied (<span id="countOccupied">0</span>)
-          </button>
-          <button class="solid-chip cooking" onclick="filterFloorTables('cooking', this)">
-            <span class="dot cooking"></span> In Kitchen (<span id="countCooking">0</span>)
-          </button>
-          <button class="solid-chip served" onclick="filterFloorTables('served', this)">
-            <span class="dot served"></span> Food on Table (<span id="countServed">0</span>)
-          </button>
-        </div>
+ <!-- VIEW 1: Floor Map -->
+ <section class="pos-content-view active" id="viewFloor">
+ <div class="floor-filter-bar">
+ <button class="solid-chip active" onclick="filterFloorTables('all', this)">All Tables (12)</button>
+ <button class="solid-chip vacant" onclick="filterFloorTables('vacant', this)">
+ <span class="dot vacant"></span> Available (<span id="countVacant">0</span>)
+ </button>
+ <button class="solid-chip occupied" onclick="filterFloorTables('occupied', this)">
+ <span class="dot occupied"></span> Occupied (<span id="countOccupied">0</span>)
+ </button>
+ <button class="solid-chip cooking" onclick="filterFloorTables('cooking', this)">
+ <span class="dot cooking"></span> In Kitchen (<span id="countCooking">0</span>)
+ </button>
+ <button class="solid-chip served" onclick="filterFloorTables('served', this)">
+ <span class="dot served"></span> Food on Table (<span id="countServed">0</span>)
+ </button>
+ </div>
 
-        <div class="floor-tables-layout" id="floorTablesGrid">
-          <!-- Injected dynamically via admin.js -->
-        </div>
-      </section>
+ <div class="floor-tables-layout" id="floorTablesGrid">
+ <!-- Injected dynamically via admin.js -->
+ </div>
+ </section>
 
-      <!-- VIEW 2: Menu & Price Studio -->
-      <section class="pos-content-view" id="viewMenu">
-        <div class="view-title-bar">
-          <div>
-            <h2>Menu Catalog & Price Studio</h2>
-            <p>Update dish prices live or toggle In Stock / Sold Out (86ing).</p>
-          </div>
-          <button class="btn-solid-blue" onclick="openAddDishModal()">+ Add New Dish</button>
-        </div>
-        <div class="menu-items-grid" id="menuEditorGrid"></div>
-      </section>
+ <!-- VIEW 2: Menu & Price Studio -->
+ <section class="pos-content-view" id="viewMenu">
+ <div class="view-title-bar">
+ <div>
+ <h2>Menu Catalog & Price Studio</h2>
+ <p>Update dish prices live or toggle In Stock / Sold Out (86ing).</p>
+ </div>
+ <button class="btn-solid-blue" onclick="openAddDishModal()">+ Add New Dish</button>
+ </div>
+ <div class="menu-items-grid" id="menuEditorGrid"></div>
+ </section>
 
-      <!-- VIEW 3: Guest CRM -->
-      <section class="pos-content-view" id="viewCrm">
-        <div class="view-title-bar">
-          <div>
-            <h2>Guest CRM & Dining Records</h2>
-            <p>Customer contact records collected automatically from table orders.</p>
-          </div>
-          <button class="btn-solid-slate" onclick="exportCrmCsv()">📥 Download CSV / Excel</button>
-        </div>
-        <div class="crm-table-container">
-          <table class="crm-data-table">
-            <thead>
-              <tr>
-                <th>GUEST NAME</th>
-                <th>PHONE NUMBER</th>
-                <th>TOTAL VISITS</th>
-                <th>LIFETIME SPEND</th>
-                <th>LAST TABLE</th>
-                <th>WHATSAPP</th>
-              </tr>
-            </thead>
-            <tbody id="crmTableBody"></tbody>
-          </table>
-        </div>
-      </section>
+ <!-- VIEW 3: Guest CRM -->
+ <section class="pos-content-view" id="viewCrm">
+ <div class="view-title-bar">
+ <div>
+ <h2>Guest CRM & Dining Records</h2>
+ <p>Customer contact records collected automatically from table orders.</p>
+ </div>
+ <button class="btn-solid-slate" onclick="exportCrmCsv()"> Download CSV / Excel</button>
+ </div>
+ <div class="crm-table-container">
+ <table class="crm-data-table">
+ <thead>
+ <tr>
+ <th>GUEST NAME</th>
+ <th>PHONE NUMBER</th>
+ <th>TOTAL VISITS</th>
+ <th>LIFETIME SPEND</th>
+ <th>LAST TABLE</th>
+ <th>WHATSAPP</th>
+ </tr>
+ </thead>
+ <tbody id="crmTableBody"></tbody>
+ </table>
+ </div>
+ </section>
 
-      <!-- VIEW 4: Sales Analytics & Z-Report -->
-      <section class="pos-content-view" id="viewAnalytics">
-        <div class="view-title-bar">
-          <div>
-            <h2>Day-End Closing Z-Report & Sales Ledger</h2>
-            <p>Official tax calculations and payment breakdown.</p>
-          </div>
-          <button class="btn-solid-blue" onclick="printDailyZReport()">🖨️ Print Closing Z-Report</button>
-        </div>
-        <div class="kpi-cards-grid">
-          <div class="kpi-stat-box">
-            <span>GROSS SALES TODAY</span>
-            <strong id="analyticRevenue">₹0</strong>
-          </div>
-          <div class="kpi-stat-box">
-            <span>TOTAL TABLES SERVED</span>
-            <strong id="analyticTablesCount">0</strong>
-          </div>
-          <div class="kpi-stat-box">
-            <span>AVERAGE TABLE VALUE</span>
-            <strong id="analyticAov">₹0</strong>
-          </div>
-          <div class="kpi-stat-box">
-            <span>ESTIMATED GST (5%)</span>
-            <strong id="analyticGst">₹0</strong>
-          </div>
-        </div>
-      </section>
+ <!-- VIEW 4: Sales Analytics & Z-Report -->
+ <section class="pos-content-view" id="viewAnalytics">
+ <div class="view-title-bar">
+ <div>
+ <h2>Day-End Closing Z-Report & Sales Ledger</h2>
+ <p>Official tax calculations and payment breakdown.</p>
+ </div>
+ <button class="btn-solid-blue" onclick="printDailyZReport()"> Print Closing Z-Report</button>
+ </div>
+ <div class="kpi-cards-grid">
+ <div class="kpi-stat-box">
+ <span>GROSS SALES TODAY</span>
+ <strong id="analyticRevenue">₹0</strong>
+ </div>
+ <div class="kpi-stat-box">
+ <span>TOTAL TABLES SERVED</span>
+ <strong id="analyticTablesCount">0</strong>
+ </div>
+ <div class="kpi-stat-box">
+ <span>AVERAGE TABLE VALUE</span>
+ <strong id="analyticAov">₹0</strong>
+ </div>
+ <div class="kpi-stat-box">
+ <span>ESTIMATED GST (5%)</span>
+ <strong id="analyticGst">₹0</strong>
+ </div>
+ </div>
+ </section>
 
-      <!-- VIEW 5: Table QR Standees -->
-      <section class="pos-content-view" id="viewQr">
-        <div class="view-title-bar">
-          <div>
-            <h2>Table QR Standee Studio</h2>
-            <p>Printable standees for Tables 1 to 8.</p>
-          </div>
-          <div style="display:flex; gap:10px;">
-            <a href="qr.html" target="_blank" class="btn-solid-slate" style="text-decoration:none;">📄 Standalone Page</a>
-            <button class="btn-solid-blue" onclick="printStandeesClean()">🖨️ Print All Standees</button>
-          </div>
-        </div>
-        <div class="standees-grid-container" id="adminStandeesGrid"></div>
-      </section>
-    </main>
+ <!-- VIEW 5: Table QR Standees -->
+ <section class="pos-content-view" id="viewQr">
+ <div class="view-title-bar">
+ <div>
+ <h2>Table QR Standee Studio</h2>
+ <p>Printable standees for Tables 1 to 8.</p>
+ </div>
+ <div style="display:flex; gap:10px;">
+ <a href="qr.html" target="_blank" class="btn-solid-slate" style="text-decoration:none;"> Standalone Page</a>
+ <button class="btn-solid-blue" onclick="printStandeesClean()"> Print All Standees</button>
+ </div>
+ </div>
+ <div class="standees-grid-container" id="adminStandeesGrid"></div>
+ </section>
+ </main>
 
-    <!-- Fixed Right Billing Sidebar -->
-    <aside class="pos-fixed-billing-sidebar" id="fixedBillingSidebar">
-      <div class="sidebar-top-title">
-        <div class="large-table-heading" id="sheetTableTitle">TABLE 01</div>
-        <span class="solid-state-badge badge-vacant" id="sheetStatusTag">VACANT</span>
-      </div>
+ <!-- Fixed Right Billing Sidebar -->
+ <aside class="pos-fixed-billing-sidebar" id="fixedBillingSidebar">
+ <div class="sidebar-top-title">
+ <div class="large-table-heading" id="sheetTableTitle">TABLE 01</div>
+ <span class="solid-state-badge badge-vacant" id="sheetStatusTag">VACANT</span>
+ </div>
 
-      <div class="sidebar-guest-box">
-        <div class="guest-info-line"><span>Guest:</span> <strong id="sheetGuestName">Walk-in</strong></div>
-        <div class="guest-info-line"><span>Phone:</span> <span id="sheetGuestPhone">N/A</span></div>
-      </div>
+ <div class="sidebar-guest-box">
+ <div class="guest-info-line"><span>Guest:</span> <strong id="sheetGuestName">Walk-in</strong></div>
+ <div class="guest-info-line"><span>Phone:</span> <span id="sheetGuestPhone">N/A</span></div>
+ </div>
 
-      <!-- Itemized Order Items Stream -->
-      <div class="sidebar-items-stream" id="sheetItemsList">
-        <!-- Injected dynamically -->
-      </div>
+ <!-- Itemized Order Items Stream -->
+ <div class="sidebar-items-stream" id="sheetItemsList">
+ <!-- Injected dynamically -->
+ </div>
 
-      <!-- Billing Dock -->
-      <div class="sidebar-billing-dock">
-        <div class="dock-row-line"><span>Subtotal:</span> <span id="sheetSubtotal">₹0</span></div>
-        <div class="dock-row-line"><span>CGST (2.5%):</span> <span id="sheetCgst">₹0</span></div>
-        <div class="dock-row-line"><span>SGST (2.5%):</span> <span id="sheetSgst">₹0</span></div>
-        <div class="dock-row-line total-highlight">
-          <strong>TOTAL PAYABLE:</strong>
-          <strong id="sheetTotal">₹0</strong>
-        </div>
+ <!-- Billing Dock -->
+ <div class="sidebar-billing-dock">
+ <div class="dock-row-line"><span>Subtotal:</span> <span id="sheetSubtotal">₹0</span></div>
+ <div class="dock-row-line"><span>CGST (2.5%):</span> <span id="sheetCgst">₹0</span></div>
+ <div class="dock-row-line"><span>SGST (2.5%):</span> <span id="sheetSgst">₹0</span></div>
+ <div class="dock-row-line total-highlight">
+ <strong>TOTAL PAYABLE:</strong>
+ <strong id="sheetTotal">₹0</strong>
+ </div>
 
-        <div class="dock-button-grid">
-          <button class="btn-dock-print" onclick="printTableTaxInvoice()">
-            🖨️ Print GST Bill
-          </button>
-          <button class="btn-dock-settle" onclick="settleAndClearCurrentTable()">
-            ✓ Mark Paid
-          </button>
-        </div>
-      </div>
-    </aside>
+ <div class="dock-button-grid">
+ <button class="btn-dock-print" onclick="printTableTaxInvoice()">
+ Print GST Bill
+ </button>
+ <button class="btn-dock-settle" onclick="settleAndClearCurrentTable()">
+ Mark Paid
+ </button>
+ </div>
+ </div>
+ </aside>
 
-  </div>
+ </div>
 
-  <!-- Modal: Add New Dish -->
-  <div class="modal-backdrop" id="modalAddDish" style="display:none;">
-    <div class="dark-modal-box">
-      <div class="modal-title-row">
-        <h3>+ Add Menu Item</h3>
-        <button class="modal-close-btn" onclick="closeModal('modalAddDish')">✕</button>
-      </div>
-      <div class="modal-form-content">
-        <div class="form-field">
-          <label>Dish Name *</label>
-          <input type="text" id="addDishName" placeholder="e.g. Truffle Risotto" required>
-        </div>
-        <div class="form-field">
-          <label>Price (₹) *</label>
-          <input type="number" id="addDishPrice" placeholder="e.g. 380" required>
-        </div>
-        <div class="form-field">
-          <label>Category</label>
-          <select id="addDishCategory">
-            <option value="starters">Starters & Appetizers</option>
-            <option value="pizzas">Woodfired Pizzas</option>
-            <option value="mains">Main Course</option>
-            <option value="breads">Tandoor Breads</option>
-            <option value="beverages">Beverages & Drinks</option>
-            <option value="desserts">Desserts</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label>Dietary Type</label>
-          <select id="addDishVeg">
-            <option value="true">🟢 Pure Vegetarian</option>
-            <option value="false">🔴 Non-Vegetarian</option>
-          </select>
-        </div>
-        <button class="btn-solid-blue btn-block" onclick="submitNewDish()">Save to Menu</button>
-      </div>
-    </div>
-  </div>
+ <!-- Modal: Add New Dish -->
+ <div class="modal-backdrop" id="modalAddDish" style="display:none;">
+ <div class="dark-modal-box">
+ <div class="modal-title-row">
+ <h3>+ Add Menu Item</h3>
+ <button class="modal-close-btn" onclick="closeModal('modalAddDish')"></button>
+ </div>
+ <div class="modal-form-content">
+ <div class="form-field">
+ <label>Dish Name *</label>
+ <input type="text" id="addDishName" placeholder="e.g. Truffle Risotto" required>
+ </div>
+ <div class="form-field">
+ <label>Price (₹) *</label>
+ <input type="number" id="addDishPrice" placeholder="e.g. 380" required>
+ </div>
+ <div class="form-field">
+ <label>Category</label>
+ <select id="addDishCategory">
+ <option value="starters">Starters & Appetizers</option>
+ <option value="pizzas">Woodfired Pizzas</option>
+ <option value="mains">Main Course</option>
+ <option value="breads">Tandoor Breads</option>
+ <option value="beverages">Beverages & Drinks</option>
+ <option value="desserts">Desserts</option>
+ </select>
+ </div>
+ <div class="form-field">
+ <label>Dietary Type</label>
+ <select id="addDishVeg">
+ <option value="true"> Pure Vegetarian</option>
+ <option value="false"> Non-Vegetarian</option>
+ </select>
+ </div>
+ <button class="btn-solid-blue btn-block" onclick="submitNewDish()">Save to Menu</button>
+ </div>
+ </div>
+ </div>
 
-  <!-- Floating Toast -->
-  <div class="pos-action-toast" id="adminToast">Action completed</div>
+ <!-- Floating Toast -->
+ <div class="pos-action-toast" id="adminToast">Action completed</div>
 
-  <script src="admin.js?v=v1787504611072"></script>
+ <script src="admin.js?v=v1787504970336"></script>
 </body>
 </html>
