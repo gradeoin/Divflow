@@ -1,3 +1,7 @@
+param(
+    [string]$WebhookUrl = ""
+)
+
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "   Starting Divflow n8n Engine Locally  " -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
@@ -5,6 +9,11 @@ Write-Host "========================================" -ForegroundColor Cyan
 # Set local persistent data directory on D: drive
 $env:N8N_USER_FOLDER = "$PSScriptRoot\..\.n8n"
 $env:N8N_PORT = "5678"
+
+if ($WebhookUrl -ne "") {
+    $env:WEBHOOK_URL = $WebhookUrl
+    Write-Host "[OK] Webhook URL configured: $WebhookUrl" -ForegroundColor Green
+}
 
 Set-Location "$PSScriptRoot\.."
 
