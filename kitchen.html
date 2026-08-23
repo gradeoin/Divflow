@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kitchen Display System (KDS) — Spice & Slice Bistro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="kitchen.css">
+</head>
+<body>
+  <header class="kds-header">
+    <div class="kds-brand">
+      <span class="kds-logo">👨‍🍳</span>
+      <div>
+        <h1>Kitchen Display System (KDS)</h1>
+        <span class="kds-sub">Spice & Slice Bistro • Real-Time Order Dispatcher</span>
+      </div>
+    </div>
+    <div class="kds-controls">
+      <a href="index.html" target="_blank" class="kds-btn">📱 Customer App</a>
+      <a href="qr.html" target="_blank" class="kds-btn">🖨️ QR Standees</a>
+      <button class="kds-btn btn-audio" id="audioToggleBtn" onclick="toggleAudio()">🔔 Sound: ON</button>
+      <button class="kds-btn btn-danger" onclick="clearAllOrders()">🗑️ Reset Orders</button>
+    </div>
+  </header>
+
+  <main class="kds-container">
+    <div class="kds-stats">
+      <div class="stat-card">
+        <span class="stat-num" id="activeOrdersCount">0</span>
+        <span class="stat-lbl">Active Orders</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" id="totalPreparingCount">0</span>
+        <span class="stat-lbl">Cooking / Preparing</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" id="totalTodaySales">₹0</span>
+        <span class="stat-lbl">Active Sales Volume</span>
+      </div>
+    </div>
+
+    <div class="kds-grid" id="kdsGrid">
+      <!-- Active KOT Cards injected here -->
+    </div>
+  </main>
+
+  <script src="kitchen.js"></script>
+</body>
+</html>

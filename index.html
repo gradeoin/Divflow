@@ -2,249 +2,211 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Divflow — Zero-Cost AI Automation Engine & Digital Dining Suite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Spice & Slice Bistro — Table Ordering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="customer.css">
 </head>
 <body>
-  <!-- Header / Navigation -->
-  <header class="navbar">
-    <div class="nav-container">
-      <a href="#" class="logo">
-        <span class="logo-badge">🌊</span>
-        <span class="logo-text">Divflow</span>
-      </a>
-      <nav class="nav-links">
-        <a href="#features">Features</a>
-        <a href="#demo">Live Demo</a>
-        <a href="#menu">Digital Menu</a>
-        <a href="#architecture">Architecture</a>
-        <a href="https://github.com/gradeoin/Divflow" target="_blank" class="github-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          GitHub Repo
+  <!-- Table PIN / Verification Modal -->
+  <div class="pin-overlay" id="pinOverlay">
+    <div class="pin-modal">
+      <div class="pin-icon">🍽️</div>
+      <h2>Welcome to Spice & Slice</h2>
+      <p>Please select your <strong>Table Number</strong> and enter the <strong>4-digit PIN</strong> printed on your table standee.</p>
+      
+      <div class="input-group">
+        <label>Select Table</label>
+        <select id="manualTableSelect">
+          <option value="1">Table 1</option>
+          <option value="2">Table 2</option>
+          <option value="3">Table 3</option>
+          <option value="4" selected>Table 4</option>
+          <option value="5">Table 5</option>
+          <option value="6">Table 6</option>
+          <option value="7">Table 7</option>
+          <option value="8">Table 8</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>4-Digit Table PIN</label>
+        <input type="password" id="tablePinInput" maxlength="4" placeholder="e.g. 8492" autofocus>
+      </div>
+      <div class="pin-error" id="pinError">Invalid PIN. Check your table standee.</div>
+      
+      <button class="btn btn-primary btn-block" onclick="verifyTableManual()">Unlock Menu & Order</button>
+      <span class="pin-hint">💡 Demo Table PIN is: <strong>8492</strong></span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="brand">
+        <span class="brand-logo">🍕</span>
+        <div class="brand-info">
+          <h1 class="brand-name">Spice & Slice Bistro</h1>
+          <div class="table-badge" id="tableBadge">
+            <span class="table-dot"></span>
+            <span id="tableNumberDisplay">Table 4</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="kitchen.html" target="_blank" class="btn-kitchen-link" title="Open Kitchen Display">
+          👨‍🍳 KDS
         </a>
-      </nav>
+        <button class="btn-icon" onclick="callWaiter()" title="Call Waiter">
+          <span>🔔</span>
+        </button>
+        <button class="btn-icon" onclick="toggleCart()" title="View Cart">
+          <span>🛒</span>
+          <span class="cart-count-badge" id="cartCountBadge">0</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-glow"></div>
-    <div class="container hero-content">
-      <div class="pill-badge">
-        <span class="pill-dot"></span>
-        100% Free & Open Source Automation Suite
-      </div>
-      <h1 class="hero-title">
-        The Zero-Cost <span class="gradient-text">AI Automation</span> Engine & Digital Dining Suite
-      </h1>
-      <p class="hero-subtitle">
-        Deploy intelligent table-side ordering, Telegram chatbots, WhatsApp Meta API flows, and omnichannel CRM automations with <strong>zero cloud API fees</strong> and <strong>infinite rate limits</strong>.
-      </p>
-      <div class="hero-actions">
-        <a href="#demo" class="btn btn-primary">Try Interactive Demo</a>
-        <a href="#architecture" class="btn btn-secondary">Explore Architecture</a>
-      </div>
-      <div class="stats-bar">
-        <div class="stat-item">
-          <span class="stat-value">₹0</span>
-          <span class="stat-label">Cloud API Cost</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-value">♾️</span>
-          <span class="stat-label">Rate Limits (Offline Llama)</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-value">1.5s</span>
-          <span class="stat-label">Average Response Time</span>
-        </div>
+  <!-- Banner (Live Order Status) -->
+  <div class="order-status-banner" id="orderStatusBanner" style="display: none;">
+    <div class="status-content">
+      <span class="status-spinner" id="bannerIcon">🍳</span>
+      <div class="status-info">
+        <strong id="bannerStatusTitle">Order #KOT-104 is Preparing</strong>
+        <span id="bannerStatusDesc">Chefs started cooking. Est: 15 mins.</span>
       </div>
     </div>
-  </section>
+    <button class="btn-bill" onclick="openBillModal()">View Bill (₹<span id="bannerBillTotal">0</span>)</button>
+  </div>
 
-  <!-- Live Demo Simulator -->
-  <section id="demo" class="demo-section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-eyebrow">Interactive Simulator</span>
-        <h2 class="section-title">Table 4 Digital Dining Experience</h2>
-        <p class="section-desc">Experience how customers order food, customize dishes, and generate Kitchen Order Tickets (KOT) seamlessly.</p>
+  <!-- Category Nav -->
+  <nav class="category-nav">
+    <div class="category-scroll" id="categoryNav">
+      <button class="cat-pill active" onclick="filterCategory('all')">✨ All</button>
+      <button class="cat-pill" onclick="filterCategory('starters')">🥗 Starters</button>
+      <button class="cat-pill" onclick="filterCategory('pizzas')">🍕 Pizzas</button>
+      <button class="cat-pill" onclick="filterCategory('mains')">🍛 Mains</button>
+      <button class="cat-pill" onclick="filterCategory('breads')">🫓 Breads</button>
+      <button class="cat-pill" onclick="filterCategory('beverages')">🥤 Drinks</button>
+      <button class="cat-pill" onclick="filterCategory('desserts')">🍨 Desserts</button>
+    </div>
+  </nav>
+
+  <!-- Search & Dietary Filters -->
+  <div class="filter-bar">
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" id="searchInput" placeholder="Search dishes, drinks..." oninput="handleSearch()">
+    </div>
+    <div class="dietary-toggle">
+      <button class="diet-btn" id="vegOnlyBtn" onclick="toggleVegOnly()">🟢 Veg Only</button>
+    </div>
+  </div>
+
+  <!-- Menu List Section -->
+  <main class="menu-container">
+    <div class="menu-grid" id="menuGrid">
+      <!-- Injected via customer.js -->
+    </div>
+  </main>
+
+  <!-- Floating Cart Bar -->
+  <div class="floating-cart-bar" id="floatingCartBar" onclick="toggleCart()">
+    <div class="float-cart-info">
+      <span class="cart-items-total" id="floatItemsCount">0 items</span>
+      <span class="cart-price-total" id="floatTotalPrice">₹0</span>
+    </div>
+    <div class="float-cart-cta">
+      <span>View Order</span>
+      <span>➔</span>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div class="cart-drawer-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="drawer-header">
+      <h2>Your Order</h2>
+      <button class="close-btn" onclick="toggleCart()">✕</button>
+    </div>
+
+    <div class="drawer-table-tag">
+      <span>Ordering for:</span>
+      <strong id="drawerTableNumber">Table 4</strong>
+    </div>
+
+    <div class="drawer-items-list" id="drawerItemsList">
+      <!-- Injected dynamically -->
+    </div>
+
+    <div class="drawer-notes">
+      <label>Special Cooking Instructions:</label>
+      <input type="text" id="orderSpecialNotes" placeholder="e.g. Extra spicy, less oil, no onions">
+    </div>
+
+    <div class="drawer-summary">
+      <div class="summary-row">
+        <span>Item Total</span>
+        <span id="drawerSubtotal">₹0</span>
       </div>
-
-      <div class="demo-grid">
-        <!-- Phone Chat Mockup -->
-        <div class="phone-wrapper">
-          <div class="phone-frame">
-            <div class="phone-notch"></div>
-            <div class="phone-header">
-              <div class="avatar">🍽️</div>
-              <div class="header-info">
-                <span class="bot-name">Divflow AI Waiter</span>
-                <span class="bot-status"><span class="online-dot"></span> Table 4 • Online</span>
-              </div>
-            </div>
-            <div class="chat-messages" id="chatMessages">
-              <div class="message message-bot">
-                👋 Welcome to <strong>Spice & Slice Bistro</strong>! You're seated at <strong>Table 4</strong>. What would you like to order today?
-              </div>
-            </div>
-            <div class="quick-chips">
-              <button class="chip" onclick="sendQuickPrompt('What are your top starters?')">🔥 Top Starters</button>
-              <button class="chip" onclick="sendQuickPrompt('Order 1 Paneer Tikka & 2 Butter Naan')">🍛 Order Food</button>
-              <button class="chip" onclick="sendQuickPrompt('Can you make it extra spicy?')">🌶️ Custom Spice</button>
-              <button class="chip" onclick="sendQuickPrompt('Confirm & place the order')">✅ Confirm Order</button>
-              <button class="chip" onclick="sendQuickPrompt('Please bring the bill')">🧾 Request Bill</button>
-            </div>
-            <div class="chat-input-bar">
-              <input type="text" id="userInput" placeholder="Ask for menu, recommendations, or order..." onkeypress="handleKeyPress(event)">
-              <button class="send-btn" onclick="sendMessage()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Live Kitchen Display (KOT) -->
-        <div class="kitchen-display">
-          <div class="kot-card">
-            <div class="kot-header">
-              <span class="kot-badge">LIVE KITCHEN DISPLAY (KOT)</span>
-              <span class="kot-time" id="kotTime">Active</span>
-            </div>
-            <div class="kot-body" id="kotBody">
-              <div class="kot-empty">
-                <span class="kot-empty-icon">🍳</span>
-                <p>Waiting for Table 4 order confirmation...</p>
-                <span class="kot-hint">Use the chat simulator to order food!</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="tech-callout">
-            <h3>⚡ Powered by Local Engine</h3>
-            <ul>
-              <li><strong>Model:</strong> Meta Llama 3.2 (3B) Local Ollama</li>
-              <li><strong>Orchestrator:</strong> n8n Self-Hosted</li>
-              <li><strong>Memory:</strong> Window Buffer Session Store</li>
-              <li><strong>Protocol:</strong> Webhook + Cloudflare HTTPS Tunnel</li>
-            </ul>
-          </div>
-        </div>
+      <div class="summary-row">
+        <span>GST (5%)</span>
+        <span id="drawerTax">₹0</span>
+      </div>
+      <div class="summary-row total-row">
+        <strong>Grand Total</strong>
+        <strong id="drawerGrandTotal">₹0</strong>
       </div>
     </div>
-  </section>
 
-  <!-- Digital Menu Section -->
-  <section id="menu" class="menu-section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-eyebrow">Live Catalog</span>
-        <h2 class="section-title">Digital Dining Menu</h2>
-        <p class="section-desc">Fully structured menu integrated directly into your AI workflow memory.</p>
+    <div class="drawer-actions">
+      <button class="btn btn-primary btn-block btn-lg" id="placeOrderBtn" onclick="placeOrder()">
+        🚀 Send Order to Kitchen
+      </button>
+    </div>
+  </aside>
+
+  <!-- Bill & Active Session Modal -->
+  <div class="bill-modal-overlay" id="billOverlay">
+    <div class="bill-modal">
+      <div class="bill-header">
+        <h2>🧾 Table Bill & Orders</h2>
+        <button class="close-btn" onclick="closeBillModal()">✕</button>
       </div>
 
-      <div class="menu-grid">
-        <div class="menu-card">
-          <div class="card-header">
-            <h3>🥗 Starters & Appetizers</h3>
-          </div>
-          <ul class="menu-list">
-            <li><span class="item-name">Paneer Tikka <span class="tag veg">Veg</span></span> <span class="price">₹280</span></li>
-            <li><span class="item-name">Crispy Corn <span class="tag veg">Veg</span></span> <span class="price">₹220</span></li>
-            <li><span class="item-name">Chicken Tikka <span class="tag nonveg">Non-Veg</span></span> <span class="price">₹340</span></li>
-            <li><span class="item-name">BBQ Chicken Wings <span class="tag nonveg">Non-Veg</span></span> <span class="price">₹320</span></li>
-          </ul>
-        </div>
+      <div class="bill-orders-container" id="billOrdersContainer">
+        <!-- Injected orders -->
+      </div>
 
-        <div class="menu-card">
-          <div class="card-header">
-            <h3>🍕 Main Course & Pizzas</h3>
-          </div>
-          <ul class="menu-list">
-            <li><span class="item-name">Margherita Pizza <span class="tag veg">Veg</span></span> <span class="price">₹350</span></li>
-            <li><span class="item-name">Farmhouse Pizza <span class="tag veg">Veg</span></span> <span class="price">₹420</span></li>
-            <li><span class="item-name">Butter Chicken <span class="tag nonveg">Non-Veg</span></span> <span class="price">₹380</span></li>
-            <li><span class="item-name">Dal Makhani <span class="tag veg">Veg</span></span> <span class="price">₹260</span></li>
-            <li><span class="item-name">Chicken Dum Biryani <span class="tag nonveg">Non-Veg</span></span> <span class="price">₹360</span></li>
-          </ul>
+      <div class="bill-total-box">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="billSubtotal">₹0</span>
         </div>
+        <div class="summary-row">
+          <span>GST (5%)</span>
+          <span id="billTax">₹0</span>
+        </div>
+        <div class="summary-row grand-total">
+          <strong>Total Payable</strong>
+          <strong id="billGrandTotal">₹0</strong>
+        </div>
+      </div>
 
-        <div class="menu-card">
-          <div class="card-header">
-            <h3>🫓 Breads & Beverages</h3>
-          </div>
-          <ul class="menu-list">
-            <li><span class="item-name">Butter Naan</span> <span class="price">₹50</span></li>
-            <li><span class="item-name">Garlic Naan</span> <span class="price">₹65</span></li>
-            <li><span class="item-name">Cold Coffee with Ice Cream</span> <span class="price">₹140</span></li>
-            <li><span class="item-name">Sizzling Brownie</span> <span class="price">₹190</span></li>
-            <li><span class="item-name">Hot Gulab Jamun (2 pcs)</span> <span class="price">₹120</span></li>
-          </ul>
-        </div>
+      <div class="bill-actions">
+        <button class="btn btn-primary btn-block" onclick="requestBill()">
+          💳 Request Bill / Call Waiter
+        </button>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Architecture Section -->
-  <section id="architecture" class="arch-section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-eyebrow">Zero-Cost Infrastructure</span>
-        <h2 class="section-title">System Architecture</h2>
-        <p class="section-desc">How Divflow orchestrates local models, webhooks, and messaging platforms at ₹0 cost.</p>
-      </div>
+  <!-- Notification Toast -->
+  <div class="toast" id="toast">Order placed successfully!</div>
 
-      <div class="arch-diagram">
-        <div class="arch-node">
-          <div class="node-icon">📱</div>
-          <div class="node-title">Channels</div>
-          <div class="node-sub">WhatsApp / Telegram / QR</div>
-        </div>
-        <div class="arch-arrow">➔</div>
-        <div class="arch-node">
-          <div class="node-icon">🛡️</div>
-          <div class="node-title">Tunnel</div>
-          <div class="node-sub">Cloudflare HTTPS Free</div>
-        </div>
-        <div class="arch-arrow">➔</div>
-        <div class="arch-node active-node">
-          <div class="node-icon">🌊</div>
-          <div class="node-title">Divflow Engine</div>
-          <div class="node-sub">n8n Orchestrator (D:)</div>
-        </div>
-        <div class="arch-arrow">➔</div>
-        <div class="arch-node">
-          <div class="node-icon">🧠</div>
-          <div class="node-title">Local AI Brain</div>
-          <div class="node-sub">Llama 3.2 3B (Ollama)</div>
-        </div>
-        <div class="arch-arrow">➔</div>
-        <div class="arch-node">
-          <div class="node-icon">🍳</div>
-          <div class="node-title">Execution</div>
-          <div class="node-sub">Kitchen KOT / DB Record</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container footer-content">
-      <p>© 2026 <strong>Divflow</strong> by Gradeo. Built for open-source AI automation mastery.</p>
-      <div class="footer-links">
-        <a href="https://github.com/gradeoin/Divflow" target="_blank">GitHub</a>
-        <a href="#demo">Live Demo</a>
-        <a href="#menu">Menu</a>
-      </div>
-    </div>
-  </footer>
-
-  <script src="app.js"></script>
+  <script src="customer.js"></script>
 </body>
 </html>
