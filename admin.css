@@ -439,3 +439,8 @@ body {
     margin: 10px auto !important;
   }
 }
+
+.table-card.status-Occupied { border-color: rgba(239, 68, 68, 0.7); background: #2b1111; }
+.status-tag-Occupied { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+.status-tag-Dining { background: rgba(217, 119, 6, 0.2); color: #fbbf24; border: 1px solid rgba(217, 119, 6, 0.4); }
+.status-tag-Vacant { background: rgba(22, 163, 74, 0.2); color: #4ade80; border: 1px solid rgba(22, 163, 74, 0.4); }

@@ -78,20 +78,44 @@ function populateDishSelect() {
   });
 }
 
+
+const LOCAL_STORAGE_TABLE_STATES = 'divflow_table_states_v1';
+
+function getTableStateMap() {
+  return JSON.parse(localStorage.getItem(LOCAL_STORAGE_TABLE_STATES) || '{}');
+}
+
+function setTableState(tableNum, stateObj) {
+  const map = getTableStateMap();
+  map[tableNum] = stateObj;
+  localStorage.setItem(LOCAL_STORAGE_TABLE_STATES, JSON.stringify(map));
+  
+  // Broadcast table state change
+  try {
+    fetch('https://ntfy.sh/' + SYNC_TOPIC, {
+      method: 'POST',
+      body: JSON.stringify({ type: 'TABLE_STATE_CHANGE', table: tableNum, state: stateObj })
+    }).catch(() => {});
+  } catch(e) {}
+}
+
 function renderFloorPlan() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const tableStateMap = getTableStateMap();
   const grid = document.getElementById('floorTablesGrid');
   if (!grid) return;
   grid.innerHTML = '';
 
-  let vacant = 0, dining = 0, todaySales = 0;
+  let vacant = 0, occupied = 0, dining = 0, todaySales = 0;
 
   for (let i = 1; i <= 12; i++) {
     const tableOrders = orders.filter(o => o.table == i && o.status !== 'Paid');
-    let status = 'Vacant';
+    const customState = tableStateMap[i] || { status: 'Vacant', guestName: '' };
+    
+    let status = customState.status;
     let total = 0;
-    let guestName = 'Vacant Table';
-    let itemsSummary = 'Ready for guests';
+    let guestName = customState.guestName || 'Vacant Table';
+    let itemsSummary = 'Ready for seating';
 
     if (tableOrders.length > 0) {
       status = 'Dining';
@@ -103,7 +127,11 @@ function renderFloorPlan() {
         count += o.items ? o.items.length : 0;
       });
       itemsSummary = count + (count === 1 ? ' item active' : ' items active');
+    } else if (status === 'Occupied') {
+      occupied++;
+      itemsSummary = 'Seated (Browsing Menu)';
     } else {
+      status = 'Vacant';
       vacant++;
     }
 
@@ -113,13 +141,13 @@ function renderFloorPlan() {
     card.innerHTML = `
       <div class="table-card-top">
         <span class="table-card-num">TABLE ${i}</span>
-        <span class="table-card-badge">${status}</span>
+        <span class="table-card-badge status-tag-${status}">${status.toUpperCase()}</span>
       </div>
       <div class="table-card-mid">
         <div class="table-card-guest">${guestName}</div>
         <div class="table-card-items">${itemsSummary}</div>
       </div>
-      <div class="table-card-total">₹${total}</div>
+      <div class="table-card-total">${total > 0 ? '₹' + total : (status === 'Occupied' ? 'SEATED' : 'FREE')}</div>
     `;
     grid.appendChild(card);
   }
@@ -127,14 +155,16 @@ function renderFloorPlan() {
   orders.forEach(o => todaySales += o.total);
 
   document.getElementById('countVacant').innerText = vacant;
-  document.getElementById('countDining').innerText = dining;
-  document.getElementById('activeTablesBadge').innerText = dining;
+  document.getElementById('countDining').innerText = dining + occupied;
+  document.getElementById('activeTablesBadge').innerText = dining + occupied;
   document.getElementById('floorTodaySales').innerText = '₹' + todaySales;
 }
 
 function selectInspectorTable(tableNum) {
   activeSelectedTable = String(tableNum);
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const tableStateMap = getTableStateMap();
+  const customState = tableStateMap[activeSelectedTable] || { status: 'Vacant', guestName: '' };
   const tableOrders = orders.filter(o => o.table == activeSelectedTable && o.status !== 'Paid');
 
   document.getElementById('inspectorTableTitle').innerText = 'Table ' + activeSelectedTable;
@@ -143,13 +173,12 @@ function selectInspectorTable(tableNum) {
   stream.innerHTML = '';
 
   let subtotal = 0;
-  let guestName = 'Walk-in Guest';
+  let guestName = customState.guestName || 'Walk-in Guest';
   let guestPhone = 'Not provided';
+  let statusText = customState.status || 'VACANT';
 
   if (tableOrders.length > 0) {
-    document.getElementById('inspectorStatusPill').innerText = 'ACTIVE DINING';
-    document.getElementById('inspectorStatusPill').style.background = 'rgba(217, 119, 6, 0.2)';
-    document.getElementById('inspectorStatusPill').style.color = '#fbbf24';
+    statusText = 'DINING';
     guestName = tableOrders[0].customerName || 'Guest';
     guestPhone = tableOrders[0].customerPhone || 'N/A';
 
@@ -163,11 +192,32 @@ function selectInspectorTable(tableNum) {
       `;
       stream.appendChild(orderBlock);
     });
+  } else if (customState.status === 'Occupied') {
+    statusText = 'OCCUPIED';
+    stream.innerHTML = '<div style="text-align:center; padding:30px; color:#fbbf24; font-size:0.85rem;">🪑 Table is occupied. Guests are currently browsing menu.</div>';
   } else {
-    document.getElementById('inspectorStatusPill').innerText = 'VACANT';
-    document.getElementById('inspectorStatusPill').style.background = 'rgba(22, 163, 74, 0.2)';
-    document.getElementById('inspectorStatusPill').style.color = '#4ade80';
-    stream.innerHTML = '<div style="text-align:center; padding:30px; color:#94a3b8; font-size:0.85rem;">Table is currently vacant.</div>';
+    statusText = 'VACANT';
+    stream.innerHTML = `
+      <div style="text-align:center; padding:30px; color:#94a3b8; font-size:0.85rem;">
+        Table is currently vacant.
+        <button class="btn-primary btn-block" style="margin-top:14px;" onclick="seatGuestsOnTable('${activeSelectedTable}')">
+          🪑 Seat Guests Here (Mark Occupied)
+        </button>
+      </div>
+    `;
+  }
+
+  const pill = document.getElementById('inspectorStatusPill');
+  pill.innerText = statusText;
+  if (statusText === 'VACANT') {
+    pill.style.background = 'rgba(22, 163, 74, 0.2)';
+    pill.style.color = '#4ade80';
+  } else if (statusText === 'OCCUPIED') {
+    pill.style.background = 'rgba(239, 68, 68, 0.2)';
+    pill.style.color = '#f87171';
+  } else {
+    pill.style.background = 'rgba(217, 119, 6, 0.2)';
+    pill.style.color = '#fbbf24';
   }
 
   document.getElementById('inspectorGuestName').innerText = guestName;
@@ -181,21 +231,26 @@ function selectInspectorTable(tableNum) {
   document.getElementById('dockGrandTotal').innerText = '₹' + total;
 }
 
-function settleTable(tenderMode) {
-  showToast('Payment received via ' + tenderMode + ' for Table ' + activeSelectedTable);
+function seatGuestsOnTable(tableNum) {
+  const name = prompt('Enter Guest Name for Table ' + tableNum + ':', 'Dining Guests');
+  if (name) {
+    setTableState(tableNum, { status: 'Occupied', guestName: name, seatedAt: Date.now() });
+    renderFloorPlan();
+    selectInspectorTable(tableNum);
+    showToast('Table ' + tableNum + ' is now OCCUPIED by ' + name);
+  }
 }
 
 function settleAndClearCurrentTable() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
-  const tableOrders = orders.filter(o => o.table == activeSelectedTable && o.status !== 'Paid');
-  if (tableOrders.length === 0) {
-    showToast('Table ' + activeSelectedTable + ' is already vacant.');
-    return;
-  }
-
+  const tableOrders = orders.filter(o => o.table == activeSelectedTable);
   tableOrders.forEach(o => o.status = 'Paid');
   localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(orders));
 
+  // Reset Table State to Vacant
+  setTableState(activeSelectedTable, { status: 'Vacant', guestName: '' });
+
+  // Broadcast
   try {
     fetch('https://ntfy.sh/' + SYNC_TOPIC, {
       method: 'POST',
@@ -205,7 +260,7 @@ function settleAndClearCurrentTable() {
 
   renderFloorPlan();
   selectInspectorTable(activeSelectedTable);
-  showToast('Table ' + activeSelectedTable + ' marked as Paid & Vacant!');
+  showToast('Table ' + activeSelectedTable + ' marked as Paid & Released (VACANT)!');
 }
 
 function renderMenuEditor() {
