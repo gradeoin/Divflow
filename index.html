@@ -126,8 +126,8 @@
     <!-- Customer Details Form -->
     <div class="customer-details-grid">
       <div class="drawer-input-group">
-        <label>Guest Name *</label>
-        <input type="text" id="guestNameInput" placeholder="e.g. Divyansh Agarwal" required>
+        <label>Your Name (Optional)</label>
+        <input type="text" id="guestNameInput" placeholder="e.g. Divyansh Agarwal" >
       </div>
       <div class="drawer-input-group">
         <label>Mobile Number (For Digital Receipt)</label>
@@ -159,9 +159,7 @@
       </div>
     </div>
 
-    <button class="btn-dispatch-order" onclick="placeOrder()">
-      DISPATCH ORDER TO KITCHEN
-    </button>
+    <button class="btn-dispatch-order" id="mainPlaceOrderBtn" onclick="placeOrder()">PLACE ORDER ➔</button>
   </aside>
 
   <!-- Billing Modal -->

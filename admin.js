@@ -20,7 +20,7 @@ const INITIAL_MENU = [
 function init() {
   loadMenuData();
   setupRealtimeSSE();
-  renderFloorPlan();
+  loadOrdersInitial();
   renderMenuEditor();
   renderCRM();
   renderAnalytics();
@@ -588,6 +588,55 @@ function printTableTaxInvoice() {
   win.print();
 }
 
+
+function saveOrderLocal(order) {
+  const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const idx = existing.findIndex(o => o.id === order.id);
+  if (idx >= 0) existing[idx] = order;
+  else existing.push(order);
+  localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(existing));
+}
+
+function updateOrderStatusLocal(orderId, status) {
+  const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const order = existing.find(o => o.id === orderId);
+  if (order) {
+    order.status = status;
+    localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(existing));
+  }
+}
+
+function loadOrdersInitial() {
+  renderFloorPlan();
+  renderCRM();
+  renderAnalytics();
+
+  // Pull cloud stream history
+  fetch('https://ntfy.sh/' + SYNC_TOPIC + '/json?poll=1')
+    .then(r => r.text())
+    .then(text => {
+      const lines = text.trim().split('\n');
+      lines.forEach(line => {
+        try {
+          const data = JSON.parse(line);
+          if (data.message) {
+            const payload = JSON.parse(data.message);
+            if (payload.type === 'NEW_ORDER' && payload.order) {
+              saveOrderLocal(payload.order);
+            } else if (payload.type === 'UPDATE_STATUS' && payload.orderId) {
+              updateOrderStatusLocal(payload.orderId, payload.status);
+            }
+          }
+        } catch(e) {}
+      });
+      renderFloorPlan();
+      renderCRM();
+      renderAnalytics();
+      selectInspectorTable(activeSelectedTable);
+    })
+    .catch(() => {});
+}
+
 function setupRealtimeSSE() {
   try {
     const es = new EventSource('https://ntfy.sh/' + SYNC_TOPIC + '/sse');
@@ -595,6 +644,12 @@ function setupRealtimeSSE() {
       try {
         const data = JSON.parse(e.data);
         if (data.message) {
+          const payload = JSON.parse(data.message);
+          if (payload.type === 'NEW_ORDER' && payload.order) {
+            saveOrderLocal(payload.order);
+          } else if (payload.type === 'UPDATE_STATUS' && payload.orderId) {
+            updateOrderStatusLocal(payload.orderId, payload.status);
+          }
           renderFloorPlan();
           renderCRM();
           renderAnalytics();

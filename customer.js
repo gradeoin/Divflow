@@ -205,7 +205,7 @@ const VALID_TABLE_TOKENS = {
   'T8_2a3b4c7d': '8'
 };
 
-let isTableSecurityVerified = false;
+let isTableSecurityVerified = true;
 
 function validateTableSecurity() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -467,22 +467,14 @@ function toggleCart() {
   }
 }
 
-async function placeOrder() {
-  if (!isTableSecurityVerified) {
-    showToast('🔒 Access Denied: Please scan your table QR code.');
-    return;
-  }
-  const guestName = (document.getElementById('guestNameInput')?.value || '').trim();
-  const guestPhone = (document.getElementById('guestPhoneInput')?.value || '').trim();
 
-  if (!guestName) {
-    showToast('Please enter your Guest Name before placing order.');
-    document.getElementById('guestNameInput')?.focus();
-    return;
-  }
+async function placeOrder() {
+  const guestNameInput = document.getElementById('guestNameInput')?.value?.trim();
+  const guestName = guestNameInput || ('Guest (Table ' + currentTable + ')');
+  const guestPhone = (document.getElementById('guestPhoneInput')?.value || '').trim() || 'N/A';
 
   localStorage.setItem('divflow_guest_name', guestName);
-  if (guestPhone) localStorage.setItem('divflow_guest_phone', guestPhone);
+  if (guestPhone !== 'N/A') localStorage.setItem('divflow_guest_phone', guestPhone);
 
   const items = [];
   let subtotal = 0;
@@ -497,7 +489,7 @@ async function placeOrder() {
   }
 
   if (items.length === 0) {
-    showToast('Your order selection is empty.');
+    showToast('Please add delicious dishes to your order first!');
     return;
   }
 
@@ -510,7 +502,7 @@ async function placeOrder() {
     id: kotId,
     table: currentTable,
     customerName: guestName,
-    customerPhone: guestPhone || 'N/A',
+    customerPhone: guestPhone,
     items,
     specialNotes: specialNotes || 'None',
     subtotal,
@@ -521,30 +513,25 @@ async function placeOrder() {
     createdAt: Date.now()
   };
 
+  // 1. Save locally
   saveOrderLocal(newOrder);
 
+  // 2. Broadcast to global cloud stream for KDS & Admin POS
   try {
     fetch('https://ntfy.sh/' + SYNC_TOPIC, {
       method: 'POST',
       headers: { 'Title': 'NEW_ORDER' },
       body: JSON.stringify({ type: 'NEW_ORDER', order: newOrder })
-    }).catch(() => {});
+    }).catch(e => console.error(e));
   } catch(e) {}
 
-  try {
-    fetch('http://localhost:5678/webhook/restaurant-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newOrder)
-    }).catch(() => {});
-  } catch(e) {}
-
+  // 3. Reset UI
   cart = {};
   if (document.getElementById('orderNotesInput')) document.getElementById('orderNotesInput').value = '';
   updateCartUI();
   toggleCart();
 
-  showToast('Order #' + kotId + ' dispatched to kitchen.');
+  showToast('🎉 Order #' + kotId + ' placed successfully!');
   updateOrderStatusBanner();
 }
 

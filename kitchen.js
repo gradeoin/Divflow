@@ -169,6 +169,18 @@ function broadcastStatusUpdate(orderId, newStatus) {
   updateOrderStatusLocal(orderId, newStatus);
   loadOrdersFromStorage();
 
+  // Broadcast to global cloud stream for Admin POS & Guest Phone
+  try {
+    fetch('https://ntfy.sh/' + SYNC_TOPIC, {
+      method: 'POST',
+      headers: { 'Title': 'UPDATE_STATUS' },
+      body: JSON.stringify({ type: 'UPDATE_STATUS', orderId: orderId, status: newStatus })
+    }).catch(e => console.error(e));
+  } catch(e) {}
+  return;
+  updateOrderStatusLocal(orderId, newStatus);
+  loadOrdersFromStorage();
+
   // Broadcast to global cloud stream
   try {
     fetch('https://ntfy.sh/' + SYNC_TOPIC, {
