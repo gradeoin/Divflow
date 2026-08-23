@@ -23,16 +23,7 @@
           <div class="table-tag">
             <span class="status-indicator"></span>
             <span id="tableNumberDisplay">Table 4</span>
-            <select id="tableSelectPicker" onchange="switchTableFromPicker(this.value)">
-              <option value="1">Table 1</option>
-              <option value="2">Table 2</option>
-              <option value="3">Table 3</option>
-              <option value="4" selected>Table 4</option>
-              <option value="5">Table 5</option>
-              <option value="6">Table 6</option>
-              <option value="7">Table 7</option>
-              <option value="8">Table 8</option>
-            </select>
+            
           </div>
         </div>
       </div>
@@ -48,6 +39,16 @@
       </div>
     </div>
   </header>
+
+  
+  <!-- Tamper-Proof Security Lock Banner -->
+  <div class="security-lock-banner" id="tableSecurityLockBanner" style="display:none;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <div>
+      <strong>UNVERIFIED TABLE ACCESS (VIEW ONLY)</strong>
+      <span>Please scan the physical QR code on your table standee to place orders for this table.</span>
+    </div>
+  </div>
 
   <!-- Live Status Bar -->
   <div class="active-status-bar" id="orderStatusBanner" style="display:none;" onclick="openBillModal()">

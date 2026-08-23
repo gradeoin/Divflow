@@ -488,3 +488,19 @@ body {
 @media (max-width: 500px) {
   .customer-details-grid { grid-template-columns: 1fr; }
 }
+
+.security-lock-banner {
+  max-width: 900px;
+  margin: 12px auto 0;
+  padding: 12px 18px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-left: 4px solid #ef4444;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #991b1b;
+  font-size: 0.8rem;
+}
+.security-lock-banner strong { display: block; font-size: 0.85rem; color: #b91c1c; }

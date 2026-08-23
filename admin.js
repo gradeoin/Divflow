@@ -527,7 +527,8 @@ function renderAdminStandees() {
   const baseUrl = 'https://divflow.pages.dev';
 
   for (let i = 1; i <= 8; i++) {
-    const targetUrl = `${baseUrl}/?table=${i}`;
+    const TOKENS = {"1":"T1_9e8a7b4f","2":"T2_4c5d6e1a","3":"T3_7f8a9b2c","4":"T4_1a2b3c9d","5":"T5_8d9e0f5e","6":"T6_3c4d5e8a","7":"T7_6f7a8b1c","8":"T8_2a3b4c7d"};
+      const targetUrl = `${baseUrl}/?t=${TOKENS[i]}`;
     const encoded = encodeURIComponent(targetUrl);
     const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encoded}&margin=4`;
 

@@ -194,7 +194,76 @@ const SYNC_TOPIC = 'divflow_restaurant_kot_live_stream_9921';
 const LOCAL_STORAGE_ORDERS = 'divflow_realtime_orders_v2';
 let allTableOrders = [];
 
+
+const VALID_TABLE_TOKENS = {
+  'T1_9e8a7b4f': '1',
+  'T2_4c5d6e1a': '2',
+  'T3_7f8a9b2c': '3',
+  'T4_1a2b3c9d': '4',
+  'T5_8d9e0f5e': '5',
+  'T6_3c4d5e8a': '6',
+  'T7_6f7a8b1c': '7',
+  'T8_2a3b4c7d': '8'
+};
+
+let isTableSecurityVerified = false;
+
+function validateTableSecurity() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenParam = urlParams.get('t') || urlParams.get('token');
+  const tableParam = urlParams.get('table');
+
+  // Check if opened via valid cryptographic QR token
+  if (tokenParam && VALID_TABLE_TOKENS[tokenParam]) {
+    currentTable = VALID_TABLE_TOKENS[tokenParam];
+    isTableSecurityVerified = true;
+    sessionStorage.setItem('divflow_verified_table_token', tokenParam);
+    sessionStorage.setItem('divflow_verified_table', currentTable);
+  } else {
+    // Check if session has a previously verified token
+    const savedToken = sessionStorage.getItem('divflow_verified_table_token');
+    if (savedToken && VALID_TABLE_TOKENS[savedToken]) {
+      currentTable = VALID_TABLE_TOKENS[savedToken];
+      isTableSecurityVerified = true;
+    } else if (tableParam && Object.values(VALID_TABLE_TOKENS).includes(tableParam)) {
+      // User typed raw ?table=X without cryptographic token: LOCK ACCESS
+      isTableSecurityVerified = false;
+      currentTable = tableParam;
+    } else {
+      isTableSecurityVerified = false;
+      currentTable = '4';
+    }
+  }
+
+  // If table access is locked due to manual URL tampering:
+  const banner = document.getElementById('tableSecurityLockBanner');
+  const dispatchBtn = document.querySelector('.btn-dispatch-order');
+  const addButtons = document.querySelectorAll('.btn-add-item');
+
+  if (!isTableSecurityVerified) {
+    if (banner) banner.style.display = 'flex';
+    if (dispatchBtn) {
+      dispatchBtn.disabled = true;
+      dispatchBtn.style.opacity = '0.5';
+      dispatchBtn.style.cursor = 'not-allowed';
+      dispatchBtn.innerText = '🔒 SCAN TABLE QR TO ORDER';
+    }
+  } else {
+    if (banner) banner.style.display = 'none';
+    if (dispatchBtn) {
+      dispatchBtn.disabled = false;
+      dispatchBtn.style.opacity = '1';
+      dispatchBtn.style.cursor = 'pointer';
+      dispatchBtn.innerText = 'DISPATCH ORDER TO KITCHEN';
+    }
+  }
+
+  document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
+  document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
+}
+
 function init() {
+  validateTableSecurity();
   const urlParams = new URLSearchParams(window.location.search);
   const tableParam = urlParams.get('table') || urlParams.get('t');
 
@@ -401,6 +470,10 @@ function toggleCart() {
 // Real-Time Multi-Device Cloud Sync via Global Pub/Sub (ntfy.sh) + n8n Webhook
 // =========================================================================
 async function placeOrder() {
+  if (!isTableSecurityVerified) {
+    showToast('🔒 Access Denied: You must physically scan the QR code on Table ' + currentTable + ' to place an order.');
+    return;
+  }
   const guestName = (document.getElementById('guestNameInput')?.value || '').trim();
   const guestPhone = (document.getElementById('guestPhoneInput')?.value || '').trim();
 
