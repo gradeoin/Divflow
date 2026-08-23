@@ -2,6 +2,7 @@
 const SYNC_TOPIC = 'divflow_restaurant_kot_live_stream_9921';
 const LOCAL_STORAGE_ORDERS = 'divflow_realtime_orders_v2';
 const LOCAL_STORAGE_MENU = 'divflow_custom_menu_v1';
+const LOCAL_STORAGE_TABLE_STATES = 'divflow_table_states_v1';
 
 let activeSelectedTable = '4';
 let currentMenu = [];
@@ -27,8 +28,8 @@ function init() {
 }
 
 function switchView(viewId, btnElement) {
-  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.pos-subview').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.pos-view').forEach(el => el.classList.remove('active'));
 
   if (btnElement) btnElement.classList.add('active');
   const target = document.getElementById('view' + viewId.charAt(0).toUpperCase() + viewId.slice(1));
@@ -37,9 +38,26 @@ function switchView(viewId, btnElement) {
 
 function filterFloorTables(filterState, btnElement) {
   activeFloorFilter = filterState;
-  document.querySelectorAll('.kpi-chip').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
   if (btnElement) btnElement.classList.add('active');
   renderFloorPlan();
+}
+
+function getTableStateMap() {
+  return JSON.parse(localStorage.getItem(LOCAL_STORAGE_TABLE_STATES) || '{}');
+}
+
+function setTableState(tableNum, stateObj) {
+  const map = getTableStateMap();
+  map[tableNum] = stateObj;
+  localStorage.setItem(LOCAL_STORAGE_TABLE_STATES, JSON.stringify(map));
+
+  try {
+    fetch('https://ntfy.sh/' + SYNC_TOPIC, {
+      method: 'POST',
+      body: JSON.stringify({ type: 'TABLE_STATE_CHANGE', table: tableNum, state: stateObj })
+    }).catch(() => {});
+  } catch(e) {}
 }
 
 function loadMenuData() {
@@ -47,39 +65,28 @@ function loadMenuData() {
   if (saved) currentMenu = JSON.parse(saved);
   else currentMenu = [...INITIAL_MENU];
   renderMenuEditor();
-  populateDishSelect();
 }
 
 function saveMenuData() {
   localStorage.setItem(LOCAL_STORAGE_MENU, JSON.stringify(currentMenu));
   renderMenuEditor();
-  populateDishSelect();
-}
-
-function populateDishSelect() {
-  const select = document.getElementById('punchDishSelect');
-  if (!select) return;
-  select.innerHTML = '';
-  currentMenu.forEach(item => {
-    const opt = document.createElement('option');
-    opt.value = item.id;
-    opt.innerText = `${item.name} (₹${item.price})`;
-    select.appendChild(opt);
-  });
 }
 
 function renderFloorPlan() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const tableStateMap = getTableStateMap();
   const grid = document.getElementById('floorTablesGrid');
   if (!grid) return;
   grid.innerHTML = '';
 
-  let vacant = 0, cooking = 0, served = 0, todaySales = 0;
+  let vacant = 0, occupied = 0, cooking = 0, served = 0, todaySales = 0;
 
   for (let i = 1; i <= 12; i++) {
     const tableOrders = orders.filter(o => o.table == i && o.status !== 'Paid');
-    let state = 'Vacant';
-    let guestName = 'Available Table';
+    const customState = tableStateMap[i] || { status: 'Vacant', guestName: '' };
+
+    let state = customState.status || 'Vacant';
+    let guestName = customState.guestName || 'Available Table';
     let info = 'Ready for seating';
     let total = 0;
 
@@ -104,33 +111,35 @@ function renderFloorPlan() {
         count += o.items ? o.items.length : 0;
       });
       info += ' (' + count + ' items)';
+    } else if (state === 'Occupied') {
+      occupied++;
+      info = '🪑 Seated (Browsing Menu)';
     } else {
+      state = 'Vacant';
       vacant++;
     }
 
-    // Apply Filter Chip
+    // Filter check
     if (activeFloorFilter === 'vacant' && state !== 'Vacant') continue;
+    if (activeFloorFilter === 'occupied' && state !== 'Occupied') continue;
     if (activeFloorFilter === 'cooking' && state !== 'Cooking') continue;
     if (activeFloorFilter === 'served' && state !== 'Served') continue;
 
     const card = document.createElement('div');
-    card.className = `industry-table-card state-${state}`;
-    card.onclick = () => openTableRegister(i);
+    card.className = `dark-table-card state-${state}`;
+    card.onclick = () => openTableCheckoutDrawer(i);
     card.innerHTML = `
-      <div class="table-card-header">
-        <div class="table-title-box">
-          <span class="table-number">TABLE ${i < 10 ? '0' + i : i}</span>
-          <span class="table-section">Main Dining • 4 Pax</span>
-        </div>
-        <span class="status-badge-pill">${state}</span>
+      <div class="card-top-bar">
+        <span class="table-id-text">TABLE ${i < 10 ? '0' + i : i}</span>
+        <span class="table-status-pill">${state.toUpperCase()}</span>
       </div>
-      <div class="table-card-body">
-        <div class="guest-name-text">${guestName}</div>
-        <div class="order-summary-text">${info}</div>
+      <div class="card-middle-content">
+        <div class="card-guest-title">${guestName}</div>
+        <div class="card-order-summary">${info}</div>
       </div>
-      <div class="table-card-footer">
-        <span class="running-bill-amount">${total > 0 ? '₹' + total : '₹0'}</span>
-        <span class="settle-action-hint">Settle Bill ➔</span>
+      <div class="card-bottom-bar">
+        <span class="card-running-total">${total > 0 ? '₹' + total : (state === 'Occupied' ? 'SEATED' : 'FREE')}</span>
+        <span class="card-settle-cue">Settle / View ➔</span>
       </div>
     `;
     grid.appendChild(card);
@@ -139,23 +148,26 @@ function renderFloorPlan() {
   orders.forEach(o => todaySales += o.total);
 
   if (document.getElementById('countVacant')) document.getElementById('countVacant').innerText = vacant;
+  if (document.getElementById('countOccupied')) document.getElementById('countOccupied').innerText = occupied;
   if (document.getElementById('countCooking')) document.getElementById('countCooking').innerText = cooking;
   if (document.getElementById('countServed')) document.getElementById('countServed').innerText = served;
-  if (document.getElementById('activeTablesCountBadge')) document.getElementById('activeTablesCountBadge').innerText = cooking + served;
+  if (document.getElementById('activeTablesCountBadge')) document.getElementById('activeTablesCountBadge').innerText = cooking + served + occupied;
   if (document.getElementById('floorTodaySales')) document.getElementById('floorTodaySales').innerText = '₹' + todaySales;
 }
 
-function openTableRegister(tableNum) {
+function openTableCheckoutDrawer(tableNum) {
   activeSelectedTable = String(tableNum);
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const tableStateMap = getTableStateMap();
+  const customState = tableStateMap[activeSelectedTable] || { status: 'Vacant', guestName: '' };
   const tableOrders = orders.filter(o => o.table == activeSelectedTable && o.status !== 'Paid');
 
   document.getElementById('sheetTableTitle').innerText = 'TABLE ' + (Number(activeSelectedTable) < 10 ? '0' + activeSelectedTable : activeSelectedTable);
 
-  let guestName = 'Walk-in Guest';
+  let guestName = customState.guestName || 'Walk-in Guest';
   let guestPhone = 'Not provided';
   let subtotal = 0;
-  let statusText = 'VACANT';
+  let statusText = customState.status || 'VACANT';
 
   const list = document.getElementById('sheetItemsList');
   list.innerHTML = '';
@@ -169,39 +181,50 @@ function openTableRegister(tableNum) {
     tableOrders.forEach(o => {
       subtotal += o.subtotal;
       const orderBox = document.createElement('div');
-      orderBox.className = 'itemized-order-block';
+      orderBox.className = 'stream-order-card';
       orderBox.innerHTML = `
-        <div class="order-block-header">
+        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#60a5fa; font-weight:700; margin-bottom:6px;">
           <span>#${o.id} • ${o.timestamp}</span>
-          <span style="color:${o.status === 'Served' ? '#16a34a' : '#d97706'};">${o.status.toUpperCase()}</span>
+          <span style="color:${o.status === 'Served' ? '#4ade80' : '#fbbf24'};">${o.status.toUpperCase()}</span>
         </div>
         ${o.items.map(i => `
-          <div class="item-line-row">
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin:2px 0;">
             <span>${i.qty}x ${i.name}</span>
-            <strong>₹${i.price * i.qty}</strong>
+            <span>₹${i.price * i.qty}</span>
           </div>
         `).join('')}
       `;
       list.appendChild(orderBox);
     });
+  } else if (customState.status === 'Occupied') {
+    statusText = 'OCCUPIED';
+    list.innerHTML = '<div style="text-align:center; padding:50px 20px; color:#f87171; font-size:0.9rem; font-weight:700;">🪑 Table is occupied. Guests are currently seated.</div>';
   } else {
-    list.innerHTML = '<div style="text-align:center; padding:50px 20px; color:#94a3b8; font-size:0.9rem;">Table is currently available for seating.</div>';
+    statusText = 'VACANT';
+    list.innerHTML = `
+      <div style="text-align:center; padding:40px 20px; color:#94a3b8; font-size:0.9rem;">
+        Table is currently vacant.
+        <button class="btn-action-primary" style="margin-top:14px; width:100%;" onclick="seatGuestsOnTable('${activeSelectedTable}')">
+          🪑 Seat Guests Here (Mark Occupied)
+        </button>
+      </div>
+    `;
   }
 
   const statusTag = document.getElementById('sheetStatusTag');
   statusTag.innerText = statusText;
   if (statusText === 'VACANT') {
-    statusTag.style.background = '#f0fdf4';
-    statusTag.style.color = '#16a34a';
-    statusTag.style.border = '1px solid #bbf7d0';
+    statusTag.style.background = 'rgba(34, 197, 94, 0.2)';
+    statusTag.style.color = '#4ade80';
+  } else if (statusText === 'OCCUPIED') {
+    statusTag.style.background = 'rgba(239, 68, 68, 0.25)';
+    statusTag.style.color = '#f87171';
   } else if (statusText === 'FOOD SERVED') {
-    statusTag.style.background = '#eff6ff';
-    statusTag.style.color = '#2563eb';
-    statusTag.style.border = '1px solid #bfdbfe';
+    statusTag.style.background = 'rgba(59, 130, 246, 0.25)';
+    statusTag.style.color = '#60a5fa';
   } else {
-    statusTag.style.background = '#fffbeb';
-    statusTag.style.color = '#d97706';
-    statusTag.style.border = '1px solid #fde68a';
+    statusTag.style.background = 'rgba(245, 158, 11, 0.25)';
+    statusTag.style.color = '#fbbf24';
   }
 
   document.getElementById('sheetGuestName').innerText = guestName;
@@ -222,11 +245,24 @@ function closeTableModal() {
   document.getElementById('tableModalOverlay').style.display = 'none';
 }
 
+function seatGuestsOnTable(tableNum) {
+  const name = prompt('Enter Guest Name for Table ' + tableNum + ':', 'Dining Guests');
+  if (name) {
+    setTableState(tableNum, { status: 'Occupied', guestName: name, seatedAt: Date.now() });
+    renderFloorPlan();
+    openTableCheckoutDrawer(tableNum);
+    showToast('Table ' + tableNum + ' marked OCCUPIED by ' + name);
+  }
+}
+
 function settleAndClearCurrentTable() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
   const tableOrders = orders.filter(o => o.table == activeSelectedTable);
   tableOrders.forEach(o => o.status = 'Paid');
   localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(orders));
+
+  // Reset Table State to Vacant
+  setTableState(activeSelectedTable, { status: 'Vacant', guestName: '' });
 
   // Broadcast CLEAR_TABLE event
   try {
@@ -240,7 +276,7 @@ function settleAndClearCurrentTable() {
   renderFloorPlan();
   renderCRM();
   renderAnalytics();
-  showToast('Table ' + activeSelectedTable + ' settled & marked Available!');
+  showToast('Table ' + activeSelectedTable + ' marked Paid & Released (VACANT)!');
 }
 
 function renderMenuEditor() {
@@ -250,15 +286,15 @@ function renderMenuEditor() {
 
   currentMenu.forEach(item => {
     const card = document.createElement('div');
-    card.className = 'catalog-item-card';
+    card.className = 'catalog-row-card';
     card.innerHTML = `
-      <img src="${item.img}" class="catalog-thumb" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
-      <div class="catalog-meta">
-        <div class="catalog-title">${item.name}</div>
-        <span>₹ <input type="number" value="${item.price}" class="catalog-price-input" onchange="updateItemPrice('${item.id}', this.value)"></span>
+      <img src="${item.img}" class="catalog-img-thumb" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+      <div style="flex:1;">
+        <div style="font-weight:700; font-size:0.9rem; margin-bottom:2px;">${item.name}</div>
+        <span>₹ <input type="number" value="${item.price}" class="catalog-price-edit" onchange="updateItemPrice('${item.id}', this.value)"></span>
       </div>
-      <button class="stock-toggle-btn ${item.inStock ? 'in-stock' : ''}" onclick="toggleItemStock('${item.id}')">
-        ${item.inStock ? '✓ In Stock' : '✕ 86ed (Sold Out)'}
+      <button class="btn-stock-toggle" style="${item.inStock ? 'color:#4ade80;' : 'color:#f87171;'}" onclick="toggleItemStock('${item.id}')">
+        ${item.inStock ? '✓ In Stock' : '✕ Sold Out'}
       </button>
     `;
     grid.appendChild(card);
@@ -279,7 +315,7 @@ function toggleItemStock(id) {
   if (item) {
     item.inStock = !item.inStock;
     saveMenuData();
-    showToast(item.name + (item.inStock ? ' In Stock' : ' marked Sold Out (86ed)'));
+    showToast(item.name + (item.inStock ? ' In Stock' : ' Sold Out (86ed)'));
   }
 }
 
@@ -313,53 +349,6 @@ function submitNewDish() {
   document.getElementById('addDishName').value = '';
   document.getElementById('addDishPrice').value = '';
   showToast(name + ' added to catalog!');
-}
-
-function openNewOrderModal() {
-  document.getElementById('modalPunchOrder').style.display = 'flex';
-}
-
-function submitManualOrder() {
-  const table = document.getElementById('punchTableSelect').value;
-  const guestName = document.getElementById('punchGuestName').value.trim() || 'Walk-in Guest';
-  const dishId = document.getElementById('punchDishSelect').value;
-  const qty = Number(document.getElementById('punchQty').value) || 1;
-
-  const dish = currentMenu.find(i => i.id === dishId);
-  if (!dish) return;
-
-  const subtotal = dish.price * qty;
-  const tax = Math.round(subtotal * 0.05);
-  const total = subtotal + tax;
-
-  const kotId = 'KOT-' + Math.floor(100 + Math.random() * 900);
-  const newOrder = {
-    id: kotId,
-    table,
-    customerName: guestName,
-    customerPhone: 'Walk-in',
-    items: [{ name: dish.name, qty, price: dish.price }],
-    specialNotes: 'Punched at POS Terminal',
-    subtotal,
-    tax,
-    total,
-    status: 'Preparing',
-    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    createdAt: Date.now()
-  };
-
-  saveOrderLocal(newOrder);
-
-  try {
-    fetch('https://ntfy.sh/' + SYNC_TOPIC, {
-      method: 'POST',
-      body: JSON.stringify({ type: 'NEW_ORDER', order: newOrder })
-    }).catch(() => {});
-  } catch(e) {}
-
-  closeModal('modalPunchOrder');
-  renderFloorPlan();
-  showToast('Order #' + kotId + ' sent to kitchen!');
 }
 
 function closeModal(modalId) {
@@ -397,11 +386,11 @@ function renderCRM() {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><strong>${g.name}</strong></td>
-      <td><span style="font-family:monospace; color:#2563eb;">${g.phone}</span></td>
+      <td><span style="font-family:monospace; color:#60a5fa;">${g.phone}</span></td>
       <td>${g.count} visit(s)</td>
       <td><strong>₹${g.spend}</strong></td>
       <td>Table ${g.lastTable}</td>
-      <td><a href="https://wa.me/${g.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(g.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!" target="_blank" class="btn-primary-action" style="font-size:0.75rem; padding:5px 10px; text-decoration:none; display:inline-flex;">💬 Send WhatsApp Offer</a></td>
+      <td><a href="https://wa.me/${g.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(g.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!" target="_blank" class="btn-action-primary" style="font-size:0.75rem; padding:5px 10px; text-decoration:none; display:inline-flex;">💬 WhatsApp</a></td>
     `;
     tbody.appendChild(row);
   });
@@ -520,7 +509,7 @@ function renderAdminStandees() {
     const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(targetUrl)}&margin=4`;
 
     const card = document.createElement('div');
-    card.className = 'admin-standee-card';
+    card.className = 'standee-print-card';
     card.innerHTML = `
       <div style="font-weight:800; font-size:1.05rem; text-transform:uppercase;">THE GRAND ESTATE</div>
       <div style="font-size:0.75rem; color:#64748b; margin-bottom:10px;">Digital Dining QR Standee</div>
@@ -571,6 +560,10 @@ function loadOrdersInitial() {
               saveOrderLocal(payload.order);
             } else if (payload.type === 'UPDATE_STATUS' && payload.orderId) {
               updateOrderStatusLocal(payload.orderId, payload.status);
+            } else if (payload.type === 'TABLE_STATE_CHANGE' && payload.table) {
+              const map = getTableStateMap();
+              map[payload.table] = payload.state;
+              localStorage.setItem(LOCAL_STORAGE_TABLE_STATES, JSON.stringify(map));
             }
           }
         } catch(e) {}
@@ -594,6 +587,10 @@ function setupRealtimeSSE() {
             saveOrderLocal(payload.order);
           } else if (payload.type === 'UPDATE_STATUS' && payload.orderId) {
             updateOrderStatusLocal(payload.orderId, payload.status);
+          } else if (payload.type === 'TABLE_STATE_CHANGE' && payload.table) {
+            const map = getTableStateMap();
+            map[payload.table] = payload.state;
+            localStorage.setItem(LOCAL_STORAGE_TABLE_STATES, JSON.stringify(map));
           }
           renderFloorPlan();
           renderCRM();
