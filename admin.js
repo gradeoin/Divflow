@@ -6,7 +6,6 @@ const LOCAL_STORAGE_MENU = 'divflow_custom_menu_v1';
 let activeSelectedTable = '4';
 let currentMenu = [];
 
-// Default Initial Menu
 const INITIAL_MENU = [
   { id: 'st1', name: 'Charcoal Smoked Paneer Tikka', category: 'starters', price: 280, isVeg: true, inStock: true, img: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80' },
   { id: 'st2', name: 'Wok Tossed Crispy Pepper Corn', category: 'starters', price: 220, isVeg: true, inStock: true, img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=600&q=80' },
@@ -35,48 +34,64 @@ function init() {
   }, 2000);
 }
 
-function switchTab(tabId) {
+function switchTab(tabId, btnElement) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.pos-tab-content').forEach(el => el.classList.remove('active'));
 
-  event.currentTarget.classList.add('active');
+  if (btnElement) btnElement.classList.add('active');
 
   const titles = {
     floor: 'Interactive Floor Plan & Tables',
     menu: 'Menu Catalog & Live Price Studio',
-    crm: 'Guest CRM & WhatsApp Leads',
-    analytics: 'Sales Analytics & Daily Z-Report',
-    qr: 'QR Standee Studio'
+    crm: 'Guest CRM Database',
+    analytics: 'Daily Z-Report & Sales Ledger',
+    qr: 'Table QR Standees Studio'
   };
 
   document.getElementById('pageHeading').innerText = titles[tabId] || 'Dashboard';
-  document.getElementById('tab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.add('active');
+  const targetContent = document.getElementById('tab' + tabId.charAt(0).toUpperCase() + tabId.slice(1));
+  if (targetContent) targetContent.classList.add('active');
 }
 
 function loadMenuData() {
   const saved = localStorage.getItem(LOCAL_STORAGE_MENU);
   if (saved) currentMenu = JSON.parse(saved);
   else currentMenu = [...INITIAL_MENU];
+  populateDishSelect();
 }
 
 function saveMenuData() {
   localStorage.setItem(LOCAL_STORAGE_MENU, JSON.stringify(currentMenu));
   renderMenuEditor();
+  populateDishSelect();
+}
+
+function populateDishSelect() {
+  const select = document.getElementById('punchDishSelect');
+  if (!select) return;
+  select.innerHTML = '';
+  currentMenu.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item.id;
+    opt.innerText = `${item.name} (₹${item.price})`;
+    select.appendChild(opt);
+  });
 }
 
 function renderFloorPlan() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
   const grid = document.getElementById('floorTablesGrid');
+  if (!grid) return;
   grid.innerHTML = '';
 
-  let vacant = 0, dining = 0, billing = 0, todaySales = 0;
+  let vacant = 0, dining = 0, todaySales = 0;
 
   for (let i = 1; i <= 12; i++) {
     const tableOrders = orders.filter(o => o.table == i && o.status !== 'Paid');
     let status = 'Vacant';
     let total = 0;
     let guestName = 'Vacant Table';
-    let itemsSummary = 'No active orders';
+    let itemsSummary = 'Ready for guests';
 
     if (tableOrders.length > 0) {
       status = 'Dining';
@@ -113,7 +128,6 @@ function renderFloorPlan() {
 
   document.getElementById('countVacant').innerText = vacant;
   document.getElementById('countDining').innerText = dining;
-  document.getElementById('countBilling').innerText = billing;
   document.getElementById('activeTablesBadge').innerText = dining;
   document.getElementById('floorTodaySales').innerText = '₹' + todaySales;
 }
@@ -168,16 +182,20 @@ function selectInspectorTable(tableNum) {
 }
 
 function settleTable(tenderMode) {
-  showToast('Payment marked via ' + tenderMode + ' for Table ' + activeSelectedTable);
+  showToast('Payment received via ' + tenderMode + ' for Table ' + activeSelectedTable);
 }
 
 function settleAndClearCurrentTable() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
-  const tableOrders = orders.filter(o => o.table == activeSelectedTable);
+  const tableOrders = orders.filter(o => o.table == activeSelectedTable && o.status !== 'Paid');
+  if (tableOrders.length === 0) {
+    showToast('Table ' + activeSelectedTable + ' is already vacant.');
+    return;
+  }
+
   tableOrders.forEach(o => o.status = 'Paid');
   localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(orders));
 
-  // Broadcast
   try {
     fetch('https://ntfy.sh/' + SYNC_TOPIC, {
       method: 'POST',
@@ -187,21 +205,22 @@ function settleAndClearCurrentTable() {
 
   renderFloorPlan();
   selectInspectorTable(activeSelectedTable);
-  showToast('Table ' + activeSelectedTable + ' settled & cleared!');
+  showToast('Table ' + activeSelectedTable + ' marked as Paid & Vacant!');
 }
 
 function renderMenuEditor() {
   const grid = document.getElementById('menuEditorGrid');
+  if (!grid) return;
   grid.innerHTML = '';
 
   currentMenu.forEach(item => {
     const card = document.createElement('div');
     card.className = 'menu-item-row';
     card.innerHTML = `
-      <img src="${item.img}" class="menu-item-thumb" alt="${item.name}">
+      <img src="${item.img}" class="menu-item-thumb" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
       <div class="menu-item-meta">
         <h4>${item.name}</h4>
-        <span>₹<input type="number" value="${item.price}" style="background:#111827; border:1px solid #374151; color:#fff; width:65px; border-radius:4px; padding:2px 4px;" onchange="updateItemPrice('${item.id}', this.value)"></span>
+        <span>₹<input type="number" value="${item.price}" style="background:#111827; border:1px solid #374151; color:#fff; width:70px; border-radius:4px; padding:3px 6px; font-weight:700;" onchange="updateItemPrice('${item.id}', this.value)"></span>
       </div>
       <button class="stock-toggle ${item.inStock ? 'in-stock' : ''}" onclick="toggleItemStock('${item.id}')">
         ${item.inStock ? '✓ In Stock' : '✕ Sold Out'}
@@ -216,7 +235,7 @@ function updateItemPrice(id, newPrice) {
   if (item) {
     item.price = Number(newPrice);
     saveMenuData();
-    showToast('Updated ' + item.name + ' price to ₹' + newPrice);
+    showToast('Updated ' + item.name + ' to ₹' + newPrice);
   }
 }
 
@@ -227,6 +246,94 @@ function toggleItemStock(id) {
     saveMenuData();
     showToast(item.name + (item.inStock ? ' is now IN STOCK' : ' marked as SOLD OUT'));
   }
+}
+
+function openAddDishModal() {
+  document.getElementById('modalAddDish').style.display = 'flex';
+}
+
+function submitNewDish() {
+  const name = document.getElementById('addDishName').value.trim();
+  const price = Number(document.getElementById('addDishPrice').value);
+  const category = document.getElementById('addDishCategory').value;
+  const isVeg = document.getElementById('addDishVeg').value === 'true';
+  const img = document.getElementById('addDishImg').value.trim() || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+
+  if (!name || !price) {
+    showToast('Please enter dish name and price');
+    return;
+  }
+
+  const newDish = {
+    id: 'dish_' + Date.now(),
+    name,
+    category,
+    price,
+    isVeg,
+    inStock: true,
+    img
+  };
+
+  currentMenu.push(newDish);
+  saveMenuData();
+  closeModal('modalAddDish');
+  document.getElementById('addDishName').value = '';
+  document.getElementById('addDishPrice').value = '';
+  showToast(name + ' added to menu!');
+}
+
+function openNewOrderModal() {
+  document.getElementById('modalPunchOrder').style.display = 'flex';
+}
+
+function submitManualOrder() {
+  const table = document.getElementById('punchTableSelect').value;
+  const guestName = document.getElementById('punchGuestName').value.trim() || 'Walk-in Guest';
+  const dishId = document.getElementById('punchDishSelect').value;
+  const qty = Number(document.getElementById('punchQty').value) || 1;
+
+  const dish = currentMenu.find(i => i.id === dishId);
+  if (!dish) return;
+
+  const subtotal = dish.price * qty;
+  const tax = Math.round(subtotal * 0.05);
+  const total = subtotal + tax;
+
+  const kotId = 'KOT-' + Math.floor(100 + Math.random() * 900);
+  const newOrder = {
+    id: kotId,
+    table,
+    customerName: guestName,
+    customerPhone: 'Walk-in',
+    items: [{ name: dish.name, qty, price: dish.price }],
+    specialNotes: 'Punched by Cashier/Waiter',
+    subtotal,
+    tax,
+    total,
+    status: 'Preparing',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    createdAt: Date.now()
+  };
+
+  const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  existing.push(newOrder);
+  localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(existing));
+
+  try {
+    fetch('https://ntfy.sh/' + SYNC_TOPIC, {
+      method: 'POST',
+      body: JSON.stringify({ type: 'NEW_ORDER', order: newOrder })
+    }).catch(() => {});
+  } catch(e) {}
+
+  closeModal('modalPunchOrder');
+  renderFloorPlan();
+  selectInspectorTable(table);
+  showToast('Order #' + kotId + ' dispatched for Table ' + table);
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).style.display = 'none';
 }
 
 function renderCRM() {
@@ -249,7 +356,13 @@ function renderCRM() {
   });
 
   const tbody = document.getElementById('crmTableBody');
+  if (!tbody) return;
   tbody.innerHTML = '';
+
+  if (crmMap.size === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">No customer CRM records captured yet. Place orders to populate.</td></tr>';
+    return;
+  }
 
   crmMap.forEach(guest => {
     const row = document.createElement('tr');
@@ -259,12 +372,42 @@ function renderCRM() {
       <td>${guest.visits} visit(s)</td>
       <td><strong>₹${guest.spend}</strong></td>
       <td>Table ${guest.lastTable}</td>
-      <td><a href="https://wa.me/${guest.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(guest.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!%20Enjoy%2015%25%20off%20on%20your%20next%20visit." target="_blank" class="btn-primary" style="font-size:0.75rem; padding:4px 8px; text-decoration:none; display:inline-flex;">💬 WhatsApp Offer</a></td>
+      <td><a href="https://wa.me/${guest.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(guest.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!%20Enjoy%2015%25%20off%20on%20your%20next%20visit." target="_blank" class="btn-primary" style="font-size:0.75rem; padding:4px 8px; text-decoration:none; display:inline-flex;">💬 WhatsApp</a></td>
     `;
     tbody.appendChild(row);
   });
 
   document.getElementById('crmLeadsBadge').innerText = crmMap.size;
+}
+
+function exportCrmCsv() {
+  const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  let csvContent = 'data:text/csv;charset=utf-8,Guest Name,Mobile Number,Total Orders,Total Spent\n';
+
+  const map = new Map();
+  orders.forEach(o => {
+    const phone = o.customerPhone || 'Walk-in';
+    const name = o.customerName || 'Guest';
+    if (!map.has(phone)) map.set(phone, { name, phone, count: 1, total: o.total });
+    else {
+      const g = map.get(phone);
+      g.count++;
+      g.total += o.total;
+    }
+  });
+
+  map.forEach(g => {
+    csvContent += `"${g.name}","${g.phone}",${g.count},${g.total}\n`;
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', 'restaurant_crm_customers.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast('CRM data exported to CSV!');
 }
 
 function renderAnalytics() {
@@ -287,8 +430,44 @@ function renderAnalytics() {
   document.getElementById('tenderCashAmount').innerText = '₹' + cashTotal;
 }
 
+function printDailyZReport() {
+  const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  let totalSales = 0;
+  orders.forEach(o => totalSales += o.total);
+  const gst = Math.round(totalSales * 0.05);
+
+  const win = window.open('', '', 'width=380,height=550');
+  win.document.write(`
+    <html>
+    <head>
+      <title>Daily Z-Report</title>
+      <style>body { font-family: monospace; padding: 20px; font-size: 14px; } .center { text-align: center; } .line { border-top: 1px dashed #000; margin: 8px 0; } .row { display: flex; justify-content: space-between; margin: 4px 0; }</style>
+    </head>
+    <body>
+      <div class="center">
+        <h2>THE GRAND ESTATE BISTRO</h2>
+        <h3>DAILY CLOSING Z-REPORT</h3>
+        <div>Date: ${new Date().toLocaleDateString()} | Time: ${new Date().toLocaleTimeString()}</div>
+      </div>
+      <div class="line"></div>
+      <div class="row"><span>Total Orders:</span><span>${orders.length}</span></div>
+      <div class="row"><span>Gross Sales:</span><span>₹${totalSales}</span></div>
+      <div class="row"><span>GST Collected (5%):</span><span>₹${gst}</span></div>
+      <div class="line"></div>
+      <div class="row"><span>UPI / Digital:</span><span>₹${Math.round(totalSales * 0.75)}</span></div>
+      <div class="row"><span>Cash in Drawer:</span><span>₹${totalSales - Math.round(totalSales * 0.75)}</span></div>
+      <div class="line"></div>
+      <div class="center"><strong>*** REGISTER BALANCED & CLOSED ***</strong></div>
+    </body>
+    </html>
+  `);
+  win.document.close();
+  win.print();
+}
+
 function renderAdminStandees() {
   const container = document.getElementById('adminStandeesGrid');
+  if (!container) return;
   container.innerHTML = '';
   const baseUrl = 'https://divflow.pages.dev';
 
@@ -312,7 +491,10 @@ function renderAdminStandees() {
 function printTableTaxInvoice() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
   const tableOrders = orders.filter(o => o.table == activeSelectedTable);
-  if (tableOrders.length === 0) return;
+  if (tableOrders.length === 0) {
+    showToast('No active orders on Table ' + activeSelectedTable);
+    return;
+  }
 
   let subtotal = 0;
   tableOrders.forEach(o => subtotal += o.subtotal);
@@ -324,12 +506,7 @@ function printTableTaxInvoice() {
     <html>
     <head>
       <title>GST Invoice — Table ${activeSelectedTable}</title>
-      <style>
-        body { font-family: monospace; padding: 20px; font-size: 13px; }
-        .center { text-align: center; }
-        .line { border-top: 1px dashed #000; margin: 8px 0; }
-        .row { display: flex; justify-content: space-between; margin: 4px 0; }
-      </style>
+      <style>body { font-family: monospace; padding: 20px; font-size: 13px; } .center { text-align: center; } .line { border-top: 1px dashed #000; margin: 8px 0; } .row { display: flex; justify-content: space-between; margin: 4px 0; }</style>
     </head>
     <body>
       <div class="center">
@@ -347,9 +524,7 @@ function printTableTaxInvoice() {
       <div class="line"></div>
       <div class="row" style="font-size:16px;"><strong>TOTAL:</strong><strong>₹${total}</strong></div>
       <div class="line"></div>
-      <div class="center">
-        <div>Thank you for dining with us!</div>
-      </div>
+      <div class="center"><div>Thank you for dining with us!</div></div>
     </body>
     </html>
   `);
@@ -375,7 +550,11 @@ function setupRealtimeSSE() {
 }
 
 function showToast(msg) {
-  alert(msg);
+  const toast = document.getElementById('adminToast');
+  if (!toast) return;
+  toast.innerText = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
 window.onload = init;

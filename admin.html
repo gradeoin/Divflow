@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Divflow Restro-OS — Enterprise POS & Operations Suite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restro-OS — Manager & POS Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -21,48 +21,44 @@
         </div>
         <div class="pos-brand-text">
           <h2>RESTRO-OS</h2>
-          <span class="pos-brand-tag">ENTERPRISE v2.4</span>
+          <span class="pos-brand-tag">MANAGER POS</span>
         </div>
       </div>
 
       <nav class="pos-nav-menu">
-        <button class="nav-item active" onclick="switchTab('floor')">
+        <button class="nav-item active" onclick="switchTab('floor', this)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          <span>Floor Plan & Tables</span>
+          <span>Floor & Tables</span>
           <span class="nav-badge" id="activeTablesBadge">0</span>
         </button>
 
-        <button class="nav-item" onclick="switchTab('menu')">
+        <button class="nav-item" onclick="switchTab('menu', this)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
-          <span>Menu & Price Studio</span>
+          <span>Menu & Prices</span>
         </button>
 
-        <button class="nav-item" onclick="switchTab('crm')">
+        <button class="nav-item" onclick="switchTab('crm', this)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span>CRM & WhatsApp Leads</span>
+          <span>Customer CRM</span>
           <span class="nav-badge" id="crmLeadsBadge">0</span>
         </button>
 
-        <button class="nav-item" onclick="switchTab('analytics')">
+        <button class="nav-item" onclick="switchTab('analytics', this)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
-          <span>Sales & Z-Report</span>
+          <span>Daily Z-Report</span>
         </button>
 
-        <button class="nav-item" onclick="switchTab('qr')">
+        <button class="nav-item" onclick="switchTab('qr', this)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM17 17h4v4h-4z"/></svg>
-          <span>QR Standee Studio</span>
+          <span>Table QR Codes</span>
         </button>
       </nav>
 
       <div class="pos-sidebar-footer">
         <a href="kitchen.html" target="_blank" class="sidebar-kds-link">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-          <span>Open Kitchen KDS</span>
+          <span>Open Kitchen Display</span>
         </a>
-        <div class="outlet-status-indicator">
-          <span class="status-dot"></span>
-          <span>OUTLET LIVE (SYNC ON)</span>
-        </div>
       </div>
     </aside>
 
@@ -72,16 +68,12 @@
       <header class="pos-top-bar">
         <div class="top-title-group">
           <h1 id="pageHeading">Interactive Floor Plan</h1>
-          <span class="top-subtitle">Real-time table occupancy & live dining billing</span>
+          <span class="top-subtitle">Real-time table status, live billing & order tracking</span>
         </div>
         <div class="top-controls">
-          <div class="search-box">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            <input type="text" id="posGlobalSearch" placeholder="Search tables, items, phones...">
-          </div>
           <button class="btn-primary" onclick="openNewOrderModal()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-            <span>Punch Order</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Punch Manual Order</span>
           </button>
         </div>
       </header>
@@ -91,12 +83,11 @@
         <div class="floor-stats-row">
           <div class="stat-pill vacant"><span class="pill-dot"></span> <span id="countVacant">0</span> Vacant</div>
           <div class="stat-pill dining"><span class="pill-dot"></span> <span id="countDining">0</span> Dining</div>
-          <div class="stat-pill billing"><span class="pill-dot"></span> <span id="countBilling">0</span> Bill Requested</div>
-          <div class="stat-pill today-sales">Today: <strong id="floorTodaySales">₹0</strong></div>
+          <div class="stat-pill today-sales">Today Sales: <strong id="floorTodaySales">₹0</strong></div>
         </div>
 
         <div class="floor-tables-grid" id="floorTablesGrid">
-          <!-- Injected dynamically via admin.js (Tables 1 to 12) -->
+          <!-- Injected dynamically via admin.js -->
         </div>
       </section>
 
@@ -105,7 +96,7 @@
         <div class="section-action-header">
           <div>
             <h2>Menu Catalog & Live Price Studio</h2>
-            <p>Edit prices on the fly or toggle out-of-stock items (instant customer sync).</p>
+            <p>Click on any price to update it live, or toggle items In Stock / Out of Stock.</p>
           </div>
           <button class="btn-primary" onclick="openAddDishModal()">+ Add New Dish</button>
         </div>
@@ -119,10 +110,10 @@
       <section class="pos-tab-content" id="tabCrm">
         <div class="section-action-header">
           <div>
-            <h2>Guest CRM & Loyalty Database</h2>
-            <p>Verified guest contact records collected automatically from table orders.</p>
+            <h2>Guest CRM Database</h2>
+            <p>Customer contact records captured automatically when guests place table orders.</p>
           </div>
-          <button class="btn-secondary" onclick="exportCrmCsv()">📥 Export to Excel / CSV</button>
+          <button class="btn-secondary" onclick="exportCrmCsv()">📥 Download CSV / Excel</button>
         </div>
 
         <div class="crm-table-wrapper">
@@ -131,10 +122,10 @@
               <tr>
                 <th>GUEST NAME</th>
                 <th>MOBILE NUMBER</th>
-                <th>TOTAL VISITS</th>
+                <th>VISITS</th>
                 <th>LIFETIME SPEND</th>
-                <th>LAST DINED TABLE</th>
-                <th>ACTIONS</th>
+                <th>LAST TABLE</th>
+                <th>ACTION</th>
               </tr>
             </thead>
             <tbody id="crmTableBody">
@@ -148,32 +139,28 @@
       <section class="pos-tab-content" id="tabAnalytics">
         <div class="section-action-header">
           <div>
-            <h2>Daily Z-Report & Revenue Analytics</h2>
-            <p>End-of-day register closure, tax reports, and tender breakdown.</p>
+            <h2>Daily Z-Report & Sales Ledger</h2>
+            <p>Daily sales summary, tax calculation, and cash vs UPI breakdown.</p>
           </div>
           <button class="btn-secondary" onclick="printDailyZReport()">🖨️ Print Daily Z-Report</button>
         </div>
 
         <div class="analytics-metrics-grid">
           <div class="metric-card">
-            <span class="metric-title">TOTAL REVENUE TODAY</span>
+            <span class="metric-title">TOTAL SALES TODAY</span>
             <strong class="metric-value" id="analyticRevenue">₹0</strong>
-            <span class="metric-sub">Inclusive of taxes & levies</span>
           </div>
           <div class="metric-card">
-            <span class="metric-title">TOTAL COVERS / TABLES</span>
+            <span class="metric-title">COMPLETED ORDERS</span>
             <strong class="metric-value" id="analyticTablesCount">0</strong>
-            <span class="metric-sub">Completed dining sessions</span>
           </div>
           <div class="metric-card">
-            <span class="metric-title">AVERAGE TABLE VALUE (ATV)</span>
+            <span class="metric-title">AVERAGE ORDER VALUE</span>
             <strong class="metric-value" id="analyticAov">₹0</strong>
-            <span class="metric-sub">Per seated table ticket</span>
           </div>
           <div class="metric-card">
-            <span class="metric-title">ESTIMATED GST COLLECTED</span>
+            <span class="metric-title">GST ESTIMATE (5%)</span>
             <strong class="metric-value" id="analyticGst">₹0</strong>
-            <span class="metric-sub">5% CGST + SGST</span>
           </div>
         </div>
 
@@ -181,12 +168,12 @@
           <h3>Payment Method Split</h3>
           <div class="tender-bars">
             <div class="tender-item">
-              <div class="tender-label"><span>UPI / QR Digital</span><strong id="tenderUpiAmount">₹0</strong></div>
-              <div class="tender-progress"><div class="progress-fill upi" id="tenderUpiBar" style="width: 75%;"></div></div>
+              <div class="tender-label"><span>UPI / Digital</span><strong id="tenderUpiAmount">₹0</strong></div>
+              <div class="tender-progress"><div class="progress-fill upi" style="width: 75%;"></div></div>
             </div>
             <div class="tender-item">
               <div class="tender-label"><span>Cash in Drawer</span><strong id="tenderCashAmount">₹0</strong></div>
-              <div class="tender-progress"><div class="progress-fill cash" id="tenderCashBar" style="width: 25%;"></div></div>
+              <div class="tender-progress"><div class="progress-fill cash" style="width: 25%;"></div></div>
             </div>
           </div>
         </div>
@@ -197,7 +184,7 @@
         <div class="section-action-header">
           <div>
             <h2>Table QR Standee Studio</h2>
-            <p>High-resolution printable acrylic standees with encrypted zero-friction table links.</p>
+            <p>Printable QR standees for Tables 1 to 8.</p>
           </div>
           <button class="btn-primary" onclick="window.print()">🖨️ Print All Standees</button>
         </div>
@@ -205,26 +192,24 @@
       </section>
     </main>
 
-    <!-- Right Slide Pane: Selected Table POS & Billing Inspector -->
+    <!-- Right Slide Pane: Table POS & Billing Inspector -->
     <aside class="pos-right-pane" id="tableInspectorPane">
       <div class="inspector-header">
         <div>
           <h2 id="inspectorTableTitle">Table 4</h2>
           <span class="inspector-status-pill" id="inspectorStatusPill">DINING</span>
         </div>
-        <button class="close-btn" onclick="closeInspector()">✕</button>
       </div>
 
-      <div class="inspector-guest-box" id="inspectorGuestBox">
+      <div class="inspector-guest-box">
         <div class="guest-line"><span>Guest:</span> <strong id="inspectorGuestName">Divyansh</strong></div>
         <div class="guest-line"><span>Phone:</span> <span id="inspectorGuestPhone">+91 98765 43210</span></div>
       </div>
 
       <div class="inspector-orders-stream" id="inspectorOrdersStream">
-        <!-- Live KOT Items list -->
+        <!-- Live KOT Items -->
       </div>
 
-      <!-- Quick Billing & Settle Box -->
       <div class="inspector-billing-dock">
         <div class="dock-summary">
           <div class="dock-row"><span>Subtotal:</span> <span id="dockSubtotal">₹0</span></div>
@@ -233,17 +218,103 @@
         </div>
 
         <div class="dock-tender-buttons">
-          <button class="btn-tender upi" onclick="settleTable('UPI')">💳 UPI / QR</button>
-          <button class="btn-tender cash" onclick="settleTable('Cash')">💵 Cash</button>
+          <button class="btn-tender upi" onclick="settleTable('UPI')">💳 Pay UPI</button>
+          <button class="btn-tender cash" onclick="settleTable('Cash')">💵 Pay Cash</button>
           <button class="btn-tender print" onclick="printTableTaxInvoice()">🖨️ Bill</button>
         </div>
 
         <button class="btn-clear-table" onclick="settleAndClearCurrentTable()">
-          ✓ Settle & Clear Table
+          ✓ Mark Paid & Clear Table
         </button>
       </div>
     </aside>
   </div>
+
+  <!-- Modal: Manual Punch Order -->
+  <div class="modal-backdrop" id="modalPunchOrder" style="display:none;">
+    <div class="admin-modal">
+      <div class="admin-modal-head">
+        <h3>Punch Manual Table Order</h3>
+        <button class="close-btn" onclick="closeModal('modalPunchOrder')">✕</button>
+      </div>
+      <div class="modal-form">
+        <div class="input-row">
+          <label>Select Table</label>
+          <select id="punchTableSelect">
+            <option value="1">Table 1</option>
+            <option value="2">Table 2</option>
+            <option value="3">Table 3</option>
+            <option value="4" selected>Table 4</option>
+            <option value="5">Table 5</option>
+            <option value="6">Table 6</option>
+            <option value="7">Table 7</option>
+            <option value="8">Table 8</option>
+          </select>
+        </div>
+        <div class="input-row">
+          <label>Guest Name</label>
+          <input type="text" id="punchGuestName" placeholder="e.g. Rahul Sharma" value="Walk-in Guest">
+        </div>
+        <div class="input-row">
+          <label>Select Dish</label>
+          <select id="punchDishSelect">
+            <!-- Populated via JS -->
+          </select>
+        </div>
+        <div class="input-row">
+          <label>Quantity</label>
+          <input type="number" id="punchQty" value="1" min="1">
+        </div>
+        <button class="btn-primary btn-block" onclick="submitManualOrder()">Dispatch to Kitchen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add New Dish -->
+  <div class="modal-backdrop" id="modalAddDish" style="display:none;">
+    <div class="admin-modal">
+      <div class="admin-modal-head">
+        <h3>+ Add New Menu Item</h3>
+        <button class="close-btn" onclick="closeModal('modalAddDish')">✕</button>
+      </div>
+      <div class="modal-form">
+        <div class="input-row">
+          <label>Dish Name *</label>
+          <input type="text" id="addDishName" placeholder="e.g. Truffle Mushroom Risotto" required>
+        </div>
+        <div class="input-row">
+          <label>Price (₹) *</label>
+          <input type="number" id="addDishPrice" placeholder="e.g. 380" required>
+        </div>
+        <div class="input-row">
+          <label>Category</label>
+          <select id="addDishCategory">
+            <option value="starters">Starters & Appetizers</option>
+            <option value="pizzas">Woodfired Pizzas</option>
+            <option value="mains">Main Course</option>
+            <option value="breads">Tandoor Breads</option>
+            <option value="beverages">Beverages & Drinks</option>
+            <option value="desserts">Desserts</option>
+          </select>
+        </div>
+        <div class="input-row">
+          <label>Dietary Type</label>
+          <select id="addDishVeg">
+            <option value="true">🟢 Pure Vegetarian</option>
+            <option value="false">🔴 Non-Vegetarian</option>
+          </select>
+        </div>
+        <div class="input-row">
+          <label>Image URL (Optional)</label>
+          <input type="text" id="addDishImg" placeholder="https://images.unsplash.com/...">
+        </div>
+        <button class="btn-primary btn-block" onclick="submitNewDish()">Save Dish to Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Non-blocking Floating Notification Toast -->
+  <div class="admin-toast" id="adminToast">Action completed successfully</div>
 
   <script src="admin.js"></script>
 </body>
