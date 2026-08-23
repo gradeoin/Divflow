@@ -113,9 +113,8 @@ function loadOrdersFromStorage() {
   let totalSales = 0;
   orders.forEach(o => totalSales += o.total);
 
-  document.getElementById('activeOrdersCount').innerText = activeOrders.length;
-  document.getElementById('totalPreparingCount').innerText = prepCount;
-  document.getElementById('totalTodaySales').innerText = '₹' + totalSales;
+  if (document.getElementById('activeOrdersCount')) document.getElementById('activeOrdersCount').innerText = activeOrders.length;
+  if (document.getElementById('totalPreparingCount')) document.getElementById('totalPreparingCount').innerText = prepCount;
 
   const grid = document.getElementById('kdsGrid');
   grid.innerHTML = '';
