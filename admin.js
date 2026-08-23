@@ -453,38 +453,45 @@ function printDailyZReport() {
 }
 
 function printTableTaxInvoice() {
- const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
- const tableOrders = orders.filter(o => o.table == activeSelectedTable);
- if (tableOrders.length === 0) {
- showToast('No active orders on Table ' + activeSelectedTable);
- return;
- }
+  const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const tableOrders = orders.filter(o => o.table == activeSelectedTable);
+  if (tableOrders.length === 0) {
+    showToast('No active orders on Table ' + activeSelectedTable);
+    return;
+  }
 
- let subtotal = 0;
- tableOrders.forEach(o => subtotal += o.subtotal);
- const tax = Math.round(subtotal * 0.05);
- const total = subtotal + tax;
+  let subtotal = 0;
+  tableOrders.forEach(o => subtotal += o.subtotal);
+  const tax = Math.round(subtotal * 0.05);
+  const total = subtotal + tax;
 
- const win = window.open('', '', 'width=380,height=550');
- win.document.write(`
- <html>
- <head><title>Invoice Table ${activeSelectedTable}</title><style>body { font-family: monospace; padding: 20px; font-size: 13px; } .center { text-align: center; } .line { border-top: 1px dashed #000; margin: 8px 0; } .row { display: flex; justify-content: space-between; margin: 4px 0; }</style></head>
- <body>
- <div class="center"><h2>THE GRAND ESTATE BISTRO</h2><div>GSTIN: 27AABCT3518Q1Z4</div><h3>TAX INVOICE — TABLE ${activeSelectedTable}</h3><div>${new Date().toLocaleString()}</div></div>
- <div class="line"></div>
- ${tableOrders.map(o => o.items.map(i => `<div class="row"><span>${i.qty}x ${i.name}</span><span>₹${i.price * i.qty}</span></div>`).join('')).join('')}
- <div class="line"></div>
- <div class="row"><span>Subtotal:</span><span>₹${subtotal}</span></div>
- <div class="row"><span>CGST (2.5%):</span><span>₹${tax / 2}</span></div>
- <div class="row"><span>SGST (2.5%):</span><span>₹${tax / 2}</span></div>
- <div class="line"></div>
- <div class="row" style="font-size:16px;"><strong>TOTAL:</strong><strong>₹${total}</strong></div>
- <div class="line"></div>
- <div class="center"><div>Thank you for dining with us!</div></div>
- </body></html>
- `);
- win.document.close();
- win.print();
+  const invoiceHtml = `
+    <html>
+    <head><title>Invoice Table ${activeSelectedTable}</title><style>body { font-family: monospace; padding: 15px; font-size: 12px; } .center { text-align: center; } .line { border-top: 1px dashed #000; margin: 6px 0; } .row { display: flex; justify-content: space-between; margin: 3px 0; }</style></head>
+    <body>
+      <div class="center"><h2>THE GRAND ESTATE BISTRO</h2><div>GSTIN: 27AABCT3518Q1Z4</div><h3>TAX INVOICE | TABLE ${activeSelectedTable}</h3><div>${new Date().toLocaleString()}</div></div>
+      <div class="line"></div>
+      ${tableOrders.map(o => o.items.map(i => `<div class="row"><span>${i.qty}x ${i.name}</span><span>₹${i.price * i.qty}</span></div>`).join('')).join('')}
+      <div class="line"></div>
+      <div class="row"><span>Subtotal:</span><span>₹${subtotal}</span></div>
+      <div class="row"><span>CGST (2.5%):</span><span>₹${tax / 2}</span></div>
+      <div class="row"><span>SGST (2.5%):</span><span>₹${tax / 2}</span></div>
+      <div class="line"></div>
+      <div class="row" style="font-size:15px;"><strong>TOTAL:</strong><strong>₹${total}</strong></div>
+      <div class="line"></div>
+      <div class="center"><div>Thank you for dining with us!</div></div>
+    </body></html>
+  `;
+
+  if (window.electronAPI && window.electronAPI.printReceiptSilent) {
+    window.electronAPI.printReceiptSilent(invoiceHtml);
+    showToast('Thermal Receipt dispatched silently to printer!');
+  } else {
+    const win = window.open('', '', 'width=380,height=550');
+    win.document.write(invoiceHtml);
+    win.document.close();
+    win.print();
+  }
 }
 
 function renderAdminStandees() {

@@ -1,24 +1,57 @@
 {
-  "name": "divflow",
+  "name": "restro-os-pos",
   "version": "1.0.0",
-  "description": "> **Modern, Zero-Cost AI Automation Engine & Workflow Hub**   > Built for local execution, n8n orchestration, autonomous AI agents, and omnichannel messaging (WhatsApp, Telegram, Discord, Gmail, Chatwoot).",
-  "main": "index.js",
+  "description": "Restro-OS Enterprise Restaurant POS & Kitchen Display Desktop Software",
+  "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron .",
+    "build:win": "electron-builder --win",
+    "pack": "electron-builder --dir"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gradeoin/Divflow.git"
+  "keywords": [
+    "restaurant",
+    "pos",
+    "kds",
+    "billing",
+    "thermal-printer",
+    "desktop-app"
+  ],
+  "author": "The Grand Estate / Divflow",
+  "license": "Commercial",
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/gradeoin/Divflow/issues"
-  },
-  "homepage": "https://github.com/gradeoin/Divflow#readme",
-  "dependencies": {
-    "n8n": "^2.35.7"
+  "build": {
+    "appId": "com.restroos.pos",
+    "productName": "Restro-OS Enterprise POS",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Restro-OS POS"
+    }
   }
 }
