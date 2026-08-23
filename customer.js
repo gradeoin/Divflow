@@ -1,5 +1,5 @@
 
-// Enterprise Hospitality Dining Menu
+// The Grand Estate Hospitality Menu
 const MENU_DATA = [
   // Starters
   {
@@ -189,14 +189,12 @@ let currentCategory = 'all';
 let isVegOnly = false;
 let cart = {};
 
-const SYNC_KEY = 'divflow_m3_restaurant_orders_sync';
+// Global Multi-Device Real-Time Pub/Sub Channel
+const SYNC_TOPIC = 'divflow_restaurant_kot_live_stream_9921';
+const LOCAL_STORAGE_ORDERS = 'divflow_realtime_orders_v2';
+let allTableOrders = [];
 
 function init() {
-  // Pre-fill saved guest details
-  const savedName = localStorage.getItem('divflow_guest_name');
-  const savedPhone = localStorage.getItem('divflow_guest_phone');
-  if (savedName && document.getElementById('guestNameInput')) document.getElementById('guestNameInput').value = savedName;
-  if (savedPhone && document.getElementById('guestPhoneInput')) document.getElementById('guestPhoneInput').value = savedPhone;
   const urlParams = new URLSearchParams(window.location.search);
   const tableParam = urlParams.get('table') || urlParams.get('t');
 
@@ -208,13 +206,19 @@ function init() {
     if (saved) currentTable = saved;
   }
 
+  // Pre-fill guest details if previously saved
+  const savedName = localStorage.getItem('divflow_guest_name');
+  const savedPhone = localStorage.getItem('divflow_guest_phone');
+  if (savedName && document.getElementById('guestNameInput')) document.getElementById('guestNameInput').value = savedName;
+  if (savedPhone && document.getElementById('guestPhoneInput')) document.getElementById('guestPhoneInput').value = savedPhone;
+
   document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
   document.getElementById('tableSelectPicker').value = currentTable;
   document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
 
   renderMenu();
-  syncOrdersFromStorage();
-  setInterval(syncOrdersFromStorage, 2000);
+  loadOrdersInitial();
+  setupRealtimeSSE();
 }
 
 function switchTableFromPicker(val) {
@@ -223,7 +227,7 @@ function switchTableFromPicker(val) {
   document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
   document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
   showToast('Switched to Table ' + currentTable);
-  syncOrdersFromStorage();
+  updateOrderStatusBanner();
 }
 
 function renderMenu() {
@@ -240,7 +244,7 @@ function renderMenu() {
   });
 
   if (filtered.length === 0) {
-    grid.innerHTML = '<div class="empty-state">No selections found matching your criteria.</div>';
+    grid.innerHTML = '<div class="empty-state">No selections found matching your search.</div>';
     return;
   }
 
@@ -393,6 +397,9 @@ function toggleCart() {
   }
 }
 
+// =========================================================================
+// Real-Time Multi-Device Cloud Sync via Global Pub/Sub (ntfy.sh) + n8n Webhook
+// =========================================================================
 async function placeOrder() {
   const guestName = (document.getElementById('guestNameInput')?.value || '').trim();
   const guestPhone = (document.getElementById('guestPhoneInput')?.value || '').trim();
@@ -403,9 +410,9 @@ async function placeOrder() {
     return;
   }
 
-  // Save guest details in session
   localStorage.setItem('divflow_guest_name', guestName);
   if (guestPhone) localStorage.setItem('divflow_guest_phone', guestPhone);
+
   const items = [];
   let subtotal = 0;
 
@@ -443,44 +450,114 @@ async function placeOrder() {
     createdAt: Date.now()
   };
 
-  // 1. Dispatch directly to n8n Automation Engine Webhook
+  // 1. Save locally for instant rendering
+  saveOrderLocal(newOrder);
+
+  // 2. Publish to Global Multi-Device Cloud Stream (Instant sub-second delivery to Laptop/Tablet)
+  try {
+    fetch('https://ntfy.sh/' + SYNC_TOPIC, {
+      method: 'POST',
+      headers: { 'Title': 'NEW_ORDER' },
+      body: JSON.stringify({ type: 'NEW_ORDER', order: newOrder })
+    }).catch(e => console.error('Cloud stream pub error:', e));
+  } catch(e) {}
+
+  // 3. Dispatch to local n8n workflow engine if active
   try {
     fetch('http://localhost:5678/webhook/restaurant-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newOrder)
-    }).then(r => r.json()).then(res => {
-      console.log('n8n Backend Order Confirmed:', res);
-    }).catch(err => console.log('Local network sync fallback active'));
+    }).catch(() => {});
   } catch(e) {}
 
-  const existingOrders = JSON.parse(localStorage.getItem(SYNC_KEY) || '[]');
-  existingOrders.push(newOrder);
-  localStorage.setItem(SYNC_KEY, JSON.stringify(existingOrders));
-
-  try {
-    const channel = new BroadcastChannel('divflow_restaurant_sync');
-    channel.postMessage({ type: 'NEW_ORDER', order: newOrder });
-  } catch(e) {}
-
+  // Reset Cart UI
   cart = {};
   document.getElementById('orderNotesInput').value = '';
   updateCartUI();
   toggleCart();
 
   showToast('Order #' + kotId + ' dispatched to kitchen.');
-  syncOrdersFromStorage();
+  updateOrderStatusBanner();
 }
 
-function syncOrdersFromStorage() {
-  const allOrders = JSON.parse(localStorage.getItem(SYNC_KEY) || '[]');
-  const tableOrders = allOrders.filter(o => o.table === currentTable && o.status !== 'Paid');
+function saveOrderLocal(order) {
+  const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const idx = existing.findIndex(o => o.id === order.id);
+  if (idx >= 0) existing[idx] = order;
+  else existing.push(order);
+  localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(existing));
+  allTableOrders = existing;
+}
+
+function loadOrdersInitial() {
+  allTableOrders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  
+  // Fetch historical cloud orders for synchronization
+  fetch('https://ntfy.sh/' + SYNC_TOPIC + '/json?poll=1')
+    .then(r => r.text())
+    .then(text => {
+      const lines = text.trim().split('\n');
+      lines.forEach(line => {
+        try {
+          const data = JSON.parse(line);
+          if (data.message) {
+            const payload = JSON.parse(data.message);
+            if (payload.type === 'NEW_ORDER' && payload.order) {
+              saveOrderLocal(payload.order);
+            } else if (payload.type === 'UPDATE_STATUS' && payload.orderId) {
+              updateOrderStatusLocal(payload.orderId, payload.status);
+            }
+          }
+        } catch(e) {}
+      });
+      updateOrderStatusBanner();
+    })
+    .catch(() => {});
+
+  updateOrderStatusBanner();
+}
+
+function setupRealtimeSSE() {
+  try {
+    const eventSource = new EventSource('https://ntfy.sh/' + SYNC_TOPIC + '/sse');
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.message) {
+          const payload = JSON.parse(data.message);
+          if (payload.type === 'NEW_ORDER' && payload.order) {
+            saveOrderLocal(payload.order);
+            updateOrderStatusBanner();
+          } else if (payload.type === 'UPDATE_STATUS' && payload.orderId) {
+            updateOrderStatusLocal(payload.orderId, payload.status);
+            updateOrderStatusBanner();
+          }
+        }
+      } catch(e) {}
+    };
+  } catch(e) {}
+}
+
+function updateOrderStatusLocal(orderId, status) {
+  const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const order = existing.find(o => o.id === orderId);
+  if (order) {
+    order.status = status;
+    localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(existing));
+    allTableOrders = existing;
+  }
+}
+
+function updateOrderStatusBanner() {
+  const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const tableOrders = orders.filter(o => o.table === currentTable && o.status !== 'Paid');
 
   const banner = document.getElementById('orderStatusBanner');
   if (tableOrders.length > 0) {
     const latest = tableOrders[tableOrders.length - 1];
     banner.style.display = 'flex';
-    document.getElementById('bannerStatusTitle').innerText = `Order #${latest.id} is ${latest.status}`;
+    document.getElementById('bannerStatusTitle').innerText = `Order #${latest.id} in ${latest.status}`;
     
     let totalBill = 0;
     tableOrders.forEach(o => totalBill += o.total);
@@ -491,8 +568,8 @@ function syncOrdersFromStorage() {
 }
 
 function openBillModal() {
-  const allOrders = JSON.parse(localStorage.getItem(SYNC_KEY) || '[]');
-  const tableOrders = allOrders.filter(o => o.table === currentTable && o.status !== 'Paid');
+  const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const tableOrders = orders.filter(o => o.table === currentTable && o.status !== 'Paid');
 
   const container = document.getElementById('billOrdersList');
   container.innerHTML = '';

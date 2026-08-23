@@ -1,22 +1,13 @@
 
-const SYNC_KEY = 'divflow_m3_restaurant_orders_sync';
+const SYNC_TOPIC = 'divflow_restaurant_kot_live_stream_9921';
+const LOCAL_STORAGE_ORDERS = 'divflow_realtime_orders_v2';
 let audioEnabled = true;
 let knownOrderIds = new Set();
 
 function init() {
-  loadOrders();
-  setInterval(loadOrders, 2000);
-
-  // Instant multi-tab BroadcastChannel sync
-  try {
-    const channel = new BroadcastChannel('divflow_restaurant_sync');
-    channel.onmessage = (e) => {
-      if (e.data?.type === 'NEW_ORDER') {
-        playDingSound();
-        loadOrders();
-      }
-    };
-  } catch(e) {}
+  loadOrdersInitial();
+  setupRealtimeSSE();
+  setInterval(loadOrdersFromStorage, 2000);
 }
 
 function playDingSound() {
@@ -39,23 +30,83 @@ function playDingSound() {
 
 function toggleAudio() {
   audioEnabled = !audioEnabled;
-  document.getElementById('audioToggleBtn').innerText = audioEnabled ? '🔔 Sound: ON' : '🔕 Sound: OFF';
+  document.getElementById('audioToggleBtn').innerText = audioEnabled ? 'AUDIO ALERT: ON' : 'AUDIO ALERT: OFF';
 }
 
-function loadOrders() {
-  const orders = JSON.parse(localStorage.getItem(SYNC_KEY) || '[]');
+function loadOrdersInitial() {
+  loadOrdersFromStorage();
+
+  // Pull cloud history
+  fetch('https://ntfy.sh/' + SYNC_TOPIC + '/json?poll=1')
+    .then(r => r.text())
+    .then(text => {
+      const lines = text.trim().split('\n');
+      lines.forEach(line => {
+        try {
+          const data = JSON.parse(line);
+          if (data.message) {
+            const payload = JSON.parse(data.message);
+            if (payload.type === 'NEW_ORDER' && payload.order) {
+              saveOrderLocal(payload.order);
+            } else if (payload.type === 'UPDATE_STATUS' && payload.orderId) {
+              updateOrderStatusLocal(payload.orderId, payload.status);
+            }
+          }
+        } catch(e) {}
+      });
+      loadOrdersFromStorage();
+    })
+    .catch(() => {});
+}
+
+function setupRealtimeSSE() {
+  try {
+    const eventSource = new EventSource('https://ntfy.sh/' + SYNC_TOPIC + '/sse');
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.message) {
+          const payload = JSON.parse(data.message);
+          if (payload.type === 'NEW_ORDER' && payload.order) {
+            saveOrderLocal(payload.order);
+            playDingSound();
+            loadOrdersFromStorage();
+          } else if (payload.type === 'UPDATE_STATUS' && payload.orderId) {
+            updateOrderStatusLocal(payload.orderId, payload.status);
+            loadOrdersFromStorage();
+          }
+        }
+      } catch(e) {}
+    };
+  } catch(e) {}
+}
+
+function saveOrderLocal(order) {
+  const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const idx = existing.findIndex(o => o.id === order.id);
+  if (idx >= 0) existing[idx] = order;
+  else existing.push(order);
+  localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(existing));
+}
+
+function updateOrderStatusLocal(orderId, status) {
+  const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
+  const order = existing.find(o => o.id === orderId);
+  if (order) {
+    order.status = status;
+    localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(existing));
+  }
+}
+
+function loadOrdersFromStorage() {
+  const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
   
-  let hasNew = false;
+  // Track new orders
   orders.forEach(o => {
     if (!knownOrderIds.has(o.id)) {
       knownOrderIds.add(o.id);
-      hasNew = true;
     }
   });
-
-  if (hasNew && knownOrderIds.size > 0) {
-    playDingSound();
-  }
 
   const activeOrders = orders.filter(o => o.status !== 'Paid');
   const prepCount = activeOrders.filter(o => o.status === 'Preparing').length;
@@ -70,43 +121,43 @@ function loadOrders() {
   grid.innerHTML = '';
 
   if (activeOrders.length === 0) {
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:60px; color:#64748b; font-size:1.2rem;">🍳 Kitchen is all clear! Waiting for incoming table orders...</div>';
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:60px; color:#64748b; font-size:1.1rem; font-weight:700; letter-spacing:0.04em;">KITCHEN CLEAR — AWAITING INCOMING GUEST DISPATCHES</div>';
     return;
   }
 
   [...activeOrders].reverse().forEach(order => {
     const card = document.createElement('div');
-    card.className = `m3-kot-card status-${order.status}`;
+    card.className = `ticket-card status-${order.status}`;
     card.innerHTML = `
-      <div class="m3-kot-head">
-        <span class="m3-kot-title">TABLE ${order.table}</span>
-        <span class="m3-kot-meta">#${order.id} • ${order.timestamp}</span>
+      <div class="ticket-head">
+        <span class="ticket-table">TABLE ${order.table} • <span style="font-size:0.9rem; font-weight:600; color:#93c5fd;">${order.customerName || "Guest"}</span></span>
+        <span class="ticket-id-badge">#${order.id} • ${order.timestamp}</span>
       </div>
-      <div class="m3-kot-items">
+      <div class="ticket-body">
         ${order.items.map(i => `
-          <div class="m3-kot-item-row">
-            <span><span class="m3-kot-qty">${i.qty}x</span> <strong>${i.name}</strong></span>
+          <div class="ticket-item">
+            <span><span class="ticket-qty">${i.qty}x</span> <strong>${i.name}</strong></span>
             <span>₹${i.price * i.qty}</span>
           </div>
         `).join('')}
         ${order.specialNotes !== 'None' ? `
-          <div class="m3-kot-notes">
-            <strong>⚠️ Chef Instructions:</strong> ${order.specialNotes}
+          <div class="ticket-notes">
+            <strong>CHEF NOTES:</strong> ${order.specialNotes}
           </div>
         ` : ''}
       </div>
-      <div class="m3-kot-foot">
+      <div class="ticket-foot">
         ${order.status === 'Preparing' ? `
-          <button class="m3-action-btn btn-serve" onclick="updateOrderStatus('${order.id}', 'Served')">
-            ✅ Mark as Served
+          <button class="ticket-action-btn btn-serve" onclick="broadcastStatusUpdate('${order.id}', 'Served')">
+            MARK SERVED
           </button>
         ` : `
-          <button class="m3-action-btn btn-paid" onclick="updateOrderStatus('${order.id}', 'Paid')">
-            💰 Mark as Paid
+          <button class="ticket-action-btn btn-paid" onclick="broadcastStatusUpdate('${order.id}', 'Paid')">
+            MARK PAID
           </button>
         `}
-        <button class="m3-action-btn btn-print" onclick="printKOT('${order.id}')" title="Print KOT Slip">
-          🖨️
+        <button class="ticket-action-btn btn-print" onclick="printKOT('${order.id}')" title="Print KOT Slip">
+          PRINT
         </button>
       </div>
     `;
@@ -114,18 +165,22 @@ function loadOrders() {
   });
 }
 
-function updateOrderStatus(id, newStatus) {
-  const orders = JSON.parse(localStorage.getItem(SYNC_KEY) || '[]');
-  const order = orders.find(o => o.id === id);
-  if (order) {
-    order.status = newStatus;
-    localStorage.setItem(SYNC_KEY, JSON.stringify(orders));
-    loadOrders();
-  }
+function broadcastStatusUpdate(orderId, newStatus) {
+  updateOrderStatusLocal(orderId, newStatus);
+  loadOrdersFromStorage();
+
+  // Broadcast to global cloud stream
+  try {
+    fetch('https://ntfy.sh/' + SYNC_TOPIC, {
+      method: 'POST',
+      headers: { 'Title': 'UPDATE_STATUS' },
+      body: JSON.stringify({ type: 'UPDATE_STATUS', orderId, status: newStatus })
+    }).catch(e => console.error(e));
+  } catch(e) {}
 }
 
 function printKOT(id) {
-  const orders = JSON.parse(localStorage.getItem(SYNC_KEY) || '[]');
+  const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
   const order = orders.find(o => o.id === id);
   if (!order) return;
 
@@ -135,24 +190,27 @@ function printKOT(id) {
     <head>
       <title>KOT #${order.id}</title>
       <style>
-        body { font-family: monospace; padding: 20px; font-size: 14px; }
+        body { font-family: monospace; padding: 20px; font-size: 13px; }
         .center { text-align: center; }
-        .line { border-top: 1px dashed #000; margin: 10px 0; }
+        .line { border-top: 1px dashed #000; margin: 8px 0; }
         .item { display: flex; justify-content: space-between; margin: 4px 0; }
       </style>
     </head>
     <body>
       <div class="center">
-        <h2>SPICE & SLICE BISTRO</h2>
+        <h2>THE GRAND ESTATE</h2>
         <h3>KITCHEN ORDER TICKET (KOT)</h3>
         <h1>TABLE ${order.table}</h1>
+        <div>Guest: ${order.customerName || 'Walk-in'} (${order.customerPhone || 'N/A'})</div>
         <div>#${order.id} | ${order.timestamp}</div>
       </div>
       <div class="line"></div>
       ${order.items.map(i => `<div class="item"><span>${i.qty}x ${i.name}</span><span>₹${i.price * i.qty}</span></div>`).join('')}
       <div class="line"></div>
-      <div><strong>Notes:</strong> ${order.specialNotes}</div>
+      <div><strong>Special Instructions:</strong> ${order.specialNotes}</div>
       <div class="line"></div>
+      <div class="item"><strong>SUBTOTAL:</strong><span>₹${order.subtotal}</span></div>
+      <div class="item"><strong>GST (5%):</strong><span>₹${order.tax}</span></div>
       <div class="item"><strong>TOTAL:</strong><strong>₹${order.total}</strong></div>
     </body>
     </html>
@@ -162,10 +220,10 @@ function printKOT(id) {
 }
 
 function clearAllOrders() {
-  if (confirm('Clear all active orders?')) {
-    localStorage.removeItem(SYNC_KEY);
+  if (confirm('Clear active kitchen display tickets?')) {
+    localStorage.removeItem(LOCAL_STORAGE_ORDERS);
     knownOrderIds.clear();
-    loadOrders();
+    loadOrdersFromStorage();
   }
 }
 
