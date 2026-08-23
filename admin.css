@@ -359,3 +359,83 @@ body {
   box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
 .admin-toast.show { opacity: 1; transform: translateY(0); }
+
+/* =========================================================
+   Print Styles: Formats ONLY Standees for Printing
+   ========================================================= */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .pos-sidebar,
+  .pos-top-bar,
+  .pos-right-pane,
+  .section-action-header,
+  .admin-toast,
+  .modal-backdrop,
+  .floor-stats-row,
+  .analytics-metrics-grid,
+  .tender-breakdown-card,
+  .crm-table-wrapper {
+    display: none !important;
+  }
+
+  .pos-app-shell {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .pos-main-workspace {
+    display: block !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .pos-tab-content {
+    display: none !important;
+    padding: 0 !important;
+  }
+
+  #tabQr {
+    display: block !important;
+  }
+
+  .standees-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .admin-standee-card {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 3px solid #111827 !important;
+    border-radius: 16px !important;
+    padding: 24px 16px !important;
+    text-align: center !important;
+    page-break-inside: avoid !important;
+    box-shadow: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .admin-standee-card img {
+    width: 150px !important;
+    height: 150px !important;
+    margin: 10px auto !important;
+  }
+}

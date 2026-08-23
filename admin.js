@@ -558,3 +558,10 @@ function showToast(msg) {
 }
 
 window.onload = init;
+
+function printStandeesClean() {
+  switchTab('qr');
+  setTimeout(() => {
+    window.print();
+  }, 100);
+}

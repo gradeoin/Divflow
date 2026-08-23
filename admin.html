@@ -186,7 +186,10 @@
             <h2>Table QR Standee Studio</h2>
             <p>Printable QR standees for Tables 1 to 8.</p>
           </div>
-          <button class="btn-primary" onclick="window.print()">🖨️ Print All Standees</button>
+          <div style="display:flex; gap:10px;">
+    <a href="qr.html" target="_blank" class="btn-secondary" style="text-decoration:none;">📄 Standalone Print Page</a>
+    <button class="btn-primary" onclick="printStandeesClean()">🖨️ Quick Print Standees</button>
+  </div>
         </div>
         <div class="standees-grid" id="adminStandeesGrid"></div>
       </section>
