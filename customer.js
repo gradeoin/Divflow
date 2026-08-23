@@ -1,93 +1,224 @@
 
-// Menu Database
+// Rich Menu Database with High-Quality Food Photography
 const MENU_DATA = [
   // Starters
-  { id: 'st1', name: 'Paneer Tikka', category: 'starters', price: 280, isVeg: true, isChef: true, desc: 'Charcoal-grilled cottage cheese marinated in tandoori spices & mint.' },
-  { id: 'st2', name: 'Crispy Pepper Corn', category: 'starters', price: 220, isVeg: true, isChef: false, desc: 'Golden sweet corn wok-tossed with green chili, spring onions & cracked pepper.' },
-  { id: 'st3', name: 'Chicken Tikka Smokey', category: 'starters', price: 340, isVeg: false, isChef: true, desc: 'Juicy chicken chunks smoked in earthen clay oven with crushed spices.' },
-  { id: 'st4', name: 'BBQ Wings (6 Pcs)', category: 'starters', price: 320, isVeg: false, isChef: false, desc: 'Crispy fried chicken wings coated in house sweet-smokey barbecue glaze.' },
-  
+  {
+    id: 'st1',
+    name: 'Tandoori Paneer Tikka',
+    category: 'starters',
+    price: 280,
+    isVeg: true,
+    bestseller: true,
+    desc: 'Charcoal-grilled cottage cheese cubes marinated in Kashmiri chili, hung curd & aromatic spices.',
+    img: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'st2',
+    name: 'Crispy Pepper Corn',
+    category: 'starters',
+    price: 220,
+    isVeg: true,
+    bestseller: false,
+    desc: 'Golden fried sweet corn kernels tossed with crunchy bell peppers, spring onions & crushed black pepper.',
+    img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'st3',
+    name: 'Smokey Chicken Tikka',
+    category: 'starters',
+    price: 340,
+    isVeg: false,
+    bestseller: true,
+    desc: 'Boneless chicken thighs marinated in mustard oil, tandoori masala & roasted to perfection.',
+    img: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'st4',
+    name: 'BBQ Glazed Chicken Wings',
+    category: 'starters',
+    price: 320,
+    isVeg: false,
+    bestseller: false,
+    desc: '6 pcs crispy wings tossed in house hickory smoked barbecue glaze, garnished with toasted sesame.',
+    img: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=600&q=80'
+  },
+
   // Pizzas
-  { id: 'pz1', name: 'Classic Margherita Pizza', category: 'pizzas', price: 350, isVeg: true, isChef: false, desc: 'Hand-stretched sourdough crust with San Marzano tomatoes, fresh mozzarella & basil.' },
-  { id: 'pz2', name: 'Farmhouse Garden Pizza', category: 'pizzas', price: 420, isVeg: true, isChef: true, desc: 'Loaded with bell peppers, sweet corn, button mushrooms, red paprika & olives.' },
-  { id: 'pz3', name: 'BBQ Chicken Feast Pizza', category: 'pizzas', price: 460, isVeg: false, isChef: true, desc: 'Grilled BBQ chicken, red onions, jalapeños & smoked gouda cheese.' },
+  {
+    id: 'pz1',
+    name: 'Woodfired Margherita Pizza',
+    category: 'pizzas',
+    price: 350,
+    isVeg: true,
+    bestseller: true,
+    desc: 'Sourdough crust, crushed San Marzano tomato sauce, fresh mozzarella & aromatic basil leaves.',
+    img: 'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'pz2',
+    name: 'Farmhouse Garden Pizza',
+    category: 'pizzas',
+    price: 420,
+    isVeg: true,
+    bestseller: false,
+    desc: 'Loaded with crunchy bell peppers, button mushrooms, sweet corn, red paprika & black olives.',
+    img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'pz3',
+    name: 'Smokey BBQ Chicken Pizza',
+    category: 'pizzas',
+    price: 460,
+    isVeg: false,
+    bestseller: true,
+    desc: 'Spiced BBQ chicken chunks, red onions, pickled jalapeños & generous mozzarella cheese.',
+    img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80'
+  },
 
   // Mains
-  { id: 'mn1', name: 'Butter Chicken Grand', category: 'mains', price: 380, isVeg: false, isChef: true, desc: 'Tender tandoori chicken simmered in a velvety buttery tomato-cashew gravy.' },
-  { id: 'mn2', name: 'Dal Makhani Slow-Cooked', category: 'mains', price: 260, isVeg: true, isChef: true, desc: 'Black lentils slow-cooked overnight with white butter and aromatic spices.' },
-  { id: 'mn3', name: 'Hyderabadi Dum Biryani (Chicken)', category: 'mains', price: 360, isVeg: false, isChef: true, desc: 'Aromatic long-grain basmati layered with spiced chicken, served with salan & raita.' },
-  { id: 'mn4', name: 'Paneer Butter Masala', category: 'mains', price: 320, isVeg: true, isChef: false, desc: 'Fresh paneer cubes in creamy mildly spiced onion-tomato gravy.' },
+  {
+    id: 'mn1',
+    name: 'Grand Butter Chicken',
+    category: 'mains',
+    price: 380,
+    isVeg: false,
+    bestseller: true,
+    desc: 'Tandoori roasted chicken in a silky, creamy tomato-cashew gravy with a dash of kasoori methi.',
+    img: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'mn2',
+    name: 'Dal Makhani Slow-Cooked',
+    category: 'mains',
+    price: 260,
+    isVeg: true,
+    bestseller: true,
+    desc: 'Whole black lentils slow-cooked overnight on charcoal with butter, cream and gentle spices.',
+    img: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'mn3',
+    name: 'Hyderabadi Chicken Dum Biryani',
+    category: 'mains',
+    price: 360,
+    isVeg: false,
+    bestseller: true,
+    desc: 'Aromatic long-grain basmati rice layered with spiced chicken, caramelized onions & fresh mint.',
+    img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'mn4',
+    name: 'Paneer Butter Masala',
+    category: 'mains',
+    price: 320,
+    isVeg: true,
+    bestseller: false,
+    desc: 'Soft cottage cheese cubes cooked in rich mildly sweet onion-tomato makhani gravy.',
+    img: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=600&q=80'
+  },
 
   // Breads
-  { id: 'br1', name: 'Butter Naan', category: 'breads', price: 50, isVeg: true, isChef: false, desc: 'Fluffy tandoor-baked flatbread glazed with melted butter.' },
-  { id: 'br2', name: 'Garlic Butter Naan', category: 'breads', price: 65, isVeg: true, isChef: false, desc: 'Layered naan topped with roasted garlic flakes, cilantro & butter.' },
-  { id: 'br3', name: 'Tandoori Roti', category: 'breads', price: 35, isVeg: true, isChef: false, desc: 'Whole wheat flatbread baked crisp in the tandoor.' },
+  {
+    id: 'br1',
+    name: 'Butter Garlic Naan',
+    category: 'breads',
+    price: 65,
+    isVeg: true,
+    bestseller: true,
+    desc: 'Tandoor baked refined flour bread topped with minced roasted garlic & fresh melted butter.',
+    img: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'br2',
+    name: 'Tandoori Butter Roti',
+    category: 'breads',
+    price: 35,
+    isVeg: true,
+    bestseller: false,
+    desc: 'Crisp whole wheat flatbread baked in clay oven, brushed with pure butter.',
+    img: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=600&q=80'
+  },
 
-  // Drinks
-  { id: 'dr1', name: 'Cold Coffee with Ice Cream', category: 'beverages', price: 140, isVeg: true, isChef: true, desc: 'Thick creamy espresso blended with chocolate syrup & vanilla ice cream.' },
-  { id: 'dr2', name: 'Fresh Lime Soda (Sweet/Salted)', category: 'beverages', price: 90, isVeg: true, isChef: false, desc: 'Refreshing bubbly lime drink with rock salt and crushed mint.' },
-  { id: 'dr3', name: 'Virgin Mojito Mint', category: 'beverages', price: 150, isVeg: true, isChef: false, desc: 'Muddled fresh mint, lime wedges, cane sugar & sparkling water.' },
+  // Beverages
+  {
+    id: 'dr1',
+    name: 'Thick Cold Coffee with Ice Cream',
+    category: 'beverages',
+    price: 140,
+    isVeg: true,
+    bestseller: true,
+    desc: 'Rich creamy chilled espresso shake topped with a scoop of vanilla ice cream & chocolate drizzle.',
+    img: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'dr2',
+    name: 'Fresh Mint Lime Soda',
+    category: 'beverages',
+    price: 90,
+    isVeg: true,
+    bestseller: false,
+    desc: 'Bubbly club soda with hand-pressed key limes, rock salt, mint leaves & cane sugar syrup.',
+    img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80'
+  },
 
   // Desserts
-  { id: 'ds1', name: 'Sizzling Brownie with Ice Cream', category: 'desserts', price: 190, isVeg: true, isChef: true, desc: 'Warm fudge brownie served on a hot skillet with dark chocolate sauce.' },
-  { id: 'ds2', name: 'Hot Gulab Jamun (2 Pcs)', category: 'desserts', price: 120, isVeg: true, isChef: false, desc: 'Melt-in-mouth milk dumplings soaked in cardamom saffron syrup.' }
+  {
+    id: 'ds1',
+    name: 'Sizzling Brownie Skillet',
+    category: 'desserts',
+    price: 190,
+    isVeg: true,
+    bestseller: true,
+    desc: 'Warm Belgian walnut brownie served on a sizzling cast-iron skillet with ice cream & fudge sauce.',
+    img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'ds2',
+    name: 'Royal Shahi Gulab Jamun (2 Pcs)',
+    category: 'desserts',
+    price: 120,
+    isVeg: true,
+    bestseller: false,
+    desc: 'Traditional deep-fried milk solid dumplings steeped in warm saffron-cardamom sugar syrup.',
+    img: 'https://images.unsplash.com/photo-1589119908995-c6837fa14d48?auto=format&fit=crop&w=600&q=80'
+  }
 ];
 
-// State
 let currentTable = '4';
-let isTableUnlocked = false;
 let currentCategory = 'all';
 let isVegOnly = false;
-let cart = {}; // { 'st1': { item, qty } }
+let cart = {}; // { id: { item, qty } }
 
-// Storage Sync
 const STORAGE_ORDERS_KEY = 'divflow_restaurant_orders_v1';
 
 function init() {
   const urlParams = new URLSearchParams(window.location.search);
   const tableParam = urlParams.get('table') || urlParams.get('t');
-  const tokenParam = urlParams.get('token') || urlParams.get('pin');
 
   if (tableParam) {
     currentTable = tableParam.replace('tbl_', '');
-  }
-
-  // Check if already unlocked in session
-  const sessionToken = sessionStorage.getItem('divflow_table_verified');
-  if (sessionToken === '8492' || tokenParam === '8492' || tokenParam === 'tbl_valid') {
-    isTableUnlocked = true;
-    document.getElementById('pinOverlay').style.display = 'none';
+    localStorage.setItem('divflow_current_table', currentTable);
   } else {
-    document.getElementById('pinOverlay').style.display = 'flex';
-    document.getElementById('manualTableSelect').value = currentTable;
+    const saved = localStorage.getItem('divflow_current_table');
+    if (saved) currentTable = saved;
   }
 
   document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
+  document.getElementById('tableSelectPicker').value = currentTable;
   document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
 
   renderMenu();
   updateOrderStatusBanner();
-  setInterval(updateOrderStatusBanner, 3000);
+  setInterval(updateOrderStatusBanner, 2500);
 }
 
-function verifyTableManual() {
-  const pin = document.getElementById('tablePinInput').value.trim();
-  const selectedTable = document.getElementById('manualTableSelect').value;
-
-  // Master demo PIN is 8492
-  if (pin === '8492' || pin === '1234') {
-    currentTable = selectedTable;
-    sessionStorage.setItem('divflow_table_verified', '8492');
-    sessionStorage.setItem('divflow_active_table', currentTable);
-    isTableUnlocked = true;
-    document.getElementById('pinOverlay').style.display = 'none';
-    document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
-    document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
-    showToast('Table ' + currentTable + ' Verified!');
-    updateOrderStatusBanner();
-  } else {
-    document.getElementById('pinError').style.display = 'block';
-  }
+function switchTableFromPicker(val) {
+  currentTable = val;
+  localStorage.setItem('divflow_current_table', currentTable);
+  document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
+  document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
+  showToast('Switched to Table ' + currentTable);
+  updateOrderStatusBanner();
 }
 
 function renderMenu() {
@@ -104,50 +235,58 @@ function renderMenu() {
   });
 
   if (filtered.length === 0) {
-    grid.innerHTML = '<div style="text-align:center; padding:40px; color:#8b949e;">No dishes found matching your search.</div>';
+    grid.innerHTML = '<div style="text-align:center; padding:60px 20px; color:#94a3b8; font-size:1rem;">No delicious dishes found matching your search.</div>';
     return;
   }
 
   filtered.forEach(item => {
     const qty = cart[item.id] ? cart[item.id].qty : 0;
     const card = document.createElement('div');
-    card.className = 'menu-card';
+    card.className = 'food-card';
     card.innerHTML = `
-      <div class="card-details">
-        <div class="card-badges">
-          <span class="badge-tag ${item.isVeg ? 'veg' : 'nonveg'}">${item.isVeg ? '🟢 Veg' : '🔴 Non-Veg'}</span>
-          ${item.isChef ? '<span class="badge-tag badge-chef">⭐ Chef Special</span>' : ''}
+      <div class="food-img-wrap">
+        <img src="${item.img}" alt="${item.name}" loading="lazy" class="food-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+        <div class="food-badges-overlay">
+          <span class="badge-tag ${item.isVeg ? 'veg' : 'nonveg'}">${item.isVeg ? '🟢 VEG' : '🔴 NON-VEG'}</span>
+          ${item.bestseller ? '<span class="badge-tag badge-star">⭐ Bestseller</span>' : ''}
         </div>
-        <div class="item-title">${item.name}</div>
-        <div class="item-desc">${item.desc}</div>
-        <div class="item-price">₹${item.price}</div>
       </div>
-      <div class="card-action">
-        ${qty === 0 ? `
-          <button class="btn-add" onclick="addToCart('${item.id}')">+ Add</button>
-        ` : `
-          <div class="qty-control">
-            <button class="qty-btn" onclick="decreaseQty('${item.id}')">-</button>
-            <span class="qty-val">${qty}</span>
-            <button class="qty-btn" onclick="increaseQty('${item.id}')">+</button>
-          </div>
-        `}
+      <div class="food-info">
+        <div class="food-header-row">
+          <h3 class="food-name">${item.name}</h3>
+          <span class="food-price">₹${item.price}</span>
+        </div>
+        <p class="food-desc">${item.desc}</p>
+        
+        <div class="food-action-row">
+          ${qty === 0 ? `
+            <button class="btn-add-food" onclick="addToCart('${item.id}')">
+              <span>+ ADD</span>
+            </button>
+          ` : `
+            <div class="qty-pill">
+              <button class="qty-pill-btn" onclick="decreaseQty('${item.id}')">−</button>
+              <span class="qty-pill-num">${qty}</span>
+              <button class="qty-pill-btn" onclick="increaseQty('${item.id}')">+</button>
+            </div>
+          `}
+        </div>
       </div>
     `;
     grid.appendChild(card);
   });
 }
 
-function filterCategory(cat) {
+function filterCategory(cat, btn) {
   currentCategory = cat;
-  document.querySelectorAll('.cat-pill').forEach(el => el.classList.remove('active'));
-  event.target.classList.add('active');
+  document.querySelectorAll('.category-chip').forEach(el => el.classList.remove('active'));
+  if (btn) btn.classList.add('active');
   renderMenu();
 }
 
 function toggleVegOnly() {
   isVegOnly = !isVegOnly;
-  const btn = document.getElementById('vegOnlyBtn');
+  const btn = document.getElementById('vegFilterBtn');
   btn.classList.toggle('active', isVegOnly);
   renderMenu();
 }
@@ -161,6 +300,7 @@ function addToCart(id) {
   if (!item) return;
   cart[id] = { item, qty: 1 };
   updateCartUI();
+  showToast('Added ' + item.name + ' to order');
 }
 
 function increaseQty(id) {
@@ -190,34 +330,39 @@ function updateCartUI() {
   const tax = Math.round(subtotal * 0.05);
   const grandTotal = subtotal + tax;
 
-  // Header count
-  document.getElementById('cartCountBadge').innerText = count;
+  // Header Badge
+  document.getElementById('headerCartCount').innerText = count;
 
-  // Floating Bar
-  const floatBar = document.getElementById('floatingCartBar');
+  // Sticky Bottom Bar
+  const floatBar = document.getElementById('stickyCartBar');
   if (count > 0) {
     floatBar.style.display = 'flex';
-    document.getElementById('floatItemsCount').innerText = count + (count === 1 ? ' item' : ' items');
-    document.getElementById('floatTotalPrice').innerText = '₹' + grandTotal;
+    document.getElementById('floatCount').innerText = count + (count === 1 ? ' ITEM' : ' ITEMS');
+    document.getElementById('floatTotal').innerText = '₹' + grandTotal;
   } else {
     floatBar.style.display = 'none';
   }
 
-  // Drawer list
-  const drawerList = document.getElementById('drawerItemsList');
+  // Drawer Items
+  const drawerList = document.getElementById('cartDrawerItems');
   drawerList.innerHTML = '';
   for (let id in cart) {
+    const item = cart[id].item;
+    const qty = cart[id].qty;
     const row = document.createElement('div');
-    row.className = 'drawer-item-row';
+    row.className = 'drawer-cart-item';
     row.innerHTML = `
-      <div>
-        <div class="drawer-item-name">${cart[id].item.name}</div>
-        <div style="font-size:0.8rem; color:#8b949e;">₹${cart[id].item.price} × ${cart[id].qty} = ₹${cart[id].item.price * cart[id].qty}</div>
+      <div class="drawer-item-title-box">
+        <span class="diet-dot ${item.isVeg ? 'veg' : 'nonveg'}"></span>
+        <div>
+          <div class="drawer-item-name">${item.name}</div>
+          <div class="drawer-item-calc">₹${item.price} × ${qty} = <strong>₹${item.price * qty}</strong></div>
+        </div>
       </div>
-      <div class="qty-control">
-        <button class="qty-btn" onclick="decreaseQty('${id}')">-</button>
-        <span class="qty-val">${cart[id].qty}</span>
-        <button class="qty-btn" onclick="increaseQty('${id}')">+</button>
+      <div class="qty-pill">
+        <button class="qty-pill-btn" onclick="decreaseQty('${id}')">−</button>
+        <span class="qty-pill-num">${qty}</span>
+        <button class="qty-pill-btn" onclick="increaseQty('${id}')">+</button>
       </div>
     `;
     drawerList.appendChild(row);
@@ -233,10 +378,15 @@ function updateCartUI() {
 function toggleCart() {
   const overlay = document.getElementById('cartOverlay');
   const drawer = document.getElementById('cartDrawer');
-  const isVisible = drawer.style.display === 'flex';
+  const isShown = drawer.classList.contains('open');
 
-  overlay.style.display = isVisible ? 'none' : 'block';
-  drawer.style.display = isVisible ? 'none' : 'flex';
+  if (isShown) {
+    overlay.style.display = 'none';
+    drawer.classList.remove('open');
+  } else {
+    overlay.style.display = 'block';
+    drawer.classList.add('open');
+  }
 }
 
 function placeOrder() {
@@ -253,13 +403,13 @@ function placeOrder() {
   }
 
   if (items.length === 0) {
-    showToast('Your cart is empty!');
+    showToast('Your cart is empty! Add delicious food first.');
     return;
   }
 
   const tax = Math.round(subtotal * 0.05);
   const total = subtotal + tax;
-  const specialNotes = document.getElementById('orderSpecialNotes').value.trim();
+  const specialNotes = document.getElementById('orderNotesInput').value.trim();
 
   const kotId = 'KOT-' + Math.floor(100 + Math.random() * 900);
   const newOrder = {
@@ -270,23 +420,22 @@ function placeOrder() {
     subtotal,
     tax,
     total,
-    status: 'Preparing', // Preparing -> Ready -> Served -> Paid
+    status: 'Preparing',
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     createdAt: Date.now()
   };
 
-  // Save to shared localStorage (synced with kitchen.html)
   const existingOrders = JSON.parse(localStorage.getItem(STORAGE_ORDERS_KEY) || '[]');
   existingOrders.push(newOrder);
   localStorage.setItem(STORAGE_ORDERS_KEY, JSON.stringify(existingOrders));
 
   // Reset Cart
   cart = {};
-  document.getElementById('orderSpecialNotes').value = '';
+  document.getElementById('orderNotesInput').value = '';
   updateCartUI();
   toggleCart();
 
-  showToast('🎉 Order #' + kotId + ' Sent to Kitchen!');
+  showToast('🎉 Order #' + kotId + ' Sent Directly to Kitchen!');
   updateOrderStatusBanner();
 }
 
@@ -302,7 +451,7 @@ function updateOrderStatusBanner() {
     
     let totalBill = 0;
     tableOrders.forEach(o => totalBill += o.total);
-    document.getElementById('bannerBillTotal').innerText = totalBill;
+    document.getElementById('bannerBillAmount').innerText = '₹' + totalBill;
   } else {
     banner.style.display = 'none';
   }
@@ -312,20 +461,25 @@ function openBillModal() {
   const allOrders = JSON.parse(localStorage.getItem(STORAGE_ORDERS_KEY) || '[]');
   const tableOrders = allOrders.filter(o => o.table === currentTable && o.status !== 'Paid');
 
-  const container = document.getElementById('billOrdersContainer');
+  const container = document.getElementById('billOrdersList');
   container.innerHTML = '';
 
   let subtotal = 0;
   tableOrders.forEach(o => {
     subtotal += o.subtotal;
     const card = document.createElement('div');
-    card.style.cssText = 'background:#0d1117; padding:12px; border-radius:10px; margin-bottom:10px; text-align:left;';
+    card.className = 'bill-order-ticket';
     card.innerHTML = `
-      <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:6px; color:#58a6ff;">
-        <span>#${o.id} (${o.timestamp})</span>
-        <span style="color:#d29922;">${o.status}</span>
+      <div class="bill-ticket-head">
+        <span>Order #${o.id} (${o.timestamp})</span>
+        <span class="ticket-status-badge status-${o.status}">${o.status}</span>
       </div>
-      ${o.items.map(i => `<div style="font-size:0.85rem; display:flex; justify-content:space-between;"><span>${i.qty}x ${i.name}</span><span>₹${i.price * i.qty}</span></div>`).join('')}
+      ${o.items.map(i => `
+        <div class="bill-ticket-item">
+          <span>${i.qty}x ${i.name}</span>
+          <span>₹${i.price * i.qty}</span>
+        </div>
+      `).join('')}
     `;
     container.appendChild(card);
   });
@@ -335,17 +489,17 @@ function openBillModal() {
 
   document.getElementById('billSubtotal').innerText = '₹' + subtotal;
   document.getElementById('billTax').innerText = '₹' + tax;
-  document.getElementById('billGrandTotal').innerText = '₹' + total;
+  document.getElementById('billTotalPayable').innerText = '₹' + total;
 
-  document.getElementById('billOverlay').style.display = 'flex';
+  document.getElementById('billModalOverlay').style.display = 'flex';
 }
 
 function closeBillModal() {
-  document.getElementById('billOverlay').style.display = 'none';
+  document.getElementById('billModalOverlay').style.display = 'none';
 }
 
-function requestBill() {
-  showToast('🧾 Waiter notified! Bill is on its way to Table ' + currentTable);
+function requestFinalBill() {
+  showToast('🧾 Waiter alerted with bill for Table ' + currentTable + '!');
   closeBillModal();
 }
 
@@ -357,7 +511,7 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.innerText = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  setTimeout(() => t.classList.remove('show'), 2800);
 }
 
 window.onload = init;

@@ -3,135 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Printable Table QR Standees — Spice & Slice Bistro</title>
+  <title>Table Standees & QR Generator — Spice & Slice Bistro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f3f4f6; padding: 20px; color: #111827; }
-    .no-print-bar {
-      max-width: 900px;
-      margin: 0 auto 24px;
-      background: #fff;
-      padding: 16px 24px;
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; padding: 24px; color: #f8fafc; margin: 0; }
+    .top-control-bar {
+      max-width: 1000px;
+      margin: 0 auto 28px;
+      background: #1e293b;
+      padding: 18px 24px;
       border-radius: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
     .print-btn {
       background: #2563eb;
       color: #fff;
       border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-weight: 700;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 800;
       cursor: pointer;
       font-size: 1rem;
+      transition: background 0.2s;
     }
+    .print-btn:hover { background: #1d4ed8; }
+    
     .standee-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 28px;
       max-width: 1000px;
       margin: 0 auto;
     }
     .standee-card {
-      background: #fff;
-      border: 3px solid #111827;
-      border-radius: 24px;
-      padding: 28px;
+      background: #ffffff;
+      color: #0f172a;
+      border: 3px solid #0f172a;
+      border-radius: 28px;
+      padding: 30px 24px;
       text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
       page-break-inside: avoid;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .restaurant-name { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-    .tagline { font-size: 0.8rem; color: #6b7280; margin-bottom: 20px; }
-    .qr-canvas-box {
-      width: 180px;
-      height: 180px;
-      margin: 0 auto 16px;
-      background: #f9fafb;
+    .brand-header { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .brand-sub { font-size: 0.85rem; color: #64748b; margin-bottom: 20px; font-weight: 600; }
+    
+    .qr-img-box {
+      width: 200px;
+      height: 200px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 20px;
       padding: 10px;
-      border-radius: 16px;
-      border: 2px solid #e5e7eb;
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-bottom: 20px;
     }
-    .table-number-box {
-      background: #111827;
-      color: #fff;
-      padding: 8px 16px;
-      border-radius: 12px;
-      font-size: 1.3rem;
+    .qr-img { width: 100%; height: 100%; object-fit: contain; }
+
+    .table-badge {
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 1.4rem;
       font-weight: 800;
-      margin-bottom: 10px;
+      padding: 8px 24px;
+      border-radius: 14px;
+      margin-bottom: 12px;
       display: inline-block;
     }
-    .pin-box {
-      font-family: 'JetBrains Mono', monospace;
+    .scan-action-text {
       font-size: 0.9rem;
       font-weight: 700;
       color: #2563eb;
-      background: #eff6ff;
-      padding: 6px 12px;
-      border-radius: 8px;
-      display: inline-block;
     }
-    .scan-hint { font-size: 0.8rem; color: #4b5563; margin-top: 12px; font-weight: 600; }
+    .scan-subtext {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
     @media print {
       body { background: #fff; padding: 0; }
-      .no-print-bar { display: none; }
+      .top-control-bar { display: none; }
       .standee-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-      .standee-card { box-shadow: none; }
+      .standee-card { box-shadow: none; border-width: 2px; }
     }
   </style>
 </head>
 <body>
-  <div class="no-print-bar">
+
+  <div class="top-control-bar">
     <div>
-      <h2 style="font-size: 1.2rem; font-weight:800;">Printable Table Standees</h2>
-      <p style="font-size: 0.85rem; color:#6b7280;">Encrypted QR Codes with 4-Digit Table Verification PINs</p>
+      <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 4px;">Printable Table Standees (Tables 1–8)</h2>
+      <p style="font-size: 0.85rem; color: #94a3b8;">Scanning any QR code opens the digital menu directly for that table with <strong>ZERO PIN</strong>.</p>
     </div>
     <button class="print-btn" onclick="window.print()">🖨️ Print Standees</button>
   </div>
 
-  <div class="standee-grid" id="standeeGrid"></div>
+  <div class="standee-grid" id="standeesContainer"></div>
 
   <script>
     const TABLES_COUNT = 8;
-    const PIN = '8492';
-    const baseUrl = window.location.origin + window.location.pathname.replace('qr.html', '');
-
-    const grid = document.getElementById('standeeGrid');
+    const baseUrl = 'https://divflow.pages.dev';
+    const container = document.getElementById('standeesContainer');
 
     for (let i = 1; i <= TABLES_COUNT; i++) {
+      const targetUrl = `${baseUrl}/?table=${i}`;
+      const encodedUrl = encodeURIComponent(targetUrl);
+      // High-res direct QR API image
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodedUrl}&margin=4`;
+
       const card = document.createElement('div');
       card.className = 'standee-card';
-      const targetUrl = `${baseUrl}?table=${i}&token=8492`;
-
       card.innerHTML = `
-        <div class="restaurant-name">🍕 Spice & Slice</div>
-        <div class="tagline">Table-Side Digital Dining</div>
-        <div class="qr-canvas-box">
-          <canvas id="qrCanvas${i}"></canvas>
+        <div class="brand-header">🍕 Spice & Slice Bistro</div>
+        <div class="brand-sub">Table-Side Digital Dining</div>
+        
+        <div class="qr-img-box">
+          <img class="qr-img" src="${qrApiUrl}" alt="Table ${i} QR Code" loading="lazy">
         </div>
-        <div class="table-number-box">TABLE ${i}</div>
-        <br>
-        <div class="pin-box">TABLE PIN: ${PIN}</div>
-        <div class="scan-hint">Scan with camera to view menu & order</div>
-      `;
-      grid.appendChild(card);
 
-      setTimeout(() => {
-        const canvas = document.getElementById('qrCanvas' + i);
-        QRCode.toCanvas(canvas, targetUrl, { width: 160, margin: 1 }, (err) => {
-          if (err) console.error(err);
-        });
-      }, 50);
+        <div class="table-badge">TABLE ${i}</div>
+        <div class="scan-action-text">📲 Scan with Camera to View Menu & Order</div>
+        <div class="scan-subtext">No app download needed • Instant live ordering</div>
+      `;
+      container.appendChild(card);
     }
   </script>
 </body>

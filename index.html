@@ -3,209 +3,187 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Spice & Slice Bistro — Table Ordering</title>
+  <title>Spice & Slice Bistro — Table Dining</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="customer.css">
 </head>
 <body>
-  <!-- Table PIN / Verification Modal -->
-  <div class="pin-overlay" id="pinOverlay">
-    <div class="pin-modal">
-      <div class="pin-icon">🍽️</div>
-      <h2>Welcome to Spice & Slice</h2>
-      <p>Please select your <strong>Table Number</strong> and enter the <strong>4-digit PIN</strong> printed on your table standee.</p>
-      
-      <div class="input-group">
-        <label>Select Table</label>
-        <select id="manualTableSelect">
-          <option value="1">Table 1</option>
-          <option value="2">Table 2</option>
-          <option value="3">Table 3</option>
-          <option value="4" selected>Table 4</option>
-          <option value="5">Table 5</option>
-          <option value="6">Table 6</option>
-          <option value="7">Table 7</option>
-          <option value="8">Table 8</option>
-        </select>
-      </div>
 
-      <div class="input-group">
-        <label>4-Digit Table PIN</label>
-        <input type="password" id="tablePinInput" maxlength="4" placeholder="e.g. 8492" autofocus>
-      </div>
-      <div class="pin-error" id="pinError">Invalid PIN. Check your table standee.</div>
-      
-      <button class="btn btn-primary btn-block" onclick="verifyTableManual()">Unlock Menu & Order</button>
-      <span class="pin-hint">💡 Demo Table PIN is: <strong>8492</strong></span>
-    </div>
-  </div>
-
-  <!-- Header -->
-  <header class="app-header">
-    <div class="header-content">
-      <div class="brand">
-        <span class="brand-logo">🍕</span>
-        <div class="brand-info">
-          <h1 class="brand-name">Spice & Slice Bistro</h1>
-          <div class="table-badge" id="tableBadge">
-            <span class="table-dot"></span>
+  <!-- Top Header Navigation -->
+  <header class="top-nav">
+    <div class="nav-wrapper">
+      <div class="restaurant-brand">
+        <span class="restaurant-logo">🍕</span>
+        <div class="restaurant-text">
+          <h1 class="restaurant-title">Spice & Slice Bistro</h1>
+          <div class="table-selector-pill">
+            <span class="pulse-dot"></span>
             <span id="tableNumberDisplay">Table 4</span>
+            <select id="tableSelectPicker" onchange="switchTableFromPicker(this.value)" title="Change Table">
+              <option value="1">Table 1</option>
+              <option value="2">Table 2</option>
+              <option value="3">Table 3</option>
+              <option value="4" selected>Table 4</option>
+              <option value="5">Table 5</option>
+              <option value="6">Table 6</option>
+              <option value="7">Table 7</option>
+              <option value="8">Table 8</option>
+            </select>
           </div>
         </div>
       </div>
-      <div class="header-actions">
-        <a href="kitchen.html" target="_blank" class="btn-kitchen-link" title="Open Kitchen Display">
+
+      <div class="top-actions">
+        <a href="kitchen.html" target="_blank" class="nav-pill-btn kds-pill" title="Live Kitchen Display">
           👨‍🍳 KDS
         </a>
-        <button class="btn-icon" onclick="callWaiter()" title="Call Waiter">
-          <span>🔔</span>
+        <button class="nav-circle-btn" onclick="callWaiter()" title="Call Waiter">
+          🔔
         </button>
-        <button class="btn-icon" onclick="toggleCart()" title="View Cart">
-          <span>🛒</span>
-          <span class="cart-count-badge" id="cartCountBadge">0</span>
+        <button class="nav-circle-btn cart-btn" onclick="toggleCart()" title="View Cart">
+          🛒
+          <span class="cart-badge-count" id="headerCartCount">0</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Banner (Live Order Status) -->
-  <div class="order-status-banner" id="orderStatusBanner" style="display: none;">
-    <div class="status-content">
-      <span class="status-spinner" id="bannerIcon">🍳</span>
-      <div class="status-info">
+  <!-- Live Order Tracking Bar -->
+  <div class="order-tracker-bar" id="orderStatusBanner" style="display:none;" onclick="openBillModal()">
+    <div class="tracker-info">
+      <span class="tracker-icon">🍳</span>
+      <div>
         <strong id="bannerStatusTitle">Order #KOT-104 is Preparing</strong>
-        <span id="bannerStatusDesc">Chefs started cooking. Est: 15 mins.</span>
+        <span>Tap to view live running bill (<span id="bannerBillAmount">₹0</span>)</span>
       </div>
     </div>
-    <button class="btn-bill" onclick="openBillModal()">View Bill (₹<span id="bannerBillTotal">0</span>)</button>
+    <span class="tracker-arrow">➔</span>
   </div>
 
-  <!-- Category Nav -->
-  <nav class="category-nav">
-    <div class="category-scroll" id="categoryNav">
-      <button class="cat-pill active" onclick="filterCategory('all')">✨ All</button>
-      <button class="cat-pill" onclick="filterCategory('starters')">🥗 Starters</button>
-      <button class="cat-pill" onclick="filterCategory('pizzas')">🍕 Pizzas</button>
-      <button class="cat-pill" onclick="filterCategory('mains')">🍛 Mains</button>
-      <button class="cat-pill" onclick="filterCategory('breads')">🫓 Breads</button>
-      <button class="cat-pill" onclick="filterCategory('beverages')">🥤 Drinks</button>
-      <button class="cat-pill" onclick="filterCategory('desserts')">🍨 Desserts</button>
+  <!-- Category Scrollable Bar -->
+  <nav class="category-bar">
+    <div class="category-track">
+      <button class="category-chip active" onclick="filterCategory('all', this)">✨ All Items</button>
+      <button class="category-chip" onclick="filterCategory('starters', this)">🥗 Starters</button>
+      <button class="category-chip" onclick="filterCategory('pizzas', this)">🍕 Woodfired Pizzas</button>
+      <button class="category-chip" onclick="filterCategory('mains', this)">🍛 Main Course</button>
+      <button class="category-chip" onclick="filterCategory('breads', this)">🫓 Naans & Breads</button>
+      <button class="category-chip" onclick="filterCategory('beverages', this)">🥤 Cold Drinks</button>
+      <button class="category-chip" onclick="filterCategory('desserts', this)">🍨 Desserts</button>
     </div>
   </nav>
 
-  <!-- Search & Dietary Filters -->
-  <div class="filter-bar">
-    <div class="search-box">
-      <span>🔍</span>
-      <input type="text" id="searchInput" placeholder="Search dishes, drinks..." oninput="handleSearch()">
+  <!-- Search & Dietary Bar -->
+  <div class="search-filter-section">
+    <div class="search-input-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search dishes, ingredients, gravies..." oninput="handleSearch()">
     </div>
-    <div class="dietary-toggle">
-      <button class="diet-btn" id="vegOnlyBtn" onclick="toggleVegOnly()">🟢 Veg Only</button>
-    </div>
+    <button class="veg-toggle-btn" id="vegFilterBtn" onclick="toggleVegOnly()">
+      🟢 Pure Veg
+    </button>
   </div>
 
-  <!-- Menu List Section -->
-  <main class="menu-container">
-    <div class="menu-grid" id="menuGrid">
-      <!-- Injected via customer.js -->
+  <!-- Food Menu Grid -->
+  <main class="food-grid-container">
+    <div class="food-cards-grid" id="menuGrid">
+      <!-- Injected by customer.js -->
     </div>
   </main>
 
-  <!-- Floating Cart Bar -->
-  <div class="floating-cart-bar" id="floatingCartBar" onclick="toggleCart()">
-    <div class="float-cart-info">
-      <span class="cart-items-total" id="floatItemsCount">0 items</span>
-      <span class="cart-price-total" id="floatTotalPrice">₹0</span>
+  <!-- Sticky Bottom Cart Pill -->
+  <div class="sticky-cart-pill" id="stickyCartBar" onclick="toggleCart()">
+    <div class="sticky-cart-left">
+      <span class="sticky-cart-count" id="floatCount">0 ITEMS</span>
+      <span class="sticky-cart-price" id="floatTotal">₹0</span>
     </div>
-    <div class="float-cart-cta">
+    <div class="sticky-cart-right">
       <span>View Order</span>
-      <span>➔</span>
+      <span class="arrow-icon">➔</span>
     </div>
   </div>
 
-  <!-- Cart Drawer -->
-  <div class="cart-drawer-overlay" id="cartOverlay" onclick="toggleCart()"></div>
-  <aside class="cart-drawer" id="cartDrawer">
-    <div class="drawer-header">
-      <h2>Your Order</h2>
-      <button class="close-btn" onclick="toggleCart()">✕</button>
+  <!-- Cart Drawer Overlay & Drawer -->
+  <div class="drawer-backdrop" id="cartOverlay" onclick="toggleCart()"></div>
+  <aside class="order-drawer" id="cartDrawer">
+    <div class="drawer-top">
+      <h2>Table Order Summary</h2>
+      <button class="drawer-close" onclick="toggleCart()">✕</button>
     </div>
 
-    <div class="drawer-table-tag">
+    <div class="table-tag-box">
       <span>Ordering for:</span>
       <strong id="drawerTableNumber">Table 4</strong>
     </div>
 
-    <div class="drawer-items-list" id="drawerItemsList">
+    <div class="drawer-cart-list" id="cartDrawerItems">
       <!-- Injected dynamically -->
     </div>
 
-    <div class="drawer-notes">
-      <label>Special Cooking Instructions:</label>
-      <input type="text" id="orderSpecialNotes" placeholder="e.g. Extra spicy, less oil, no onions">
+    <div class="drawer-cooking-notes">
+      <label>Chef / Cooking Instructions:</label>
+      <input type="text" id="orderNotesInput" placeholder="e.g. Extra spicy, less butter, no onions/garlic">
     </div>
 
-    <div class="drawer-summary">
-      <div class="summary-row">
-        <span>Item Total</span>
+    <div class="drawer-bill-summary">
+      <div class="bill-line">
+        <span>Subtotal</span>
         <span id="drawerSubtotal">₹0</span>
       </div>
-      <div class="summary-row">
-        <span>GST (5%)</span>
+      <div class="bill-line">
+        <span>GST & Service (5%)</span>
         <span id="drawerTax">₹0</span>
       </div>
-      <div class="summary-row total-row">
+      <div class="bill-line grand-total-line">
         <strong>Grand Total</strong>
         <strong id="drawerGrandTotal">₹0</strong>
       </div>
     </div>
 
-    <div class="drawer-actions">
-      <button class="btn btn-primary btn-block btn-lg" id="placeOrderBtn" onclick="placeOrder()">
+    <div class="drawer-footer-actions">
+      <button class="btn-send-kitchen" onclick="placeOrder()">
         🚀 Send Order to Kitchen
       </button>
     </div>
   </aside>
 
-  <!-- Bill & Active Session Modal -->
-  <div class="bill-modal-overlay" id="billOverlay">
-    <div class="bill-modal">
-      <div class="bill-header">
-        <h2>🧾 Table Bill & Orders</h2>
-        <button class="close-btn" onclick="closeBillModal()">✕</button>
+  <!-- Live Bill Modal -->
+  <div class="modal-backdrop" id="billModalOverlay" style="display:none;">
+    <div class="bill-dialog">
+      <div class="bill-dialog-head">
+        <h2>🧾 Active Dining Bill</h2>
+        <button class="drawer-close" onclick="closeBillModal()">✕</button>
       </div>
 
-      <div class="bill-orders-container" id="billOrdersContainer">
-        <!-- Injected orders -->
+      <div class="bill-orders-scroll" id="billOrdersList">
+        <!-- Injected order tickets -->
       </div>
 
-      <div class="bill-total-box">
-        <div class="summary-row">
+      <div class="bill-final-box">
+        <div class="bill-line">
           <span>Subtotal</span>
           <span id="billSubtotal">₹0</span>
         </div>
-        <div class="summary-row">
+        <div class="bill-line">
           <span>GST (5%)</span>
           <span id="billTax">₹0</span>
         </div>
-        <div class="summary-row grand-total">
+        <div class="bill-line grand-total-line">
           <strong>Total Payable</strong>
-          <strong id="billGrandTotal">₹0</strong>
+          <strong id="billTotalPayable">₹0</strong>
         </div>
       </div>
 
-      <div class="bill-actions">
-        <button class="btn btn-primary btn-block" onclick="requestBill()">
-          💳 Request Bill / Call Waiter
-        </button>
-      </div>
+      <button class="btn-request-bill" onclick="requestFinalBill()">
+        💳 Request Bill / Call Waiter
+      </button>
     </div>
   </div>
 
   <!-- Notification Toast -->
-  <div class="toast" id="toast">Order placed successfully!</div>
+  <div class="floating-toast" id="toast">Added to order</div>
 
   <script src="customer.js"></script>
 </body>
