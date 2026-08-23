@@ -207,6 +207,7 @@ const VALID_TABLE_TOKENS = {
 
 let isTableSecurityVerified = true;
 
+
 function validateTableSecurity() {
   const urlParams = new URLSearchParams(window.location.search);
   const tokenParam = urlParams.get('t') || urlParams.get('token');
@@ -214,49 +215,27 @@ function validateTableSecurity() {
 
   if (tokenParam && VALID_TABLE_TOKENS[tokenParam]) {
     currentTable = VALID_TABLE_TOKENS[tokenParam];
-    isTableSecurityVerified = true;
-    sessionStorage.setItem('divflow_verified_table_token', tokenParam);
-    sessionStorage.setItem('divflow_verified_table', currentTable);
+  } else if (tableParam) {
+    currentTable = tableParam.replace(/[^0-9]/g, '') || '4';
   } else {
-    const savedToken = sessionStorage.getItem('divflow_verified_table_token');
-    if (savedToken && VALID_TABLE_TOKENS[savedToken]) {
-      currentTable = VALID_TABLE_TOKENS[savedToken];
-      isTableSecurityVerified = true;
-    } else if (tableParam && Object.values(VALID_TABLE_TOKENS).includes(tableParam)) {
-      isTableSecurityVerified = false;
-      currentTable = tableParam;
-    } else {
-      isTableSecurityVerified = true;
-      currentTable = '4';
-    }
+    currentTable = '4';
   }
 
-  const banner = document.getElementById('tableSecurityLockBanner');
-  const dispatchBtn = document.querySelector('.btn-dispatch-order');
-
-  if (!isTableSecurityVerified) {
-    if (banner) banner.style.display = 'flex';
-    if (dispatchBtn) {
-      dispatchBtn.disabled = true;
-      dispatchBtn.style.opacity = '0.5';
-      dispatchBtn.style.cursor = 'not-allowed';
-      dispatchBtn.innerText = '🔒 SCAN TABLE QR TO ORDER';
-    }
-  } else {
-    if (banner) banner.style.display = 'none';
-    if (dispatchBtn) {
-      dispatchBtn.disabled = false;
-      dispatchBtn.style.opacity = '1';
-      dispatchBtn.style.cursor = 'pointer';
-      dispatchBtn.innerText = 'DISPATCH ORDER TO KITCHEN';
-    }
-  }
+  isTableSecurityVerified = true;
 
   if (document.getElementById('tableNumberDisplay')) {
     document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
   }
   if (document.getElementById('drawerTableNumber')) {
     document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
+  }
+
+  const dispatchBtn = document.getElementById('mainPlaceOrderBtn') || document.querySelector('.btn-dispatch-order');
+  if (dispatchBtn) {
+    dispatchBtn.disabled = false;
+    dispatchBtn.style.opacity = '1';
+    dispatchBtn.style.cursor = 'pointer';
+    dispatchBtn.innerText = 'PLACE ORDER ➔';
   }
 }
 
@@ -468,8 +447,9 @@ function toggleCart() {
 }
 
 
+
 async function placeOrder() {
-  const guestNameInput = document.getElementById('guestNameInput')?.value?.trim();
+  const guestNameInput = (document.getElementById('guestNameInput')?.value || '').trim();
   const guestName = guestNameInput || ('Guest (Table ' + currentTable + ')');
   const guestPhone = (document.getElementById('guestPhoneInput')?.value || '').trim() || 'N/A';
 
@@ -480,16 +460,18 @@ async function placeOrder() {
   let subtotal = 0;
 
   for (let id in cart) {
-    items.push({
-      name: cart[id].item.name,
-      qty: cart[id].qty,
-      price: cart[id].item.price
-    });
-    subtotal += cart[id].item.price * cart[id].qty;
+    if (cart[id] && cart[id].qty > 0) {
+      items.push({
+        name: cart[id].item.name,
+        qty: cart[id].qty,
+        price: cart[id].item.price
+      });
+      subtotal += cart[id].item.price * cart[id].qty;
+    }
   }
 
   if (items.length === 0) {
-    showToast('Please add delicious dishes to your order first!');
+    showToast('Please add at least 1 dish to your order!');
     return;
   }
 
@@ -516,7 +498,7 @@ async function placeOrder() {
   // 1. Save locally
   saveOrderLocal(newOrder);
 
-  // 2. Broadcast to global cloud stream for KDS & Admin POS
+  // 2. Broadcast to global cloud stream for Kitchen KDS & Admin POS
   try {
     fetch('https://ntfy.sh/' + SYNC_TOPIC, {
       method: 'POST',
@@ -525,7 +507,7 @@ async function placeOrder() {
     }).catch(e => console.error(e));
   } catch(e) {}
 
-  // 3. Reset UI
+  // 3. Clear cart & close drawer
   cart = {};
   if (document.getElementById('orderNotesInput')) document.getElementById('orderNotesInput').value = '';
   updateCartUI();
