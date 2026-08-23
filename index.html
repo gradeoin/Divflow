@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>The Grand Estate Bistro — Table Service</title>
+  <title>The Grand Estate Bistro — Digital Dining</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
 </head>
 <body>
 
-  <!-- Top Enterprise Header -->
+  <!-- Top Hospitality Header (Customer-Facing Only) -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand-block">
@@ -38,10 +38,6 @@
       </div>
 
       <div class="header-actions">
-        <a href="kitchen.html" target="_blank" class="btn-kds-link">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-          <span>KDS DISPLAY</span>
-        </a>
         <button class="icon-btn" onclick="callWaiter()" title="Summon Service Captain">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         </button>
@@ -112,7 +108,7 @@
     </div>
   </div>
 
-  <!-- Order Review Drawer -->
+  <!-- Order Review Drawer with Customer Name & Mobile -->
   <div class="drawer-overlay" id="cartDrawerOverlay" onclick="toggleCart()"></div>
   <aside class="order-drawer" id="cartDrawer">
     <div class="drawer-grab-bar"></div>
@@ -124,6 +120,18 @@
     <div class="table-identifier-box">
       <span>Service Table</span>
       <strong id="drawerTableNumber">Table 4</strong>
+    </div>
+
+    <!-- Customer Details Form -->
+    <div class="customer-details-grid">
+      <div class="drawer-input-group">
+        <label>Guest Name *</label>
+        <input type="text" id="guestNameInput" placeholder="e.g. Divyansh Agarwal" required>
+      </div>
+      <div class="drawer-input-group">
+        <label>Mobile Number (For Digital Receipt)</label>
+        <input type="tel" id="guestPhoneInput" placeholder="e.g. +91 98765 43210" maxlength="14">
+      </div>
     </div>
 
     <div class="drawer-orders-list" id="drawerCartList">

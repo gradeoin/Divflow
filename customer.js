@@ -192,6 +192,11 @@ let cart = {};
 const SYNC_KEY = 'divflow_m3_restaurant_orders_sync';
 
 function init() {
+  // Pre-fill saved guest details
+  const savedName = localStorage.getItem('divflow_guest_name');
+  const savedPhone = localStorage.getItem('divflow_guest_phone');
+  if (savedName && document.getElementById('guestNameInput')) document.getElementById('guestNameInput').value = savedName;
+  if (savedPhone && document.getElementById('guestPhoneInput')) document.getElementById('guestPhoneInput').value = savedPhone;
   const urlParams = new URLSearchParams(window.location.search);
   const tableParam = urlParams.get('table') || urlParams.get('t');
 
@@ -389,6 +394,18 @@ function toggleCart() {
 }
 
 async function placeOrder() {
+  const guestName = (document.getElementById('guestNameInput')?.value || '').trim();
+  const guestPhone = (document.getElementById('guestPhoneInput')?.value || '').trim();
+
+  if (!guestName) {
+    showToast('Please enter your Guest Name before placing order.');
+    document.getElementById('guestNameInput')?.focus();
+    return;
+  }
+
+  // Save guest details in session
+  localStorage.setItem('divflow_guest_name', guestName);
+  if (guestPhone) localStorage.setItem('divflow_guest_phone', guestPhone);
   const items = [];
   let subtotal = 0;
 
@@ -414,6 +431,8 @@ async function placeOrder() {
   const newOrder = {
     id: kotId,
     table: currentTable,
+    customerName: guestName,
+    customerPhone: guestPhone || 'N/A',
     items,
     specialNotes: specialNotes || 'None',
     subtotal,
@@ -423,6 +442,17 @@ async function placeOrder() {
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     createdAt: Date.now()
   };
+
+  // 1. Dispatch directly to n8n Automation Engine Webhook
+  try {
+    fetch('http://localhost:5678/webhook/restaurant-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newOrder)
+    }).then(r => r.json()).then(res => {
+      console.log('n8n Backend Order Confirmed:', res);
+    }).catch(err => console.log('Local network sync fallback active'));
+  } catch(e) {}
 
   const existingOrders = JSON.parse(localStorage.getItem(SYNC_KEY) || '[]');
   existingOrders.push(newOrder);

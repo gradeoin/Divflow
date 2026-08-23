@@ -1,5 +1,5 @@
 {
-  "name": "Divflow Restaurant Multi-Device Sync API",
+  "name": "Divflow Restaurant Real-Time Order & CRM API",
   "nodes": [
     {
       "parameters": {
@@ -8,20 +8,33 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "webhook-post-order",
-      "name": "POST /restaurant-order",
+      "id": "webhook-order-in",
+      "name": "Webhook Inbound Order",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
         240,
         260
       ],
-      "webhookId": "restaurant-order"
+      "webhookId": "restaurant-order-inbound"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process and structure the incoming table order & customer CRM data\nconst body = $input.item.json.body || $input.item.json;\n\nconst orderSummary = {\n  orderId: body.id || 'KOT-' + Math.floor(100 + Math.random() * 900),\n  table: body.table || '4',\n  customerName: body.customerName || 'Guest',\n  customerPhone: body.customerPhone || 'N/A',\n  itemsCount: body.items ? body.items.length : 0,\n  items: body.items || [],\n  specialNotes: body.specialNotes || 'None',\n  subtotal: body.subtotal || 0,\n  tax: body.tax || 0,\n  total: body.total || 0,\n  status: 'Preparing',\n  receivedAt: new Date().toISOString(),\n  formattedTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })\n};\n\nreturn [{\n  json: orderSummary\n}];"
+      },
+      "id": "code-process-order",
+      "name": "Process Order & CRM",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        260
+      ]
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\n  \"success\": true,\n  \"orderId\": \"{{ $json.body.id }}\",\n  \"message\": \"Order placed successfully\",\n  \"receivedAt\": \"{{ new Date().toISOString() }}\"\n}",
+        "responseBody": "={\n  \"success\": true,\n  \"orderId\": \"{{ $json.orderId }}\",\n  \"table\": \"{{ $json.table }}\",\n  \"customerName\": \"{{ $json.customerName }}\",\n  \"status\": \"Preparing\",\n  \"total\": {{ $json.total }},\n  \"message\": \"Order received by n8n engine and sent to kitchen\"\n}",
         "options": {
           "responseHeaders": {
             "entries": [
@@ -41,22 +54,33 @@
           }
         }
       },
-      "id": "respond-post-order",
-      "name": "Respond Order Placed",
+      "id": "respond-order-placed",
+      "name": "Respond Confirmation to Web App",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        480,
+        720,
         260
       ]
     }
   ],
   "connections": {
-    "POST /restaurant-order": {
+    "Webhook Inbound Order": {
       "main": [
         [
           {
-            "node": "Respond Order Placed",
+            "node": "Process Order & CRM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Order & CRM": {
+      "main": [
+        [
+          {
+            "node": "Respond Confirmation to Web App",
             "type": "main",
             "index": 0
           }

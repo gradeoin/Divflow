@@ -478,3 +478,13 @@ body {
 @media (min-width: 600px) {
   .menu-items-grid { grid-template-columns: 1fr 1fr; }
 }
+
+.customer-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+@media (max-width: 500px) {
+  .customer-details-grid { grid-template-columns: 1fr; }
+}
