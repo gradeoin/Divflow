@@ -1,198 +1,195 @@
 
-// Google Material 3 Restaurant Dining Menu
+// Enterprise Hospitality Dining Menu
 const MENU_DATA = [
   // Starters
   {
     id: 'st1',
-    name: 'Tandoori Paneer Tikka',
+    name: 'Charcoal Smoked Paneer Tikka',
     category: 'starters',
     price: 280,
     isVeg: true,
-    bestseller: true,
-    desc: 'Charcoal-grilled cottage cheese marinated in hung curd, Kashmiri chili & mint chutney.',
+    signature: true,
+    desc: 'Artisanal cottage cheese marinated in hung curd, hand-pounded spices, char-grilled in clay oven.',
     img: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'st2',
-    name: 'Crispy Pepper Corn',
+    name: 'Wok Tossed Crispy Pepper Corn',
     category: 'starters',
     price: 220,
     isVeg: true,
-    bestseller: false,
-    desc: 'Golden sweet corn wok-tossed with green bell peppers, spring onions & cracked black pepper.',
+    signature: false,
+    desc: 'Tender corn kernels flash-fried with scallions, bell peppers, cracked black pepper and rock salt.',
     img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'st3',
-    name: 'Smokey Chicken Tikka',
+    name: 'Tandoori Murgh Malai Tikka',
     category: 'starters',
     price: 340,
     isVeg: false,
-    bestseller: true,
-    desc: 'Juicy boneless chicken thighs roasted in traditional clay oven with mustard oil & spices.',
+    signature: true,
+    desc: 'Prime boneless chicken infused with crushed cardamom, cream, cheddar cheese and yellow chili.',
     img: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'st4',
-    name: 'BBQ Glazed Chicken Wings',
+    name: 'Hickory Glazed Chicken Wings',
     category: 'starters',
     price: 320,
     isVeg: false,
-    bestseller: false,
-    desc: 'Crispy wings tossed in house hickory barbecue sauce with toasted sesame seeds.',
+    signature: false,
+    desc: 'Crisp chicken wings glazed in house-crafted smoked barbecue reduction, toasted white sesame.',
     img: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=600&q=80'
   },
 
   // Pizzas
   {
     id: 'pz1',
-    name: 'Classic Margherita Pizza',
+    name: 'Artisanal Margherita Pizza',
     category: 'pizzas',
     price: 350,
     isVeg: true,
-    bestseller: true,
-    desc: 'Italian sourdough base, crushed San Marzano tomato sauce, fresh mozzarella & basil.',
+    signature: true,
+    desc: 'Fermented sourdough crust, San Marzano tomato reduction, fresh Fior di Latte mozzarella, organic basil.',
     img: 'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'pz2',
-    name: 'Farmhouse Garden Pizza',
+    name: 'Verdure Rustica Pizza',
     category: 'pizzas',
     price: 420,
     isVeg: true,
-    bestseller: false,
-    desc: 'Fresh bell peppers, button mushrooms, sweet corn, red paprika & black olives.',
+    signature: false,
+    desc: 'Roasted sweet peppers, button mushrooms, charred sweet corn, sun-ripened olives and aged parmesan.',
     img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'pz3',
-    name: 'Smokey BBQ Chicken Pizza',
+    name: 'Smoked Barbecue Chicken Pizza',
     category: 'pizzas',
     price: 460,
     isVeg: false,
-    bestseller: true,
-    desc: 'Grilled BBQ chicken chunks, red onions, pickled jalapeños & generous melted mozzarella.',
+    signature: true,
+    desc: 'Shredded smoked chicken, caramelized shallots, pickled jalapeños and smoked provolone cheese.',
     img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80'
   },
 
   // Mains
   {
     id: 'mn1',
-    name: 'Grand Butter Chicken',
+    name: 'Signature Butter Chicken',
     category: 'mains',
     price: 380,
     isVeg: false,
-    bestseller: true,
-    desc: 'Tandoori chicken in rich creamy tomato-cashew makhani gravy with fenugreek butter.',
+    signature: true,
+    desc: 'Charcoal-roasted chicken simmered in rich satin tomato-cashew reduction with fenugreek butter.',
     img: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'mn2',
-    name: 'Dal Makhani Slow-Cooked',
+    name: 'Slow Simmered Dal Makhani',
     category: 'mains',
     price: 260,
     isVeg: true,
-    bestseller: true,
-    desc: 'Whole black lentils slow-simmered overnight with white butter and fresh cream.',
+    signature: true,
+    desc: 'Overnight charcoal-simmered whole black lentils enriched with churned butter and dairy cream.',
     img: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'mn3',
-    name: 'Hyderabadi Chicken Dum Biryani',
+    name: 'Nawabi Chicken Dum Biryani',
     category: 'mains',
     price: 360,
     isVeg: false,
-    bestseller: true,
-    desc: 'Fragrant basmati rice layered with spiced chicken, mint & fried onions. Served with raita.',
+    signature: true,
+    desc: 'Aged basmati rice sealed on dum with marinated spring chicken, saffron and caramelized onions.',
     img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'mn4',
-    name: 'Paneer Butter Masala',
+    name: 'Paneer Makhani Royale',
     category: 'mains',
     price: 320,
     isVeg: true,
-    bestseller: false,
-    desc: 'Cottage cheese cubes tossed in velvet onion-tomato gravy with aromatic spices.',
+    signature: false,
+    desc: 'Fresh cottage cheese batons in velvety spiced tomato-onion reduction with fresh coriander.',
     img: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=600&q=80'
   },
 
   // Breads
   {
     id: 'br1',
-    name: 'Butter Garlic Naan',
+    name: 'Roasted Garlic Butter Naan',
     category: 'breads',
     price: 65,
     isVeg: true,
-    bestseller: true,
-    desc: 'Tandoor-baked leavened bread layered with roasted garlic and melted butter.',
+    signature: true,
+    desc: 'Clay oven baked leavened flatbread infused with roasted garlic confit and churned butter.',
     img: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'br2',
-    name: 'Tandoori Butter Roti',
+    name: 'Traditional Tandoori Roti',
     category: 'breads',
     price: 35,
     isVeg: true,
-    bestseller: false,
-    desc: 'Whole wheat tandoori flatbread brushed with pure dairy butter.',
+    signature: false,
+    desc: 'Whole wheat crisp flatbread baked in the tandoor, finished with clarified butter.',
     img: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=600&q=80'
   },
 
   // Beverages
   {
     id: 'dr1',
-    name: 'Thick Cold Coffee with Ice Cream',
+    name: 'Artisan Cold Brew Glacé',
     category: 'beverages',
     price: 140,
     isVeg: true,
-    bestseller: true,
-    desc: 'Rich creamy chilled espresso shake topped with vanilla bean ice cream & chocolate.',
+    signature: true,
+    desc: 'Slow-steeped arabica cold brew blended with dairy cream, Madagascar vanilla bean gelato.',
     img: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'dr2',
-    name: 'Fresh Mint Lime Soda',
+    name: 'Preserved Mint Lime Cooler',
     category: 'beverages',
     price: 90,
     isVeg: true,
-    bestseller: false,
-    desc: 'Sparkling soda with fresh lime juice, crushed mint, rock salt and cane sugar.',
+    signature: false,
+    desc: 'Hand-pressed key lime, Himalayan pink rock salt, organic cane sugar and sparkling soda.',
     img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80'
   },
 
   // Desserts
   {
     id: 'ds1',
-    name: 'Sizzling Brownie with Ice Cream',
+    name: 'Sizzling Valrhona Brownie',
     category: 'desserts',
     price: 190,
     isVeg: true,
-    bestseller: true,
-    desc: 'Warm walnut fudge brownie served sizzling on cast iron with ice cream & dark chocolate.',
+    signature: true,
+    desc: 'Dark chocolate walnut torte served on hot skillet with vanilla gelato and warm ganache.',
     img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'ds2',
-    name: 'Royal Shahi Gulab Jamun (2 Pcs)',
+    name: 'Shahi Kesari Gulab Jamun (2 Pcs)',
     category: 'desserts',
     price: 120,
     isVeg: true,
-    bestseller: false,
-    desc: 'Warm golden milk dumplings soaked in saffron and cardamom sugar syrup.',
+    signature: false,
+    desc: 'Khoya dumplings infused with saffron and green cardamom, soaked in warm rose syrup.',
     img: 'https://images.unsplash.com/photo-1589119908995-c6837fa14d48?auto=format&fit=crop&w=600&q=80'
   }
 ];
 
-// State & Multi-Device Sync
 let currentTable = '4';
 let currentCategory = 'all';
 let isVegOnly = false;
 let cart = {};
 
-// Global Cloud Sync Key (Supports instant sync across phones, laptops, and tablets)
 const SYNC_KEY = 'divflow_m3_restaurant_orders_sync';
-const CLOUD_SYNC_URL = 'https://api.jsonbin.io/v3/b/66c88e99acd3cb34a87754b2'; // Universal cloud fallback + local sync
 
 function init() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -238,39 +235,41 @@ function renderMenu() {
   });
 
   if (filtered.length === 0) {
-    grid.innerHTML = '<div class="m3-empty-state">No matching dishes found. Try searching for something else.</div>';
+    grid.innerHTML = '<div class="empty-state">No selections found matching your criteria.</div>';
     return;
   }
 
   filtered.forEach(item => {
     const qty = cart[item.id] ? cart[item.id].qty : 0;
     const card = document.createElement('div');
-    card.className = 'm3-food-card';
+    card.className = 'food-card';
     card.innerHTML = `
-      <div class="m3-food-img-container">
-        <img src="${item.img}" alt="${item.name}" loading="lazy" class="m3-food-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
-        <div class="m3-badge-overlay">
-          <span class="m3-tag ${item.isVeg ? 'veg' : 'nonveg'}">${item.isVeg ? '🟢 VEG' : '🔴 NON-VEG'}</span>
-          ${item.bestseller ? '<span class="m3-tag m3-tag-star">⭐ Bestseller</span>' : ''}
+      <div class="food-img-frame">
+        <img src="${item.img}" alt="${item.name}" loading="lazy" class="food-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+        <div class="food-badge-overlay">
+          <span class="fssai-indicator ${item.isVeg ? 'veg' : 'nonveg'}">
+            <span class="fssai-dot"></span>
+          </span>
+          ${item.signature ? '<span class="signature-tag">SIGNATURE</span>' : ''}
         </div>
       </div>
-      <div class="m3-food-body">
-        <div class="m3-food-header">
-          <h3 class="m3-food-title">${item.name}</h3>
-          <span class="m3-food-price">₹${item.price}</span>
+      <div class="food-body">
+        <div class="food-header">
+          <h3 class="food-title">${item.name}</h3>
+          <span class="food-price">₹${item.price}</span>
         </div>
-        <p class="m3-food-desc">${item.desc}</p>
+        <p class="food-desc">${item.desc}</p>
         
-        <div class="m3-food-action">
+        <div class="food-footer">
           ${qty === 0 ? `
-            <button class="m3-btn-add" onclick="addToCart('${item.id}')">
-              <span>+ ADD</span>
+            <button class="btn-add-item" onclick="addToCart('${item.id}')">
+              <span>ADD TO ORDER</span>
             </button>
           ` : `
-            <div class="m3-qty-pill">
-              <button class="m3-qty-btn" onclick="decreaseQty('${item.id}')">−</button>
-              <span class="m3-qty-val">${qty}</span>
-              <button class="m3-qty-btn" onclick="increaseQty('${item.id}')">+</button>
+            <div class="qty-controller">
+              <button class="qty-btn" onclick="decreaseQty('${item.id}')">−</button>
+              <span class="qty-value">${qty}</span>
+              <button class="qty-btn" onclick="increaseQty('${item.id}')">+</button>
             </div>
           `}
         </div>
@@ -282,7 +281,7 @@ function renderMenu() {
 
 function filterCategory(cat, btn) {
   currentCategory = cat;
-  document.querySelectorAll('.m3-chip').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.cat-tab').forEach(el => el.classList.remove('active'));
   if (btn) btn.classList.add('active');
   renderMenu();
 }
@@ -303,7 +302,7 @@ function addToCart(id) {
   if (!item) return;
   cart[id] = { item, qty: 1 };
   updateCartUI();
-  showToast('Added ' + item.name + ' to order');
+  showToast(item.name + ' added');
 }
 
 function increaseQty(id) {
@@ -335,7 +334,7 @@ function updateCartUI() {
 
   document.getElementById('headerCartCount').innerText = count;
 
-  const floatBar = document.getElementById('m3FabCart');
+  const floatBar = document.getElementById('stickyCartBar');
   if (count > 0) {
     floatBar.style.display = 'flex';
     document.getElementById('fabCountText').innerText = count + (count === 1 ? ' ITEM' : ' ITEMS');
@@ -350,19 +349,19 @@ function updateCartUI() {
     const item = cart[id].item;
     const qty = cart[id].qty;
     const row = document.createElement('div');
-    row.className = 'm3-drawer-row';
+    row.className = 'drawer-row';
     row.innerHTML = `
-      <div class="m3-drawer-item-info">
-        <span class="m3-dot ${item.isVeg ? 'veg' : 'nonveg'}"></span>
+      <div class="drawer-item-details">
+        <span class="fssai-indicator ${item.isVeg ? 'veg' : 'nonveg'}"><span class="fssai-dot"></span></span>
         <div>
-          <div class="m3-drawer-item-title">${item.name}</div>
-          <div class="m3-drawer-item-price">₹${item.price} × ${qty} = <strong>₹${item.price * qty}</strong></div>
+          <div class="drawer-item-title">${item.name}</div>
+          <div class="drawer-item-sub">₹${item.price} × ${qty} = <strong>₹${item.price * qty}</strong></div>
         </div>
       </div>
-      <div class="m3-qty-pill">
-        <button class="m3-qty-btn" onclick="decreaseQty('${id}')">−</button>
-        <span class="m3-qty-val">${qty}</span>
-        <button class="m3-qty-btn" onclick="increaseQty('${id}')">+</button>
+      <div class="qty-controller">
+        <button class="qty-btn" onclick="decreaseQty('${id}')">−</button>
+        <span class="qty-value">${qty}</span>
+        <button class="qty-btn" onclick="increaseQty('${id}')">+</button>
       </div>
     `;
     drawerList.appendChild(row);
@@ -403,7 +402,7 @@ async function placeOrder() {
   }
 
   if (items.length === 0) {
-    showToast('Your cart is empty! Add items first.');
+    showToast('Your order selection is empty.');
     return;
   }
 
@@ -425,33 +424,21 @@ async function placeOrder() {
     createdAt: Date.now()
   };
 
-  // 1. Sync to shared multi-device storage
   const existingOrders = JSON.parse(localStorage.getItem(SYNC_KEY) || '[]');
   existingOrders.push(newOrder);
   localStorage.setItem(SYNC_KEY, JSON.stringify(existingOrders));
 
-  // 2. Broadcast via BroadcastChannel API (Instant zero-latency tab & window sync)
   try {
     const channel = new BroadcastChannel('divflow_restaurant_sync');
     channel.postMessage({ type: 'NEW_ORDER', order: newOrder });
   } catch(e) {}
 
-  // 3. Optional POST to n8n webhook API if available
-  try {
-    fetch('http://localhost:5678/webhook/restaurant-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newOrder)
-    }).catch(() => {});
-  } catch(e) {}
-
-  // Reset Cart
   cart = {};
   document.getElementById('orderNotesInput').value = '';
   updateCartUI();
   toggleCart();
 
-  showToast('🚀 Order #' + kotId + ' Sent to Kitchen Display!');
+  showToast('Order #' + kotId + ' dispatched to kitchen.');
   syncOrdersFromStorage();
 }
 
@@ -484,14 +471,14 @@ function openBillModal() {
   tableOrders.forEach(o => {
     subtotal += o.subtotal;
     const card = document.createElement('div');
-    card.className = 'm3-bill-ticket';
+    card.className = 'bill-ticket';
     card.innerHTML = `
-      <div class="m3-bill-ticket-head">
-        <span>Order #${o.id} (${o.timestamp})</span>
-        <span class="m3-status-chip status-${o.status}">${o.status}</span>
+      <div class="bill-ticket-head">
+        <span>Order #${o.id} • ${o.timestamp}</span>
+        <span class="status-pill ${o.status.toLowerCase()}">${o.status.toUpperCase()}</span>
       </div>
       ${o.items.map(i => `
-        <div class="m3-bill-ticket-item">
+        <div class="bill-ticket-row">
           <span>${i.qty}x ${i.name}</span>
           <span>₹${i.price * i.qty}</span>
         </div>
@@ -515,16 +502,16 @@ function closeBillModal() {
 }
 
 function requestFinalBill() {
-  showToast('🧾 Waiter notified! Bill terminal is on its way to Table ' + currentTable);
+  showToast('Service captain notified. Bill terminal dispatched to Table ' + currentTable);
   closeBillModal();
 }
 
 function callWaiter() {
-  showToast('🔔 Floor Captain alerted for Table ' + currentTable);
+  showToast('Service captain summoned for Table ' + currentTable);
 }
 
 function showToast(msg) {
-  const t = document.getElementById('m3Toast');
+  const t = document.getElementById('toastNotification');
   t.innerText = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
