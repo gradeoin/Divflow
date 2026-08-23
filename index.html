@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Spice & Slice Bistro — Table Dining</title>
+  <title>Spice & Slice — Table Dining</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="customer.css">
 </head>
 <body>
 
-  <!-- Top Header Navigation -->
-  <header class="top-nav">
-    <div class="nav-wrapper">
-      <div class="restaurant-brand">
-        <span class="restaurant-logo">🍕</span>
-        <div class="restaurant-text">
-          <h1 class="restaurant-title">Spice & Slice Bistro</h1>
-          <div class="table-selector-pill">
-            <span class="pulse-dot"></span>
+  <!-- Material 3 Top App Bar -->
+  <header class="m3-top-app-bar">
+    <div class="m3-app-bar-content">
+      <div class="m3-brand-box">
+        <span class="m3-brand-icon">🍕</span>
+        <div>
+          <h1 class="m3-brand-title">Spice & Slice Bistro</h1>
+          <div class="m3-table-pill">
+            <span class="m3-dot-pulse"></span>
             <span id="tableNumberDisplay">Table 4</span>
-            <select id="tableSelectPicker" onchange="switchTableFromPicker(this.value)" title="Change Table">
+            <select id="tableSelectPicker" onchange="switchTableFromPicker(this.value)" title="Switch Table">
               <option value="1">Table 1</option>
               <option value="2">Table 2</option>
               <option value="3">Table 3</option>
@@ -35,155 +35,154 @@
         </div>
       </div>
 
-      <div class="top-actions">
-        <a href="kitchen.html" target="_blank" class="nav-pill-btn kds-pill" title="Live Kitchen Display">
+      <div class="m3-actions-box">
+        <a href="kitchen.html" target="_blank" class="m3-kds-button" title="Open Kitchen Display Screen">
           👨‍🍳 KDS
         </a>
-        <button class="nav-circle-btn" onclick="callWaiter()" title="Call Waiter">
+        <button class="m3-icon-btn" onclick="callWaiter()" title="Call Waiter">
           🔔
         </button>
-        <button class="nav-circle-btn cart-btn" onclick="toggleCart()" title="View Cart">
+        <button class="m3-icon-btn m3-cart-trigger" onclick="toggleCart()" title="View Cart">
           🛒
-          <span class="cart-badge-count" id="headerCartCount">0</span>
+          <span class="m3-badge" id="headerCartCount">0</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Live Order Tracking Bar -->
-  <div class="order-tracker-bar" id="orderStatusBanner" style="display:none;" onclick="openBillModal()">
-    <div class="tracker-info">
-      <span class="tracker-icon">🍳</span>
+  <!-- Live Status Bar -->
+  <div class="m3-order-banner" id="orderStatusBanner" style="display:none;" onclick="openBillModal()">
+    <div class="m3-banner-left">
+      <span class="m3-banner-icon">🍳</span>
       <div>
         <strong id="bannerStatusTitle">Order #KOT-104 is Preparing</strong>
-        <span>Tap to view live running bill (<span id="bannerBillAmount">₹0</span>)</span>
+        <span>Live running bill: <strong id="bannerBillAmount" style="color:#0061a4;">₹0</strong> (Tap to view)</span>
       </div>
     </div>
-    <span class="tracker-arrow">➔</span>
+    <span class="m3-banner-arrow">➔</span>
   </div>
 
-  <!-- Category Scrollable Bar -->
-  <nav class="category-bar">
-    <div class="category-track">
-      <button class="category-chip active" onclick="filterCategory('all', this)">✨ All Items</button>
-      <button class="category-chip" onclick="filterCategory('starters', this)">🥗 Starters</button>
-      <button class="category-chip" onclick="filterCategory('pizzas', this)">🍕 Woodfired Pizzas</button>
-      <button class="category-chip" onclick="filterCategory('mains', this)">🍛 Main Course</button>
-      <button class="category-chip" onclick="filterCategory('breads', this)">🫓 Naans & Breads</button>
-      <button class="category-chip" onclick="filterCategory('beverages', this)">🥤 Cold Drinks</button>
-      <button class="category-chip" onclick="filterCategory('desserts', this)">🍨 Desserts</button>
+  <!-- Material 3 Category Chips -->
+  <nav class="m3-chips-nav">
+    <div class="m3-chips-scroll">
+      <button class="m3-chip active" onclick="filterCategory('all', this)">✨ All Items</button>
+      <button class="m3-chip" onclick="filterCategory('starters', this)">🥗 Starters</button>
+      <button class="m3-chip" onclick="filterCategory('pizzas', this)">🍕 Pizzas</button>
+      <button class="m3-chip" onclick="filterCategory('mains', this)">🍛 Mains</button>
+      <button class="m3-chip" onclick="filterCategory('breads', this)">🫓 Breads</button>
+      <button class="m3-chip" onclick="filterCategory('beverages', this)">🥤 Beverages</button>
+      <button class="m3-chip" onclick="filterCategory('desserts', this)">🍨 Desserts</button>
     </div>
   </nav>
 
   <!-- Search & Dietary Bar -->
-  <div class="search-filter-section">
-    <div class="search-input-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Search dishes, ingredients, gravies..." oninput="handleSearch()">
+  <div class="m3-search-row">
+    <div class="m3-search-bar">
+      <span>🔍</span>
+      <input type="text" id="searchInput" placeholder="Search dishes, gravies, desserts..." oninput="handleSearch()">
     </div>
-    <button class="veg-toggle-btn" id="vegFilterBtn" onclick="toggleVegOnly()">
-      🟢 Pure Veg
+    <button class="m3-filter-btn" id="vegFilterBtn" onclick="toggleVegOnly()">
+      🟢 Veg Only
     </button>
   </div>
 
   <!-- Food Menu Grid -->
-  <main class="food-grid-container">
-    <div class="food-cards-grid" id="menuGrid">
+  <main class="m3-container">
+    <div class="m3-grid" id="menuGrid">
       <!-- Injected by customer.js -->
     </div>
   </main>
 
-  <!-- Sticky Bottom Cart Pill -->
-  <div class="sticky-cart-pill" id="stickyCartBar" onclick="toggleCart()">
-    <div class="sticky-cart-left">
-      <span class="sticky-cart-count" id="floatCount">0 ITEMS</span>
-      <span class="sticky-cart-price" id="floatTotal">₹0</span>
+  <!-- Material 3 Floating Cart Pill (FAB) -->
+  <div class="m3-fab-cart" id="m3FabCart" onclick="toggleCart()">
+    <div class="m3-fab-info">
+      <span class="m3-fab-count" id="fabCountText">0 ITEMS</span>
+      <span class="m3-fab-price" id="fabPriceText">₹0</span>
     </div>
-    <div class="sticky-cart-right">
+    <div class="m3-fab-cta">
       <span>View Order</span>
-      <span class="arrow-icon">➔</span>
+      <span>➔</span>
     </div>
   </div>
 
-  <!-- Cart Drawer Overlay & Drawer -->
-  <div class="drawer-backdrop" id="cartOverlay" onclick="toggleCart()"></div>
-  <aside class="order-drawer" id="cartDrawer">
-    <div class="drawer-top">
+  <!-- Material 3 Bottom Sheet (Cart Drawer) -->
+  <div class="m3-scrim" id="cartDrawerOverlay" onclick="toggleCart()"></div>
+  <aside class="m3-bottom-sheet" id="cartDrawer">
+    <div class="m3-sheet-handle"></div>
+    <div class="m3-sheet-header">
       <h2>Table Order Summary</h2>
-      <button class="drawer-close" onclick="toggleCart()">✕</button>
+      <button class="m3-close-btn" onclick="toggleCart()">✕</button>
     </div>
 
-    <div class="table-tag-box">
+    <div class="m3-table-info-box">
       <span>Ordering for:</span>
       <strong id="drawerTableNumber">Table 4</strong>
     </div>
 
-    <div class="drawer-cart-list" id="cartDrawerItems">
+    <div class="m3-sheet-items" id="drawerCartList">
       <!-- Injected dynamically -->
     </div>
 
-    <div class="drawer-cooking-notes">
-      <label>Chef / Cooking Instructions:</label>
-      <input type="text" id="orderNotesInput" placeholder="e.g. Extra spicy, less butter, no onions/garlic">
+    <div class="m3-input-field">
+      <label>Special Cooking Notes:</label>
+      <input type="text" id="orderNotesInput" placeholder="e.g. Extra spicy, less oil, no onions">
     </div>
 
-    <div class="drawer-bill-summary">
-      <div class="bill-line">
-        <span>Subtotal</span>
+    <div class="m3-bill-card">
+      <div class="m3-bill-row">
+        <span>Item Total</span>
         <span id="drawerSubtotal">₹0</span>
       </div>
-      <div class="bill-line">
+      <div class="m3-bill-row">
         <span>GST & Service (5%)</span>
         <span id="drawerTax">₹0</span>
       </div>
-      <div class="bill-line grand-total-line">
+      <div class="m3-bill-row m3-total-row">
         <strong>Grand Total</strong>
         <strong id="drawerGrandTotal">₹0</strong>
       </div>
     </div>
 
-    <div class="drawer-footer-actions">
-      <button class="btn-send-kitchen" onclick="placeOrder()">
-        🚀 Send Order to Kitchen
-      </button>
-    </div>
+    <button class="m3-btn-primary" onclick="placeOrder()">
+      🚀 Send Order to Kitchen
+    </button>
   </aside>
 
   <!-- Live Bill Modal -->
-  <div class="modal-backdrop" id="billModalOverlay" style="display:none;">
-    <div class="bill-dialog">
-      <div class="bill-dialog-head">
+  <div class="m3-dialog-overlay" id="billModalOverlay" style="display:none;">
+    <div class="m3-dialog">
+      <div class="m3-dialog-header">
         <h2>🧾 Active Dining Bill</h2>
-        <button class="drawer-close" onclick="closeBillModal()">✕</button>
+        <button class="m3-close-btn" onclick="closeBillModal()">✕</button>
       </div>
 
-      <div class="bill-orders-scroll" id="billOrdersList">
-        <!-- Injected order tickets -->
+      <div class="m3-dialog-content" id="billOrdersList">
+        <!-- Injected orders -->
       </div>
 
-      <div class="bill-final-box">
-        <div class="bill-line">
+      <div class="m3-bill-card">
+        <div class="m3-bill-row">
           <span>Subtotal</span>
           <span id="billSubtotal">₹0</span>
         </div>
-        <div class="bill-line">
+        <div class="m3-bill-row">
           <span>GST (5%)</span>
           <span id="billTax">₹0</span>
         </div>
-        <div class="bill-line grand-total-line">
+        <div class="m3-bill-row m3-total-row">
           <strong>Total Payable</strong>
           <strong id="billTotalPayable">₹0</strong>
         </div>
       </div>
 
-      <button class="btn-request-bill" onclick="requestFinalBill()">
+      <button class="m3-btn-primary" onclick="requestFinalBill()">
         💳 Request Bill / Call Waiter
       </button>
     </div>
   </div>
 
   <!-- Notification Toast -->
-  <div class="floating-toast" id="toast">Added to order</div>
+  <div class="m3-toast" id="m3Toast">Item added to order</div>
 
   <script src="customer.js"></script>
 </body>

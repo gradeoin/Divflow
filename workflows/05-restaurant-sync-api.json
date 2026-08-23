@@ -1,0 +1,71 @@
+{
+  "name": "Divflow Restaurant Multi-Device Sync API",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "restaurant-order",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-post-order",
+      "name": "POST /restaurant-order",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        260
+      ],
+      "webhookId": "restaurant-order"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"orderId\": \"{{ $json.body.id }}\",\n  \"message\": \"Order placed successfully\",\n  \"receivedAt\": \"{{ new Date().toISOString() }}\"\n}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-post-order",
+      "name": "Respond Order Placed",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        260
+      ]
+    }
+  ],
+  "connections": {
+    "POST /restaurant-order": {
+      "main": [
+        [
+          {
+            "node": "Respond Order Placed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

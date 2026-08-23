@@ -6,32 +6,34 @@
   <title>Table Standees & QR Generator — Spice & Slice Bistro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@700;800&family=Roboto:wght@500;700&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; padding: 24px; color: #f8fafc; margin: 0; }
-    .top-control-bar {
+    body { font-family: 'Google Sans', -apple-system, sans-serif; background: #f8fafc; padding: 24px; color: #0f172a; margin: 0; }
+    .m3-top-bar {
       max-width: 1000px;
       margin: 0 auto 28px;
-      background: #1e293b;
+      background: #ffffff;
       padding: 18px 24px;
-      border-radius: 16px;
+      border-radius: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
     }
-    .print-btn {
-      background: #2563eb;
+    .m3-print-btn {
+      background: #0061a4;
       color: #fff;
       border: none;
       padding: 12px 24px;
-      border-radius: 12px;
-      font-weight: 800;
+      border-radius: 16px;
+      font-weight: 700;
       cursor: pointer;
       font-size: 1rem;
       transition: background 0.2s;
+      box-shadow: 0 4px 14px rgba(0, 97, 164, 0.25);
     }
-    .print-btn:hover { background: #1d4ed8; }
+    .m3-print-btn:hover { background: #004f87; }
     
     .standee-grid {
       display: grid;
@@ -43,24 +45,24 @@
     .standee-card {
       background: #ffffff;
       color: #0f172a;
-      border: 3px solid #0f172a;
+      border: 2px solid #e2e8f0;
       border-radius: 28px;
       padding: 30px 24px;
       text-align: center;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
       page-break-inside: avoid;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-    .brand-header { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
-    .brand-sub { font-size: 0.85rem; color: #64748b; margin-bottom: 20px; font-weight: 600; }
+    .brand-header { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .brand-sub { font-size: 0.85rem; color: #64748b; margin-bottom: 20px; font-weight: 500; }
     
     .qr-img-box {
       width: 200px;
       height: 200px;
       background: #f8fafc;
-      border: 2px solid #e2e8f0;
+      border: 1px solid #e2e8f0;
       border-radius: 20px;
       padding: 10px;
       display: flex;
@@ -71,10 +73,10 @@
     .qr-img { width: 100%; height: 100%; object-fit: contain; }
 
     .table-badge {
-      background: #0f172a;
+      background: #0061a4;
       color: #ffffff;
-      font-size: 1.4rem;
-      font-weight: 800;
+      font-size: 1.35rem;
+      font-weight: 700;
       padding: 8px 24px;
       border-radius: 14px;
       margin-bottom: 12px;
@@ -83,7 +85,7 @@
     .scan-action-text {
       font-size: 0.9rem;
       font-weight: 700;
-      color: #2563eb;
+      color: #0061a4;
     }
     .scan-subtext {
       font-size: 0.75rem;
@@ -93,20 +95,20 @@
 
     @media print {
       body { background: #fff; padding: 0; }
-      .top-control-bar { display: none; }
+      .m3-top-bar { display: none; }
       .standee-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-      .standee-card { box-shadow: none; border-width: 2px; }
+      .standee-card { box-shadow: none; border-color: #cbd5e1; }
     }
   </style>
 </head>
 <body>
 
-  <div class="top-control-bar">
+  <div class="m3-top-bar">
     <div>
-      <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 4px;">Printable Table Standees (Tables 1–8)</h2>
-      <p style="font-size: 0.85rem; color: #94a3b8;">Scanning any QR code opens the digital menu directly for that table with <strong>ZERO PIN</strong>.</p>
+      <h2 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 4px;">Printable Table Standees (Tables 1–8)</h2>
+      <p style="font-size: 0.85rem; color: #64748b; margin: 0;">Scan with phone camera to open the Google Material 3 digital menu instantly.</p>
     </div>
-    <button class="print-btn" onclick="window.print()">🖨️ Print Standees</button>
+    <button class="m3-print-btn" onclick="window.print()">🖨️ Print Standees</button>
   </div>
 
   <div class="standee-grid" id="standeesContainer"></div>
@@ -119,7 +121,6 @@
     for (let i = 1; i <= TABLES_COUNT; i++) {
       const targetUrl = `${baseUrl}/?table=${i}`;
       const encodedUrl = encodeURIComponent(targetUrl);
-      // High-res direct QR API image
       const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodedUrl}&margin=4`;
 
       const card = document.createElement('div');
@@ -133,8 +134,8 @@
         </div>
 
         <div class="table-badge">TABLE ${i}</div>
-        <div class="scan-action-text">📲 Scan with Camera to View Menu & Order</div>
-        <div class="scan-subtext">No app download needed • Instant live ordering</div>
+        <div class="scan-action-text">📲 Scan to View Menu & Order</div>
+        <div class="scan-subtext">Instant live ordering • Multi-device kitchen sync</div>
       `;
       container.appendChild(card);
     }

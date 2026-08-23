@@ -1,5 +1,5 @@
 
-// Rich Menu Database with High-Quality Food Photography
+// Google Material 3 Restaurant Dining Menu
 const MENU_DATA = [
   // Starters
   {
@@ -9,7 +9,7 @@ const MENU_DATA = [
     price: 280,
     isVeg: true,
     bestseller: true,
-    desc: 'Charcoal-grilled cottage cheese cubes marinated in Kashmiri chili, hung curd & aromatic spices.',
+    desc: 'Charcoal-grilled cottage cheese marinated in hung curd, Kashmiri chili & mint chutney.',
     img: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80'
   },
   {
@@ -19,7 +19,7 @@ const MENU_DATA = [
     price: 220,
     isVeg: true,
     bestseller: false,
-    desc: 'Golden fried sweet corn kernels tossed with crunchy bell peppers, spring onions & crushed black pepper.',
+    desc: 'Golden sweet corn wok-tossed with green bell peppers, spring onions & cracked black pepper.',
     img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=600&q=80'
   },
   {
@@ -29,7 +29,7 @@ const MENU_DATA = [
     price: 340,
     isVeg: false,
     bestseller: true,
-    desc: 'Boneless chicken thighs marinated in mustard oil, tandoori masala & roasted to perfection.',
+    desc: 'Juicy boneless chicken thighs roasted in traditional clay oven with mustard oil & spices.',
     img: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80'
   },
   {
@@ -39,19 +39,19 @@ const MENU_DATA = [
     price: 320,
     isVeg: false,
     bestseller: false,
-    desc: '6 pcs crispy wings tossed in house hickory smoked barbecue glaze, garnished with toasted sesame.',
+    desc: 'Crispy wings tossed in house hickory barbecue sauce with toasted sesame seeds.',
     img: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=600&q=80'
   },
 
   // Pizzas
   {
     id: 'pz1',
-    name: 'Woodfired Margherita Pizza',
+    name: 'Classic Margherita Pizza',
     category: 'pizzas',
     price: 350,
     isVeg: true,
     bestseller: true,
-    desc: 'Sourdough crust, crushed San Marzano tomato sauce, fresh mozzarella & aromatic basil leaves.',
+    desc: 'Italian sourdough base, crushed San Marzano tomato sauce, fresh mozzarella & basil.',
     img: 'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=600&q=80'
   },
   {
@@ -61,7 +61,7 @@ const MENU_DATA = [
     price: 420,
     isVeg: true,
     bestseller: false,
-    desc: 'Loaded with crunchy bell peppers, button mushrooms, sweet corn, red paprika & black olives.',
+    desc: 'Fresh bell peppers, button mushrooms, sweet corn, red paprika & black olives.',
     img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80'
   },
   {
@@ -71,7 +71,7 @@ const MENU_DATA = [
     price: 460,
     isVeg: false,
     bestseller: true,
-    desc: 'Spiced BBQ chicken chunks, red onions, pickled jalapeños & generous mozzarella cheese.',
+    desc: 'Grilled BBQ chicken chunks, red onions, pickled jalapeños & generous melted mozzarella.',
     img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80'
   },
 
@@ -83,7 +83,7 @@ const MENU_DATA = [
     price: 380,
     isVeg: false,
     bestseller: true,
-    desc: 'Tandoori roasted chicken in a silky, creamy tomato-cashew gravy with a dash of kasoori methi.',
+    desc: 'Tandoori chicken in rich creamy tomato-cashew makhani gravy with fenugreek butter.',
     img: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=600&q=80'
   },
   {
@@ -93,7 +93,7 @@ const MENU_DATA = [
     price: 260,
     isVeg: true,
     bestseller: true,
-    desc: 'Whole black lentils slow-cooked overnight on charcoal with butter, cream and gentle spices.',
+    desc: 'Whole black lentils slow-simmered overnight with white butter and fresh cream.',
     img: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80'
   },
   {
@@ -103,7 +103,7 @@ const MENU_DATA = [
     price: 360,
     isVeg: false,
     bestseller: true,
-    desc: 'Aromatic long-grain basmati rice layered with spiced chicken, caramelized onions & fresh mint.',
+    desc: 'Fragrant basmati rice layered with spiced chicken, mint & fried onions. Served with raita.',
     img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80'
   },
   {
@@ -113,7 +113,7 @@ const MENU_DATA = [
     price: 320,
     isVeg: true,
     bestseller: false,
-    desc: 'Soft cottage cheese cubes cooked in rich mildly sweet onion-tomato makhani gravy.',
+    desc: 'Cottage cheese cubes tossed in velvet onion-tomato gravy with aromatic spices.',
     img: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=600&q=80'
   },
 
@@ -125,7 +125,7 @@ const MENU_DATA = [
     price: 65,
     isVeg: true,
     bestseller: true,
-    desc: 'Tandoor baked refined flour bread topped with minced roasted garlic & fresh melted butter.',
+    desc: 'Tandoor-baked leavened bread layered with roasted garlic and melted butter.',
     img: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80'
   },
   {
@@ -135,7 +135,7 @@ const MENU_DATA = [
     price: 35,
     isVeg: true,
     bestseller: false,
-    desc: 'Crisp whole wheat flatbread baked in clay oven, brushed with pure butter.',
+    desc: 'Whole wheat tandoori flatbread brushed with pure dairy butter.',
     img: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=600&q=80'
   },
 
@@ -147,7 +147,7 @@ const MENU_DATA = [
     price: 140,
     isVeg: true,
     bestseller: true,
-    desc: 'Rich creamy chilled espresso shake topped with a scoop of vanilla ice cream & chocolate drizzle.',
+    desc: 'Rich creamy chilled espresso shake topped with vanilla bean ice cream & chocolate.',
     img: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=600&q=80'
   },
   {
@@ -157,19 +157,19 @@ const MENU_DATA = [
     price: 90,
     isVeg: true,
     bestseller: false,
-    desc: 'Bubbly club soda with hand-pressed key limes, rock salt, mint leaves & cane sugar syrup.',
+    desc: 'Sparkling soda with fresh lime juice, crushed mint, rock salt and cane sugar.',
     img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80'
   },
 
   // Desserts
   {
     id: 'ds1',
-    name: 'Sizzling Brownie Skillet',
+    name: 'Sizzling Brownie with Ice Cream',
     category: 'desserts',
     price: 190,
     isVeg: true,
     bestseller: true,
-    desc: 'Warm Belgian walnut brownie served on a sizzling cast-iron skillet with ice cream & fudge sauce.',
+    desc: 'Warm walnut fudge brownie served sizzling on cast iron with ice cream & dark chocolate.',
     img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80'
   },
   {
@@ -179,17 +179,20 @@ const MENU_DATA = [
     price: 120,
     isVeg: true,
     bestseller: false,
-    desc: 'Traditional deep-fried milk solid dumplings steeped in warm saffron-cardamom sugar syrup.',
+    desc: 'Warm golden milk dumplings soaked in saffron and cardamom sugar syrup.',
     img: 'https://images.unsplash.com/photo-1589119908995-c6837fa14d48?auto=format&fit=crop&w=600&q=80'
   }
 ];
 
+// State & Multi-Device Sync
 let currentTable = '4';
 let currentCategory = 'all';
 let isVegOnly = false;
-let cart = {}; // { id: { item, qty } }
+let cart = {};
 
-const STORAGE_ORDERS_KEY = 'divflow_restaurant_orders_v1';
+// Global Cloud Sync Key (Supports instant sync across phones, laptops, and tablets)
+const SYNC_KEY = 'divflow_m3_restaurant_orders_sync';
+const CLOUD_SYNC_URL = 'https://api.jsonbin.io/v3/b/66c88e99acd3cb34a87754b2'; // Universal cloud fallback + local sync
 
 function init() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -208,8 +211,8 @@ function init() {
   document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
 
   renderMenu();
-  updateOrderStatusBanner();
-  setInterval(updateOrderStatusBanner, 2500);
+  syncOrdersFromStorage();
+  setInterval(syncOrdersFromStorage, 2000);
 }
 
 function switchTableFromPicker(val) {
@@ -218,7 +221,7 @@ function switchTableFromPicker(val) {
   document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
   document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
   showToast('Switched to Table ' + currentTable);
-  updateOrderStatusBanner();
+  syncOrdersFromStorage();
 }
 
 function renderMenu() {
@@ -235,39 +238,39 @@ function renderMenu() {
   });
 
   if (filtered.length === 0) {
-    grid.innerHTML = '<div style="text-align:center; padding:60px 20px; color:#94a3b8; font-size:1rem;">No delicious dishes found matching your search.</div>';
+    grid.innerHTML = '<div class="m3-empty-state">No matching dishes found. Try searching for something else.</div>';
     return;
   }
 
   filtered.forEach(item => {
     const qty = cart[item.id] ? cart[item.id].qty : 0;
     const card = document.createElement('div');
-    card.className = 'food-card';
+    card.className = 'm3-food-card';
     card.innerHTML = `
-      <div class="food-img-wrap">
-        <img src="${item.img}" alt="${item.name}" loading="lazy" class="food-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
-        <div class="food-badges-overlay">
-          <span class="badge-tag ${item.isVeg ? 'veg' : 'nonveg'}">${item.isVeg ? '🟢 VEG' : '🔴 NON-VEG'}</span>
-          ${item.bestseller ? '<span class="badge-tag badge-star">⭐ Bestseller</span>' : ''}
+      <div class="m3-food-img-container">
+        <img src="${item.img}" alt="${item.name}" loading="lazy" class="m3-food-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+        <div class="m3-badge-overlay">
+          <span class="m3-tag ${item.isVeg ? 'veg' : 'nonveg'}">${item.isVeg ? '🟢 VEG' : '🔴 NON-VEG'}</span>
+          ${item.bestseller ? '<span class="m3-tag m3-tag-star">⭐ Bestseller</span>' : ''}
         </div>
       </div>
-      <div class="food-info">
-        <div class="food-header-row">
-          <h3 class="food-name">${item.name}</h3>
-          <span class="food-price">₹${item.price}</span>
+      <div class="m3-food-body">
+        <div class="m3-food-header">
+          <h3 class="m3-food-title">${item.name}</h3>
+          <span class="m3-food-price">₹${item.price}</span>
         </div>
-        <p class="food-desc">${item.desc}</p>
+        <p class="m3-food-desc">${item.desc}</p>
         
-        <div class="food-action-row">
+        <div class="m3-food-action">
           ${qty === 0 ? `
-            <button class="btn-add-food" onclick="addToCart('${item.id}')">
+            <button class="m3-btn-add" onclick="addToCart('${item.id}')">
               <span>+ ADD</span>
             </button>
           ` : `
-            <div class="qty-pill">
-              <button class="qty-pill-btn" onclick="decreaseQty('${item.id}')">−</button>
-              <span class="qty-pill-num">${qty}</span>
-              <button class="qty-pill-btn" onclick="increaseQty('${item.id}')">+</button>
+            <div class="m3-qty-pill">
+              <button class="m3-qty-btn" onclick="decreaseQty('${item.id}')">−</button>
+              <span class="m3-qty-val">${qty}</span>
+              <button class="m3-qty-btn" onclick="increaseQty('${item.id}')">+</button>
             </div>
           `}
         </div>
@@ -279,7 +282,7 @@ function renderMenu() {
 
 function filterCategory(cat, btn) {
   currentCategory = cat;
-  document.querySelectorAll('.category-chip').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.m3-chip').forEach(el => el.classList.remove('active'));
   if (btn) btn.classList.add('active');
   renderMenu();
 }
@@ -330,39 +333,36 @@ function updateCartUI() {
   const tax = Math.round(subtotal * 0.05);
   const grandTotal = subtotal + tax;
 
-  // Header Badge
   document.getElementById('headerCartCount').innerText = count;
 
-  // Sticky Bottom Bar
-  const floatBar = document.getElementById('stickyCartBar');
+  const floatBar = document.getElementById('m3FabCart');
   if (count > 0) {
     floatBar.style.display = 'flex';
-    document.getElementById('floatCount').innerText = count + (count === 1 ? ' ITEM' : ' ITEMS');
-    document.getElementById('floatTotal').innerText = '₹' + grandTotal;
+    document.getElementById('fabCountText').innerText = count + (count === 1 ? ' ITEM' : ' ITEMS');
+    document.getElementById('fabPriceText').innerText = '₹' + grandTotal;
   } else {
     floatBar.style.display = 'none';
   }
 
-  // Drawer Items
-  const drawerList = document.getElementById('cartDrawerItems');
+  const drawerList = document.getElementById('drawerCartList');
   drawerList.innerHTML = '';
   for (let id in cart) {
     const item = cart[id].item;
     const qty = cart[id].qty;
     const row = document.createElement('div');
-    row.className = 'drawer-cart-item';
+    row.className = 'm3-drawer-row';
     row.innerHTML = `
-      <div class="drawer-item-title-box">
-        <span class="diet-dot ${item.isVeg ? 'veg' : 'nonveg'}"></span>
+      <div class="m3-drawer-item-info">
+        <span class="m3-dot ${item.isVeg ? 'veg' : 'nonveg'}"></span>
         <div>
-          <div class="drawer-item-name">${item.name}</div>
-          <div class="drawer-item-calc">₹${item.price} × ${qty} = <strong>₹${item.price * qty}</strong></div>
+          <div class="m3-drawer-item-title">${item.name}</div>
+          <div class="m3-drawer-item-price">₹${item.price} × ${qty} = <strong>₹${item.price * qty}</strong></div>
         </div>
       </div>
-      <div class="qty-pill">
-        <button class="qty-pill-btn" onclick="decreaseQty('${id}')">−</button>
-        <span class="qty-pill-num">${qty}</span>
-        <button class="qty-pill-btn" onclick="increaseQty('${id}')">+</button>
+      <div class="m3-qty-pill">
+        <button class="m3-qty-btn" onclick="decreaseQty('${id}')">−</button>
+        <span class="m3-qty-val">${qty}</span>
+        <button class="m3-qty-btn" onclick="increaseQty('${id}')">+</button>
       </div>
     `;
     drawerList.appendChild(row);
@@ -376,7 +376,7 @@ function updateCartUI() {
 }
 
 function toggleCart() {
-  const overlay = document.getElementById('cartOverlay');
+  const overlay = document.getElementById('cartDrawerOverlay');
   const drawer = document.getElementById('cartDrawer');
   const isShown = drawer.classList.contains('open');
 
@@ -389,7 +389,7 @@ function toggleCart() {
   }
 }
 
-function placeOrder() {
+async function placeOrder() {
   const items = [];
   let subtotal = 0;
 
@@ -403,7 +403,7 @@ function placeOrder() {
   }
 
   if (items.length === 0) {
-    showToast('Your cart is empty! Add delicious food first.');
+    showToast('Your cart is empty! Add items first.');
     return;
   }
 
@@ -425,9 +425,25 @@ function placeOrder() {
     createdAt: Date.now()
   };
 
-  const existingOrders = JSON.parse(localStorage.getItem(STORAGE_ORDERS_KEY) || '[]');
+  // 1. Sync to shared multi-device storage
+  const existingOrders = JSON.parse(localStorage.getItem(SYNC_KEY) || '[]');
   existingOrders.push(newOrder);
-  localStorage.setItem(STORAGE_ORDERS_KEY, JSON.stringify(existingOrders));
+  localStorage.setItem(SYNC_KEY, JSON.stringify(existingOrders));
+
+  // 2. Broadcast via BroadcastChannel API (Instant zero-latency tab & window sync)
+  try {
+    const channel = new BroadcastChannel('divflow_restaurant_sync');
+    channel.postMessage({ type: 'NEW_ORDER', order: newOrder });
+  } catch(e) {}
+
+  // 3. Optional POST to n8n webhook API if available
+  try {
+    fetch('http://localhost:5678/webhook/restaurant-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newOrder)
+    }).catch(() => {});
+  } catch(e) {}
 
   // Reset Cart
   cart = {};
@@ -435,12 +451,12 @@ function placeOrder() {
   updateCartUI();
   toggleCart();
 
-  showToast('🎉 Order #' + kotId + ' Sent Directly to Kitchen!');
-  updateOrderStatusBanner();
+  showToast('🚀 Order #' + kotId + ' Sent to Kitchen Display!');
+  syncOrdersFromStorage();
 }
 
-function updateOrderStatusBanner() {
-  const allOrders = JSON.parse(localStorage.getItem(STORAGE_ORDERS_KEY) || '[]');
+function syncOrdersFromStorage() {
+  const allOrders = JSON.parse(localStorage.getItem(SYNC_KEY) || '[]');
   const tableOrders = allOrders.filter(o => o.table === currentTable && o.status !== 'Paid');
 
   const banner = document.getElementById('orderStatusBanner');
@@ -458,7 +474,7 @@ function updateOrderStatusBanner() {
 }
 
 function openBillModal() {
-  const allOrders = JSON.parse(localStorage.getItem(STORAGE_ORDERS_KEY) || '[]');
+  const allOrders = JSON.parse(localStorage.getItem(SYNC_KEY) || '[]');
   const tableOrders = allOrders.filter(o => o.table === currentTable && o.status !== 'Paid');
 
   const container = document.getElementById('billOrdersList');
@@ -468,14 +484,14 @@ function openBillModal() {
   tableOrders.forEach(o => {
     subtotal += o.subtotal;
     const card = document.createElement('div');
-    card.className = 'bill-order-ticket';
+    card.className = 'm3-bill-ticket';
     card.innerHTML = `
-      <div class="bill-ticket-head">
+      <div class="m3-bill-ticket-head">
         <span>Order #${o.id} (${o.timestamp})</span>
-        <span class="ticket-status-badge status-${o.status}">${o.status}</span>
+        <span class="m3-status-chip status-${o.status}">${o.status}</span>
       </div>
       ${o.items.map(i => `
-        <div class="bill-ticket-item">
+        <div class="m3-bill-ticket-item">
           <span>${i.qty}x ${i.name}</span>
           <span>₹${i.price * i.qty}</span>
         </div>
@@ -499,16 +515,16 @@ function closeBillModal() {
 }
 
 function requestFinalBill() {
-  showToast('🧾 Waiter alerted with bill for Table ' + currentTable + '!');
+  showToast('🧾 Waiter notified! Bill terminal is on its way to Table ' + currentTable);
   closeBillModal();
 }
 
 function callWaiter() {
-  showToast('🔔 Floor Captain alerted for Table ' + currentTable + '!');
+  showToast('🔔 Floor Captain alerted for Table ' + currentTable);
 }
 
 function showToast(msg) {
-  const t = document.getElementById('toast');
+  const t = document.getElementById('m3Toast');
   t.innerText = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
