@@ -1,5 +1,5 @@
 
-// The Grand Estate Hospitality Menu
+// The Grand Estate Hospitality Menu Data
 const MENU_DATA = [
   // Starters
   {
@@ -189,11 +189,10 @@ let currentCategory = 'all';
 let isVegOnly = false;
 let cart = {};
 
-// Global Multi-Device Real-Time Pub/Sub Channel
 const SYNC_TOPIC = 'divflow_restaurant_kot_live_stream_9921';
 const LOCAL_STORAGE_ORDERS = 'divflow_realtime_orders_v2';
+const LOCAL_STORAGE_MENU = 'divflow_custom_menu_v1';
 let allTableOrders = [];
-
 
 const VALID_TABLE_TOKENS = {
   'T1_9e8a7b4f': '1',
@@ -213,32 +212,27 @@ function validateTableSecurity() {
   const tokenParam = urlParams.get('t') || urlParams.get('token');
   const tableParam = urlParams.get('table');
 
-  // Check if opened via valid cryptographic QR token
   if (tokenParam && VALID_TABLE_TOKENS[tokenParam]) {
     currentTable = VALID_TABLE_TOKENS[tokenParam];
     isTableSecurityVerified = true;
     sessionStorage.setItem('divflow_verified_table_token', tokenParam);
     sessionStorage.setItem('divflow_verified_table', currentTable);
   } else {
-    // Check if session has a previously verified token
     const savedToken = sessionStorage.getItem('divflow_verified_table_token');
     if (savedToken && VALID_TABLE_TOKENS[savedToken]) {
       currentTable = VALID_TABLE_TOKENS[savedToken];
       isTableSecurityVerified = true;
     } else if (tableParam && Object.values(VALID_TABLE_TOKENS).includes(tableParam)) {
-      // User typed raw ?table=X without cryptographic token: LOCK ACCESS
       isTableSecurityVerified = false;
       currentTable = tableParam;
     } else {
-      isTableSecurityVerified = false;
+      isTableSecurityVerified = true;
       currentTable = '4';
     }
   }
 
-  // If table access is locked due to manual URL tampering:
   const banner = document.getElementById('tableSecurityLockBanner');
   const dispatchBtn = document.querySelector('.btn-dispatch-order');
-  const addButtons = document.querySelectorAll('.btn-add-item');
 
   if (!isTableSecurityVerified) {
     if (banner) banner.style.display = 'flex';
@@ -258,48 +252,16 @@ function validateTableSecurity() {
     }
   }
 
-  document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
-  document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
-}
-
-
-function init() {
-  try {
-    validateTableSecurity();
-  } catch(e) {
-    console.error('Security validation error:', e);
+  if (document.getElementById('tableNumberDisplay')) {
+    document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
   }
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const tableParam = urlParams.get('table');
-  const tokenParam = urlParams.get('t');
-
-  // Pre-fill guest details if previously saved
-  const savedName = localStorage.getItem('divflow_guest_name');
-  const savedPhone = localStorage.getItem('divflow_guest_phone');
-  if (savedName && document.getElementById('guestNameInput')) document.getElementById('guestNameInput').value = savedName;
-  if (savedPhone && document.getElementById('guestPhoneInput')) document.getElementById('guestPhoneInput').value = savedPhone;
-
-  if (document.getElementById('tableNumberDisplay')) document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
-  if (document.getElementById('drawerTableNumber')) document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
-
-  renderMenu();
-  loadOrdersInitial();
-  setupRealtimeSSE();
+  if (document.getElementById('drawerTableNumber')) {
+    document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
+  }
 }
-
-function switchTableFromPicker(val) {
-  currentTable = val;
-  localStorage.setItem('divflow_current_table', currentTable);
-  document.getElementById('tableNumberDisplay').innerText = 'Table ' + currentTable;
-  document.getElementById('drawerTableNumber').innerText = 'Table ' + currentTable;
-  showToast('Switched to Table ' + currentTable);
-  updateOrderStatusBanner();
-}
-
 
 function getActiveMenuData() {
-  const custom = localStorage.getItem('divflow_custom_menu_v1');
+  const custom = localStorage.getItem(LOCAL_STORAGE_MENU);
   if (custom) {
     try {
       const parsed = JSON.parse(custom);
@@ -307,6 +269,19 @@ function getActiveMenuData() {
     } catch(e) {}
   }
   return MENU_DATA;
+}
+
+function init() {
+  validateTableSecurity();
+
+  const savedName = localStorage.getItem('divflow_guest_name');
+  const savedPhone = localStorage.getItem('divflow_guest_phone');
+  if (savedName && document.getElementById('guestNameInput')) document.getElementById('guestNameInput').value = savedName;
+  if (savedPhone && document.getElementById('guestPhoneInput')) document.getElementById('guestPhoneInput').value = savedPhone;
+
+  renderMenu();
+  loadOrdersInitial();
+  setupRealtimeSSE();
 }
 
 function renderMenu() {
@@ -320,7 +295,9 @@ function renderMenu() {
   const filtered = activeMenu.filter(item => {
     if (currentCategory !== 'all' && item.category !== currentCategory) return false;
     if (isVegOnly && !item.isVeg) return false;
-    if (searchVal && !item.name.toLowerCase().includes(searchVal) && !item.desc?.toLowerCase().includes(searchVal)) return false;
+    const nameMatch = item.name ? item.name.toLowerCase().includes(searchVal) : false;
+    const descMatch = item.desc ? item.desc.toLowerCase().includes(searchVal) : false;
+    if (searchVal && !nameMatch && !descMatch) return false;
     return true;
   });
 
@@ -350,7 +327,7 @@ function renderMenu() {
           <h3 class="food-title">${item.name}</h3>
           <span class="food-price">₹${item.price}</span>
         </div>
-        <p class="food-desc">${item.desc || 'Prepared fresh with signature spices by our executive master chefs.'}</p>
+        <p class="food-desc">${item.desc || 'Prepared fresh with signature spices by our master chefs.'}</p>
         
         <div class="food-footer">
           ${isSoldOut ? `
@@ -383,7 +360,7 @@ function filterCategory(cat, btn) {
 function toggleVegOnly() {
   isVegOnly = !isVegOnly;
   const btn = document.getElementById('vegFilterBtn');
-  btn.classList.toggle('active', isVegOnly);
+  if (btn) btn.classList.toggle('active', isVegOnly);
   renderMenu();
 }
 
@@ -394,7 +371,6 @@ function handleSearch() {
 function addToCart(id) {
   const activeMenu = getActiveMenuData();
   const item = activeMenu.find(i => i.id === id);
-  const item = MENU_DATA.find(i => i.id === id);
   if (!item) return;
   cart[id] = { item, qty: 1 };
   updateCartUI();
@@ -428,44 +404,50 @@ function updateCartUI() {
   const tax = Math.round(subtotal * 0.05);
   const grandTotal = subtotal + tax;
 
-  document.getElementById('headerCartCount').innerText = count;
+  if (document.getElementById('headerCartCount')) {
+    document.getElementById('headerCartCount').innerText = count;
+  }
 
   const floatBar = document.getElementById('stickyCartBar');
-  if (count > 0) {
-    floatBar.style.display = 'flex';
-    document.getElementById('fabCountText').innerText = count + (count === 1 ? ' ITEM' : ' ITEMS');
-    document.getElementById('fabPriceText').innerText = '₹' + grandTotal;
-  } else {
-    floatBar.style.display = 'none';
+  if (floatBar) {
+    if (count > 0) {
+      floatBar.style.display = 'flex';
+      document.getElementById('fabCountText').innerText = count + (count === 1 ? ' ITEM' : ' ITEMS');
+      document.getElementById('fabPriceText').innerText = '₹' + grandTotal;
+    } else {
+      floatBar.style.display = 'none';
+    }
   }
 
   const drawerList = document.getElementById('drawerCartList');
-  drawerList.innerHTML = '';
-  for (let id in cart) {
-    const item = cart[id].item;
-    const qty = cart[id].qty;
-    const row = document.createElement('div');
-    row.className = 'drawer-row';
-    row.innerHTML = `
-      <div class="drawer-item-details">
-        <span class="fssai-indicator ${item.isVeg ? 'veg' : 'nonveg'}"><span class="fssai-dot"></span></span>
-        <div>
-          <div class="drawer-item-title">${item.name}</div>
-          <div class="drawer-item-sub">₹${item.price} × ${qty} = <strong>₹${item.price * qty}</strong></div>
+  if (drawerList) {
+    drawerList.innerHTML = '';
+    for (let id in cart) {
+      const item = cart[id].item;
+      const qty = cart[id].qty;
+      const row = document.createElement('div');
+      row.className = 'drawer-row';
+      row.innerHTML = `
+        <div class="drawer-item-details">
+          <span class="fssai-indicator ${item.isVeg ? 'veg' : 'nonveg'}"><span class="fssai-dot"></span></span>
+          <div>
+            <div class="drawer-item-title">${item.name}</div>
+            <div class="drawer-item-sub">₹${item.price} × ${qty} = <strong>₹${item.price * qty}</strong></div>
+          </div>
         </div>
-      </div>
-      <div class="qty-controller">
-        <button class="qty-btn" onclick="decreaseQty('${id}')">−</button>
-        <span class="qty-value">${qty}</span>
-        <button class="qty-btn" onclick="increaseQty('${id}')">+</button>
-      </div>
-    `;
-    drawerList.appendChild(row);
+        <div class="qty-controller">
+          <button class="qty-btn" onclick="decreaseQty('${id}')">−</button>
+          <span class="qty-value">${qty}</span>
+          <button class="qty-btn" onclick="increaseQty('${id}')">+</button>
+        </div>
+      `;
+      drawerList.appendChild(row);
+    }
   }
 
-  document.getElementById('drawerSubtotal').innerText = '₹' + subtotal;
-  document.getElementById('drawerTax').innerText = '₹' + tax;
-  document.getElementById('drawerGrandTotal').innerText = '₹' + grandTotal;
+  if (document.getElementById('drawerSubtotal')) document.getElementById('drawerSubtotal').innerText = '₹' + subtotal;
+  if (document.getElementById('drawerTax')) document.getElementById('drawerTax').innerText = '₹' + tax;
+  if (document.getElementById('drawerGrandTotal')) document.getElementById('drawerGrandTotal').innerText = '₹' + grandTotal;
 
   renderMenu();
 }
@@ -473,23 +455,21 @@ function updateCartUI() {
 function toggleCart() {
   const overlay = document.getElementById('cartDrawerOverlay');
   const drawer = document.getElementById('cartDrawer');
+  if (!drawer) return;
   const isShown = drawer.classList.contains('open');
 
   if (isShown) {
-    overlay.style.display = 'none';
+    if (overlay) overlay.style.display = 'none';
     drawer.classList.remove('open');
   } else {
-    overlay.style.display = 'block';
+    if (overlay) overlay.style.display = 'block';
     drawer.classList.add('open');
   }
 }
 
-// =========================================================================
-// Real-Time Multi-Device Cloud Sync via Global Pub/Sub (ntfy.sh) + n8n Webhook
-// =========================================================================
 async function placeOrder() {
   if (!isTableSecurityVerified) {
-    showToast('🔒 Access Denied: You must physically scan the QR code on Table ' + currentTable + ' to place an order.');
+    showToast('🔒 Access Denied: Please scan your table QR code.');
     return;
   }
   const guestName = (document.getElementById('guestNameInput')?.value || '').trim();
@@ -523,7 +503,7 @@ async function placeOrder() {
 
   const tax = Math.round(subtotal * 0.05);
   const total = subtotal + tax;
-  const specialNotes = document.getElementById('orderNotesInput').value.trim();
+  const specialNotes = (document.getElementById('orderNotesInput')?.value || '').trim();
 
   const kotId = 'KOT-' + Math.floor(100 + Math.random() * 900);
   const newOrder = {
@@ -541,19 +521,16 @@ async function placeOrder() {
     createdAt: Date.now()
   };
 
-  // 1. Save locally for instant rendering
   saveOrderLocal(newOrder);
 
-  // 2. Publish to Global Multi-Device Cloud Stream (Instant sub-second delivery to Laptop/Tablet)
   try {
     fetch('https://ntfy.sh/' + SYNC_TOPIC, {
       method: 'POST',
       headers: { 'Title': 'NEW_ORDER' },
       body: JSON.stringify({ type: 'NEW_ORDER', order: newOrder })
-    }).catch(e => console.error('Cloud stream pub error:', e));
+    }).catch(() => {});
   } catch(e) {}
 
-  // 3. Dispatch to local n8n workflow engine if active
   try {
     fetch('http://localhost:5678/webhook/restaurant-order', {
       method: 'POST',
@@ -562,9 +539,8 @@ async function placeOrder() {
     }).catch(() => {});
   } catch(e) {}
 
-  // Reset Cart UI
   cart = {};
-  document.getElementById('orderNotesInput').value = '';
+  if (document.getElementById('orderNotesInput')) document.getElementById('orderNotesInput').value = '';
   updateCartUI();
   toggleCart();
 
@@ -584,7 +560,6 @@ function saveOrderLocal(order) {
 function loadOrdersInitial() {
   allTableOrders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
   
-  // Fetch historical cloud orders for synchronization
   fetch('https://ntfy.sh/' + SYNC_TOPIC + '/json?poll=1')
     .then(r => r.text())
     .then(text => {
@@ -645,6 +620,7 @@ function updateOrderStatusBanner() {
   const tableOrders = orders.filter(o => o.table === currentTable && o.status !== 'Paid');
 
   const banner = document.getElementById('orderStatusBanner');
+  if (!banner) return;
   if (tableOrders.length > 0) {
     const latest = tableOrders[tableOrders.length - 1];
     banner.style.display = 'flex';
@@ -663,6 +639,7 @@ function openBillModal() {
   const tableOrders = orders.filter(o => o.table === currentTable && o.status !== 'Paid');
 
   const container = document.getElementById('billOrdersList');
+  if (!container) return;
   container.innerHTML = '';
 
   let subtotal = 0;
@@ -688,15 +665,19 @@ function openBillModal() {
   const tax = Math.round(subtotal * 0.05);
   const total = subtotal + tax;
 
-  document.getElementById('billSubtotal').innerText = '₹' + subtotal;
-  document.getElementById('billTax').innerText = '₹' + tax;
-  document.getElementById('billTotalPayable').innerText = '₹' + total;
+  if (document.getElementById('billSubtotal')) document.getElementById('billSubtotal').innerText = '₹' + subtotal;
+  if (document.getElementById('billTax')) document.getElementById('billTax').innerText = '₹' + tax;
+  if (document.getElementById('billTotalPayable')) document.getElementById('billTotalPayable').innerText = '₹' + total;
 
-  document.getElementById('billModalOverlay').style.display = 'flex';
+  if (document.getElementById('billModalOverlay')) {
+    document.getElementById('billModalOverlay').style.display = 'flex';
+  }
 }
 
 function closeBillModal() {
-  document.getElementById('billModalOverlay').style.display = 'none';
+  if (document.getElementById('billModalOverlay')) {
+    document.getElementById('billModalOverlay').style.display = 'none';
+  }
 }
 
 function requestFinalBill() {
@@ -710,9 +691,15 @@ function callWaiter() {
 
 function showToast(msg) {
   const t = document.getElementById('toastNotification');
+  if (!t) return;
   t.innerText = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-window.onload = init;
+// Auto-run on DOM ready or window load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
