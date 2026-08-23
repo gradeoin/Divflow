@@ -6,234 +6,209 @@
   <meta http-equiv="Expires" content="0">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Restro-OS — Manager & POS Hub</title>
+  <title>Restro-OS — Cashier & Manager POS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=v1787503433948">
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <link rel="stylesheet" href="admin.css?v=v1787503568662">
 </head>
 <body>
 
-  <div class="pos-app-shell">
-    <!-- Left Navigation Sidebar -->
-    <aside class="pos-sidebar">
-      <div class="pos-sidebar-brand">
-        <div class="pos-brand-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+  <div class="pos-layout">
+    <!-- Top Header Bar -->
+    <header class="pos-header">
+      <div class="header-left">
+        <div class="logo-badge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
-        <div class="pos-brand-text">
-          <h2>RESTRO-OS</h2>
-          <span class="pos-brand-tag">MANAGER POS</span>
+        <div>
+          <h1 class="pos-title">THE GRAND ESTATE</h1>
+          <span class="pos-subtitle">CASHIER & MANAGER TERMINAL</span>
         </div>
       </div>
 
-      <nav class="pos-nav-menu">
-        <button class="nav-item active" onclick="switchTab('floor', this)">
+      <!-- Main Navigation Tabs -->
+      <nav class="pos-nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('floor', this)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          <span>Floor & Tables</span>
-          <span class="nav-badge" id="activeTablesBadge">0</span>
+          <span>Floor Map</span>
+          <span class="badge" id="activeTablesCountBadge">0</span>
         </button>
 
-        <button class="nav-item" onclick="switchTab('menu', this)">
+        <button class="tab-btn" onclick="switchTab('menu', this)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
           <span>Menu & Prices</span>
         </button>
 
-        <button class="nav-item" onclick="switchTab('crm', this)">
+        <button class="tab-btn" onclick="switchTab('crm', this)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span>Customer CRM</span>
-          <span class="nav-badge" id="crmLeadsBadge">0</span>
+          <span>Customers (CRM)</span>
         </button>
 
-        <button class="nav-item" onclick="switchTab('analytics', this)">
+        <button class="tab-btn" onclick="switchTab('analytics', this)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
-          <span>Daily Z-Report</span>
+          <span>Sales & Z-Report</span>
         </button>
 
-        <button class="nav-item" onclick="switchTab('qr', this)">
+        <button class="tab-btn" onclick="switchTab('qr', this)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM17 17h4v4h-4z"/></svg>
-          <span>Table QR Codes</span>
+          <span>QR Standees</span>
         </button>
       </nav>
 
-      <div class="pos-sidebar-footer">
-        <a href="kitchen.html" target="_blank" class="sidebar-kds-link">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-          <span>Open Kitchen Display</span>
+      <div class="header-right">
+        <button class="btn-punch-order" onclick="openNewOrderModal()">
+          + Punch Order
+        </button>
+        <a href="kitchen.html" target="_blank" class="btn-kds-link">
+          Open Kitchen (KDS) ➔
         </a>
       </div>
-    </aside>
+    </header>
 
-    <!-- Main Workspace Pane -->
-    <main class="pos-main-workspace">
-      <!-- Top Action Bar -->
-      <header class="pos-top-bar">
-        <div class="top-title-group">
-          <h1 id="pageHeading">Interactive Floor Plan</h1>
-          <span class="top-subtitle">Real-time table status, live billing & order tracking</span>
-        </div>
-        <div class="top-controls">
-          <button class="btn-primary" onclick="openNewOrderModal()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-            <span>Punch Manual Order</span>
-          </button>
-        </div>
-      </header>
+    <!-- Main Viewport Content -->
+    <main class="pos-content">
 
-      <!-- TAB 1: Interactive Floor Map -->
-      <section class="pos-tab-content active" id="tabFloor">
-        <div class="floor-stats-row">
-          <div class="stat-pill vacant"><span class="pill-dot"></span> <span id="countVacant">0</span> Vacant</div>
-          <div class="stat-pill dining"><span class="pill-dot"></span> <span id="countDining">0</span> Dining</div>
-          <div class="stat-pill today-sales">Today Sales: <strong id="floorTodaySales">₹0</strong></div>
-        </div>
-
-        <div class="floor-tables-grid" id="floorTablesGrid">
-          <!-- Injected dynamically via admin.js -->
-        </div>
-      </section>
-
-      <!-- TAB 2: Menu & Price Studio -->
-      <section class="pos-tab-content" id="tabMenu">
-        <div class="section-action-header">
-          <div>
-            <h2>Menu Catalog & Live Price Studio</h2>
-            <p>Click on any price to update it live, or toggle items In Stock / Out of Stock.</p>
+      <!-- TAB 1: Spacious Floor Map -->
+      <section class="pos-view active" id="viewFloor">
+        <div class="floor-summary-bar">
+          <div class="summary-left">
+            <span class="status-legend"><span class="dot vacant"></span> <span id="countVacant">0</span> Vacant</span>
+            <span class="status-legend"><span class="dot cooking"></span> <span id="countCooking">0</span> Cooking</span>
+            <span class="status-legend"><span class="dot served"></span> <span id="countServed">0</span> Food on Table</span>
           </div>
-          <button class="btn-primary" onclick="openAddDishModal()">+ Add New Dish</button>
+          <div class="summary-right">
+            <span>Today's Total Sales:</span>
+            <strong id="floorTodaySales">₹0</strong>
+          </div>
         </div>
 
-        <div class="menu-editor-grid" id="menuEditorGrid">
+        <div class="tables-grid" id="floorTablesGrid">
           <!-- Injected dynamically -->
         </div>
       </section>
 
-      <!-- TAB 3: CRM & WhatsApp Leads -->
-      <section class="pos-tab-content" id="tabCrm">
-        <div class="section-action-header">
+      <!-- TAB 2: Menu Catalog & Prices -->
+      <section class="pos-view" id="viewMenu">
+        <div class="view-header">
+          <div>
+            <h2>Menu Catalog & Live Pricing</h2>
+            <p>Edit prices or toggle In Stock / Sold Out in 1 click.</p>
+          </div>
+          <button class="btn-punch-order" onclick="openAddDishModal()">+ Add New Dish</button>
+        </div>
+        <div class="menu-grid" id="menuEditorGrid"></div>
+      </section>
+
+      <!-- TAB 3: Customers (CRM) -->
+      <section class="pos-view" id="viewCrm">
+        <div class="view-header">
           <div>
             <h2>Guest CRM Database</h2>
-            <p>Customer contact records captured automatically when guests place table orders.</p>
+            <p>Customer contact records captured from table orders.</p>
           </div>
-          <button class="btn-secondary" onclick="exportCrmCsv()">📥 Download CSV / Excel</button>
+          <button class="btn-secondary" onclick="exportCrmCsv()">📥 Download Excel (CSV)</button>
         </div>
-
-        <div class="crm-table-wrapper">
-          <table class="crm-table">
+        <div class="crm-table-box">
+          <table class="data-table">
             <thead>
               <tr>
                 <th>GUEST NAME</th>
-                <th>MOBILE NUMBER</th>
-                <th>VISITS</th>
+                <th>PHONE NUMBER</th>
+                <th>TOTAL VISITS</th>
                 <th>LIFETIME SPEND</th>
                 <th>LAST TABLE</th>
                 <th>ACTION</th>
               </tr>
             </thead>
-            <tbody id="crmTableBody">
-              <!-- Injected dynamically -->
-            </tbody>
+            <tbody id="crmTableBody"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- TAB 4: Sales Analytics & Daily Z-Report -->
-      <section class="pos-tab-content" id="tabAnalytics">
-        <div class="section-action-header">
+      <!-- TAB 4: Daily Sales & Z-Report -->
+      <section class="pos-view" id="viewAnalytics">
+        <div class="view-header">
           <div>
-            <h2>Daily Z-Report & Sales Ledger</h2>
-            <p>Daily sales summary, tax calculation, and cash vs UPI breakdown.</p>
+            <h2>Daily Sales & Register Z-Report</h2>
+            <p>End-of-day register closure and tax summary.</p>
           </div>
           <button class="btn-secondary" onclick="printDailyZReport()">🖨️ Print Daily Z-Report</button>
         </div>
-
-        <div class="analytics-metrics-grid">
-          <div class="metric-card">
-            <span class="metric-title">TOTAL SALES TODAY</span>
-            <strong class="metric-value" id="analyticRevenue">₹0</strong>
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <span>TOTAL SALES TODAY</span>
+            <strong id="analyticRevenue">₹0</strong>
           </div>
-          <div class="metric-card">
-            <span class="metric-title">COMPLETED ORDERS</span>
-            <strong class="metric-value" id="analyticTablesCount">0</strong>
+          <div class="metric-box">
+            <span>COMPLETED COVERS / ORDERS</span>
+            <strong id="analyticTablesCount">0</strong>
           </div>
-          <div class="metric-card">
-            <span class="metric-title">AVERAGE ORDER VALUE</span>
-            <strong class="metric-value" id="analyticAov">₹0</strong>
+          <div class="metric-box">
+            <span>AVERAGE ORDER VALUE</span>
+            <strong id="analyticAov">₹0</strong>
           </div>
-          <div class="metric-card">
-            <span class="metric-title">GST ESTIMATE (5%)</span>
-            <strong class="metric-value" id="analyticGst">₹0</strong>
-          </div>
-        </div>
-
-        <div class="tender-breakdown-card">
-          <h3>Payment Method Split</h3>
-          <div class="tender-bars">
-            <div class="tender-item">
-              <div class="tender-label"><span>UPI / Digital</span><strong id="tenderUpiAmount">₹0</strong></div>
-              <div class="tender-progress"><div class="progress-fill upi" style="width: 75%;"></div></div>
-            </div>
-            <div class="tender-item">
-              <div class="tender-label"><span>Cash in Drawer</span><strong id="tenderCashAmount">₹0</strong></div>
-              <div class="tender-progress"><div class="progress-fill cash" style="width: 25%;"></div></div>
-            </div>
+          <div class="metric-box">
+            <span>ESTIMATED GST (5%)</span>
+            <strong id="analyticGst">₹0</strong>
           </div>
         </div>
       </section>
 
       <!-- TAB 5: QR Standees Studio -->
-      <section class="pos-tab-content" id="tabQr">
-        <div class="section-action-header">
+      <section class="pos-view" id="viewQr">
+        <div class="view-header">
           <div>
             <h2>Table QR Standee Studio</h2>
-            <p>Printable QR standees for Tables 1 to 8.</p>
+            <p>High-resolution printable standees for Tables 1 to 8.</p>
           </div>
           <div style="display:flex; gap:10px;">
-    <a href="qr.html" target="_blank" class="btn-secondary" style="text-decoration:none;">📄 Standalone Print Page</a>
-    <button class="btn-primary" onclick="printStandeesClean()">🖨️ Quick Print Standees</button>
-  </div>
+            <a href="qr.html" target="_blank" class="btn-secondary" style="text-decoration:none;">📄 Standalone Page</a>
+            <button class="btn-punch-order" onclick="printStandeesClean()">🖨️ Print All Standees</button>
+          </div>
         </div>
         <div class="standees-grid" id="adminStandeesGrid"></div>
       </section>
     </main>
+  </div>
 
-    <!-- Right Slide Pane: Table POS & Billing Inspector -->
-    <aside class="pos-right-pane" id="tableInspectorPane">
-      <div class="inspector-header">
+  <!-- Slide-Out Table Checkout & Billing Modal -->
+  <div class="table-modal-overlay" id="tableModalOverlay" style="display:none;" onclick="closeTableModal(event)">
+    <div class="table-modal-sheet" onclick="event.stopPropagation()">
+      <div class="sheet-header">
         <div>
-          <h2 id="inspectorTableTitle">Table 4</h2>
-          <span class="inspector-status-pill" id="inspectorStatusPill">DINING</span>
+          <h2 id="sheetTableTitle">TABLE 4</h2>
+          <span class="sheet-status-tag" id="sheetStatusTag">VACANT</span>
         </div>
+        <button class="sheet-close-btn" onclick="closeTableModal()">✕</button>
       </div>
 
-      <div class="inspector-guest-box">
-        <div class="guest-line"><span>Guest:</span> <strong id="inspectorGuestName">Divyansh</strong></div>
-        <div class="guest-line"><span>Phone:</span> <span id="inspectorGuestPhone">+91 98765 43210</span></div>
+      <div class="sheet-guest-info">
+        <div><span>Guest:</span> <strong id="sheetGuestName">Walk-in</strong></div>
+        <div><span>Phone:</span> <span id="sheetGuestPhone">N/A</span></div>
       </div>
 
-      <div class="inspector-orders-stream" id="inspectorOrdersStream">
-        <!-- Live KOT Items -->
+      <div class="sheet-items-scroll" id="sheetItemsList">
+        <!-- Injected dynamically -->
       </div>
 
-      <div class="inspector-billing-dock">
-        <div class="dock-summary">
-          <div class="dock-row"><span>Subtotal:</span> <span id="dockSubtotal">₹0</span></div>
-          <div class="dock-row"><span>GST (5%):</span> <span id="dockTax">₹0</span></div>
-          <div class="dock-row total"><strong>Grand Total:</strong> <strong id="dockGrandTotal">₹0</strong></div>
-        </div>
-
-        <div class="dock-tender-buttons">
-          <button class="btn-tender upi" onclick="settleTable('UPI')">💳 Pay UPI</button>
-          <button class="btn-tender cash" onclick="settleTable('Cash')">💵 Pay Cash</button>
-          <button class="btn-tender print" onclick="printTableTaxInvoice()">🖨️ Bill</button>
+      <div class="sheet-footer">
+        <div class="sheet-bill-summary">
+          <div class="bill-row"><span>Subtotal</span><span id="sheetSubtotal">₹0</span></div>
+          <div class="bill-row"><span>GST (5%)</span><span id="sheetTax">₹0</span></div>
+          <div class="bill-row total"><strong>Grand Total</strong><strong id="sheetTotal">₹0</strong></div>
         </div>
 
-        <button class="btn-clear-table" onclick="settleAndClearCurrentTable()">
-          ✓ Mark Paid & Clear Table
-        </button>
+        <div class="sheet-actions-grid">
+          <button class="action-btn invoice" onclick="printTableTaxInvoice()">
+            🖨️ Print GST Bill
+          </button>
+          <button class="action-btn settle" onclick="settleAndClearCurrentTable()">
+            ✓ Mark Paid & Clear Table
+          </button>
+        </div>
       </div>
-    </aside>
+    </div>
   </div>
 
   <!-- Modal: Manual Punch Order -->
@@ -263,15 +238,13 @@
         </div>
         <div class="input-row">
           <label>Select Dish</label>
-          <select id="punchDishSelect">
-            <!-- Populated via JS -->
-          </select>
+          <select id="punchDishSelect"></select>
         </div>
         <div class="input-row">
           <label>Quantity</label>
           <input type="number" id="punchQty" value="1" min="1">
         </div>
-        <button class="btn-primary btn-block" onclick="submitManualOrder()">Dispatch to Kitchen</button>
+        <button class="btn-punch-order btn-block" onclick="submitManualOrder()">Dispatch to Kitchen</button>
       </div>
     </div>
   </div>
@@ -286,7 +259,7 @@
       <div class="modal-form">
         <div class="input-row">
           <label>Dish Name *</label>
-          <input type="text" id="addDishName" placeholder="e.g. Truffle Mushroom Risotto" required>
+          <input type="text" id="addDishName" placeholder="e.g. Truffle Risotto" required>
         </div>
         <div class="input-row">
           <label>Price (₹) *</label>
@@ -310,18 +283,14 @@
             <option value="false">🔴 Non-Vegetarian</option>
           </select>
         </div>
-        <div class="input-row">
-          <label>Image URL (Optional)</label>
-          <input type="text" id="addDishImg" placeholder="https://images.unsplash.com/...">
-        </div>
-        <button class="btn-primary btn-block" onclick="submitNewDish()">Save Dish to Menu</button>
+        <button class="btn-punch-order btn-block" onclick="submitNewDish()">Save Dish</button>
       </div>
     </div>
   </div>
 
-  <!-- Non-blocking Floating Notification Toast -->
-  <div class="admin-toast" id="adminToast">Action completed successfully</div>
+  <!-- Non-blocking Toast -->
+  <div class="admin-toast" id="adminToast">Action completed</div>
 
-  <script src="admin.js?v=v1787503433948"></script>
+  <script src="admin.js?v=v1787503568662"></script>
 </body>
 </html>

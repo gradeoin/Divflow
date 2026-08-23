@@ -19,44 +19,26 @@ const INITIAL_MENU = [
 
 function init() {
   loadMenuData();
-  setupRealtimeSSE();
   loadOrdersInitial();
-  renderMenuEditor();
-  renderCRM();
-  renderAnalytics();
+  setupRealtimeSSE();
   renderAdminStandees();
-  selectInspectorTable(activeSelectedTable);
-
-  setInterval(() => {
-    renderFloorPlan();
-    renderCRM();
-    renderAnalytics();
-  }, 2000);
+  setInterval(loadOrdersInitial, 2500);
 }
 
-function switchTab(tabId, btnElement) {
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.pos-tab-content').forEach(el => el.classList.remove('active'));
+function switchTab(viewId, btnElement) {
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.pos-view').forEach(el => el.classList.remove('active'));
 
   if (btnElement) btnElement.classList.add('active');
-
-  const titles = {
-    floor: 'Interactive Floor Plan & Tables',
-    menu: 'Menu Catalog & Live Price Studio',
-    crm: 'Guest CRM Database',
-    analytics: 'Daily Z-Report & Sales Ledger',
-    qr: 'Table QR Standees Studio'
-  };
-
-  document.getElementById('pageHeading').innerText = titles[tabId] || 'Dashboard';
-  const targetContent = document.getElementById('tab' + tabId.charAt(0).toUpperCase() + tabId.slice(1));
-  if (targetContent) targetContent.classList.add('active');
+  const target = document.getElementById('view' + viewId.charAt(0).toUpperCase() + viewId.slice(1));
+  if (target) target.classList.add('active');
 }
 
 function loadMenuData() {
   const saved = localStorage.getItem(LOCAL_STORAGE_MENU);
   if (saved) currentMenu = JSON.parse(saved);
   else currentMenu = [...INITIAL_MENU];
+  renderMenuEditor();
   populateDishSelect();
 }
 
@@ -78,61 +60,33 @@ function populateDishSelect() {
   });
 }
 
-
-const LOCAL_STORAGE_TABLE_STATES = 'divflow_table_states_v1';
-
-function getTableStateMap() {
-  return JSON.parse(localStorage.getItem(LOCAL_STORAGE_TABLE_STATES) || '{}');
-}
-
-function setTableState(tableNum, stateObj) {
-  const map = getTableStateMap();
-  map[tableNum] = stateObj;
-  localStorage.setItem(LOCAL_STORAGE_TABLE_STATES, JSON.stringify(map));
-  
-  // Broadcast table state change
-  try {
-    fetch('https://ntfy.sh/' + SYNC_TOPIC, {
-      method: 'POST',
-      body: JSON.stringify({ type: 'TABLE_STATE_CHANGE', table: tableNum, state: stateObj })
-    }).catch(() => {});
-  } catch(e) {}
-}
-
-
 function renderFloorPlan() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
-  const tableStateMap = getTableStateMap();
   const grid = document.getElementById('floorTablesGrid');
   if (!grid) return;
   grid.innerHTML = '';
 
-  let vacant = 0, occupied = 0, preparing = 0, served = 0, todaySales = 0;
+  let vacant = 0, cooking = 0, served = 0, todaySales = 0;
 
   for (let i = 1; i <= 12; i++) {
     const tableOrders = orders.filter(o => o.table == i && o.status !== 'Paid');
-    const customState = tableStateMap[i] || { status: 'Vacant', guestName: '' };
-    
-    let status = customState.status || 'Vacant';
+    let state = 'Vacant';
+    let guestName = 'Vacant Table';
+    let info = 'Ready for seating';
     let total = 0;
-    let guestName = customState.guestName || 'Vacant Table';
-    let itemsSummary = 'Ready for seating';
 
     if (tableOrders.length > 0) {
-      const hasPreparing = tableOrders.some(o => o.status === 'Preparing');
+      const hasCooking = tableOrders.some(o => o.status === 'Preparing');
       const allServed = tableOrders.every(o => o.status === 'Served');
 
-      if (hasPreparing) {
-        status = 'Preparing';
-        preparing++;
-        itemsSummary = '🍳 Kitchen Cooking';
+      if (hasCooking) {
+        state = 'Cooking';
+        cooking++;
+        info = '🍳 In Kitchen';
       } else if (allServed) {
-        status = 'Served';
+        state = 'Served';
         served++;
-        itemsSummary = '✅ Food on Table (Served)';
-      } else {
-        status = 'Dining';
-        preparing++;
+        info = '✅ Food on Table';
       }
 
       guestName = tableOrders[0].customerName || 'Guest';
@@ -141,128 +95,112 @@ function renderFloorPlan() {
         total += o.total;
         count += o.items ? o.items.length : 0;
       });
-      itemsSummary += ' • ' + count + ' items';
-    } else if (status === 'Occupied') {
-      occupied++;
-      itemsSummary = 'Seated (Browsing Menu)';
+      info += ' (' + count + ' items)';
     } else {
-      status = 'Vacant';
       vacant++;
     }
 
     const card = document.createElement('div');
-    card.className = `table-card status-${status}`;
-    card.onclick = () => selectInspectorTable(i);
+    card.className = `pos-table-card state-${state}`;
+    card.onclick = () => openTableCheckoutSheet(i);
     card.innerHTML = `
-      <div class="table-card-top">
-        <span class="table-card-num">TABLE ${i}</span>
-        <span class="table-card-badge status-tag-${status}">${status.toUpperCase()}</span>
+      <div class="card-top">
+        <span class="card-num">TABLE ${i}</span>
+        <span class="card-pill">${state.toUpperCase()}</span>
       </div>
-      <div class="table-card-mid">
-        <div class="table-card-guest">${guestName}</div>
-        <div class="table-card-items">${itemsSummary}</div>
+      <div class="card-mid">
+        <div class="card-guest">${guestName}</div>
+        <div class="card-info">${info}</div>
       </div>
-      <div class="table-card-total">${total > 0 ? '₹' + total : (status === 'Occupied' ? 'SEATED' : 'FREE')}</div>
+      <div class="card-bot">
+        <span class="card-total">${total > 0 ? '₹' + total : 'FREE'}</span>
+        <span class="card-hint">Tap to Settle ➔</span>
+      </div>
     `;
     grid.appendChild(card);
   }
 
   orders.forEach(o => todaySales += o.total);
 
-  document.getElementById('countVacant').innerText = vacant;
-  document.getElementById('countDining').innerText = preparing + served + occupied;
-  document.getElementById('activeTablesBadge').innerText = preparing + served + occupied;
-  document.getElementById('floorTodaySales').innerText = '₹' + todaySales;
+  if (document.getElementById('countVacant')) document.getElementById('countVacant').innerText = vacant;
+  if (document.getElementById('countCooking')) document.getElementById('countCooking').innerText = cooking;
+  if (document.getElementById('countServed')) document.getElementById('countServed').innerText = served;
+  if (document.getElementById('activeTablesCountBadge')) document.getElementById('activeTablesCountBadge').innerText = cooking + served;
+  if (document.getElementById('floorTodaySales')) document.getElementById('floorTodaySales').innerText = '₹' + todaySales;
 }
 
-function selectInspectorTable(tableNum) {
+function openTableCheckoutSheet(tableNum) {
   activeSelectedTable = String(tableNum);
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
-  const tableStateMap = getTableStateMap();
-  const customState = tableStateMap[activeSelectedTable] || { status: 'Vacant', guestName: '' };
   const tableOrders = orders.filter(o => o.table == activeSelectedTable && o.status !== 'Paid');
 
-  document.getElementById('inspectorTableTitle').innerText = 'Table ' + activeSelectedTable;
+  document.getElementById('sheetTableTitle').innerText = 'TABLE ' + activeSelectedTable;
 
-  const stream = document.getElementById('inspectorOrdersStream');
-  stream.innerHTML = '';
-
-  let subtotal = 0;
-  let guestName = customState.guestName || 'Walk-in Guest';
+  let guestName = 'Walk-in Guest';
   let guestPhone = 'Not provided';
-  let statusText = customState.status || 'VACANT';
+  let subtotal = 0;
+  let statusText = 'VACANT';
+
+  const list = document.getElementById('sheetItemsList');
+  list.innerHTML = '';
 
   if (tableOrders.length > 0) {
     const isAllServed = tableOrders.every(o => o.status === 'Served');
-    statusText = isAllServed ? 'SERVED' : 'PREPARING';
+    statusText = isAllServed ? 'SERVED' : 'COOKING';
     guestName = tableOrders[0].customerName || 'Guest';
     guestPhone = tableOrders[0].customerPhone || 'N/A';
 
     tableOrders.forEach(o => {
       subtotal += o.subtotal;
-      const orderBlock = document.createElement('div');
-      orderBlock.style.cssText = 'background:#1e293b; padding:10px; border-radius:8px; margin-bottom:8px;';
-      orderBlock.innerHTML = `
-        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#60a5fa; font-weight:700; margin-bottom:4px;">
+      const orderBox = document.createElement('div');
+      orderBox.className = 'sheet-order-card';
+      orderBox.innerHTML = `
+        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#60a5fa; font-weight:700; margin-bottom:6px;">
           <span>#${o.id} • ${o.timestamp}</span>
           <span style="color:${o.status === 'Served' ? '#4ade80' : '#fbbf24'};">${o.status.toUpperCase()}</span>
         </div>
-        ${o.items.map(i => `<div class="stream-item-row"><span>${i.qty}x ${i.name}</span><span>₹${i.price * i.qty}</span></div>`).join('')}
+        ${o.items.map(i => `
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin:2px 0;">
+            <span>${i.qty}x ${i.name}</span>
+            <span>₹${i.price * i.qty}</span>
+          </div>
+        `).join('')}
       `;
-      stream.appendChild(orderBlock);
+      list.appendChild(orderBox);
     });
-  } else if (customState.status === 'Occupied') {
-    statusText = 'OCCUPIED';
-    stream.innerHTML = '<div style="text-align:center; padding:30px; color:#fbbf24; font-size:0.85rem;">🪑 Table is occupied. Guests are currently browsing menu.</div>';
   } else {
-    statusText = 'VACANT';
-    stream.innerHTML = `
-      <div style="text-align:center; padding:30px; color:#94a3b8; font-size:0.85rem;">
-        Table is currently vacant.
-        <button class="btn-primary btn-block" style="margin-top:14px;" onclick="seatGuestsOnTable('${activeSelectedTable}')">
-          🪑 Seat Guests Here (Mark Occupied)
-        </button>
-      </div>
-    `;
+    list.innerHTML = '<div style="text-align:center; padding:40px 20px; color:#94a3b8; font-size:0.9rem;">Table is currently vacant and clean.</div>';
   }
 
-  const pill = document.getElementById('inspectorStatusPill');
-  pill.innerText = statusText;
+  const statusTag = document.getElementById('sheetStatusTag');
+  statusTag.innerText = statusText;
   if (statusText === 'VACANT') {
-    pill.style.background = 'rgba(22, 163, 74, 0.2)';
-    pill.style.color = '#4ade80';
+    statusTag.style.background = 'rgba(34, 197, 94, 0.2)';
+    statusTag.style.color = '#4ade80';
   } else if (statusText === 'SERVED') {
-    pill.style.background = 'rgba(37, 99, 235, 0.25)';
-    pill.style.color = '#60a5fa';
-  } else if (statusText === 'PREPARING') {
-    pill.style.background = 'rgba(217, 119, 6, 0.25)';
-    pill.style.color = '#fbbf24';
+    statusTag.style.background = 'rgba(59, 130, 246, 0.25)';
+    statusTag.style.color = '#60a5fa';
   } else {
-    pill.style.background = 'rgba(239, 68, 68, 0.2)';
-    pill.style.color = '#f87171';
+    statusTag.style.background = 'rgba(245, 158, 11, 0.25)';
+    statusTag.style.color = '#fbbf24';
   }
 
-  document.getElementById('inspectorGuestName').innerText = guestName;
-  document.getElementById('inspectorGuestPhone').innerText = guestPhone;
+  document.getElementById('sheetGuestName').innerText = guestName;
+  document.getElementById('sheetGuestPhone').innerText = guestPhone;
 
   const tax = Math.round(subtotal * 0.05);
   const total = subtotal + tax;
 
-  document.getElementById('dockSubtotal').innerText = '₹' + subtotal;
-  document.getElementById('dockTax').innerText = '₹' + tax;
-  document.getElementById('dockGrandTotal').innerText = '₹' + total;
+  document.getElementById('sheetSubtotal').innerText = '₹' + subtotal;
+  document.getElementById('sheetTax').innerText = '₹' + tax;
+  document.getElementById('sheetTotal').innerText = '₹' + total;
+
+  document.getElementById('tableModalOverlay').style.display = 'flex';
 }
 
-function seatGuestsOnTable(tableNum) {
-  const name = prompt('Enter Guest Name for Table ' + tableNum + ':', 'Dining Guests');
-  if (name) {
-    setTableState(tableNum, { status: 'Occupied', guestName: name, seatedAt: Date.now() });
-    renderFloorPlan();
-    selectInspectorTable(tableNum);
-    showToast('Table ' + tableNum + ' is now OCCUPIED by ' + name);
-  }
+function closeTableModal() {
+  document.getElementById('tableModalOverlay').style.display = 'none';
 }
-
 
 function settleAndClearCurrentTable() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
@@ -270,10 +208,7 @@ function settleAndClearCurrentTable() {
   tableOrders.forEach(o => o.status = 'Paid');
   localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(orders));
 
-  // Reset Table State to Vacant
-  setTableState(activeSelectedTable, { status: 'Vacant', guestName: '' });
-
-  // Broadcast CLEAR_TABLE event so customer phones reset active bill session
+  // Broadcast CLEAR_TABLE event
   try {
     fetch('https://ntfy.sh/' + SYNC_TOPIC, {
       method: 'POST',
@@ -281,11 +216,12 @@ function settleAndClearCurrentTable() {
     }).catch(() => {});
   } catch(e) {}
 
+  closeTableModal();
   renderFloorPlan();
-  selectInspectorTable(activeSelectedTable);
-  showToast('Table ' + activeSelectedTable + ' marked as Paid & Session Reset (VACANT)!');
+  renderCRM();
+  renderAnalytics();
+  showToast('Table ' + activeSelectedTable + ' marked Paid & Cleared!');
 }
-
 
 function renderMenuEditor() {
   const grid = document.getElementById('menuEditorGrid');
@@ -297,11 +233,11 @@ function renderMenuEditor() {
     card.className = 'menu-item-row';
     card.innerHTML = `
       <img src="${item.img}" class="menu-item-thumb" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
-      <div class="menu-item-meta">
-        <h4>${item.name}</h4>
-        <span>₹<input type="number" value="${item.price}" style="background:#111827; border:1px solid #374151; color:#fff; width:70px; border-radius:4px; padding:3px 6px; font-weight:700;" onchange="updateItemPrice('${item.id}', this.value)"></span>
+      <div style="flex:1;">
+        <div style="font-weight:700; font-size:0.9rem; margin-bottom:2px;">${item.name}</div>
+        <span>₹<input type="number" value="${item.price}" style="background:#0f172a; border:1px solid #334155; color:#fff; width:65px; border-radius:4px; padding:2px 6px; font-weight:700;" onchange="updateItemPrice('${item.id}', this.value)"></span>
       </div>
-      <button class="stock-toggle ${item.inStock ? 'in-stock' : ''}" onclick="toggleItemStock('${item.id}')">
+      <button class="btn-secondary" style="${item.inStock ? 'color:#4ade80;' : 'color:#f87171;'}" onclick="toggleItemStock('${item.id}')">
         ${item.inStock ? '✓ In Stock' : '✕ Sold Out'}
       </button>
     `;
@@ -314,7 +250,7 @@ function updateItemPrice(id, newPrice) {
   if (item) {
     item.price = Number(newPrice);
     saveMenuData();
-    showToast('Updated ' + item.name + ' to ₹' + newPrice);
+    showToast('Price updated to ₹' + newPrice);
   }
 }
 
@@ -323,7 +259,7 @@ function toggleItemStock(id) {
   if (item) {
     item.inStock = !item.inStock;
     saveMenuData();
-    showToast(item.name + (item.inStock ? ' is now IN STOCK' : ' marked as SOLD OUT'));
+    showToast(item.name + (item.inStock ? ' In Stock' : ' Sold Out'));
   }
 }
 
@@ -336,24 +272,22 @@ function submitNewDish() {
   const price = Number(document.getElementById('addDishPrice').value);
   const category = document.getElementById('addDishCategory').value;
   const isVeg = document.getElementById('addDishVeg').value === 'true';
-  const img = document.getElementById('addDishImg').value.trim() || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
 
   if (!name || !price) {
-    showToast('Please enter dish name and price');
+    showToast('Enter dish name and price');
     return;
   }
 
-  const newDish = {
+  currentMenu.push({
     id: 'dish_' + Date.now(),
     name,
     category,
     price,
     isVeg,
     inStock: true,
-    img
-  };
+    img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'
+  });
 
-  currentMenu.push(newDish);
   saveMenuData();
   closeModal('modalAddDish');
   document.getElementById('addDishName').value = '';
@@ -385,7 +319,7 @@ function submitManualOrder() {
     customerName: guestName,
     customerPhone: 'Walk-in',
     items: [{ name: dish.name, qty, price: dish.price }],
-    specialNotes: 'Punched by Cashier/Waiter',
+    specialNotes: 'Punched at Counter',
     subtotal,
     tax,
     total,
@@ -394,9 +328,7 @@ function submitManualOrder() {
     createdAt: Date.now()
   };
 
-  const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
-  existing.push(newOrder);
-  localStorage.setItem(LOCAL_STORAGE_ORDERS, JSON.stringify(existing));
+  saveOrderLocal(newOrder);
 
   try {
     fetch('https://ntfy.sh/' + SYNC_TOPIC, {
@@ -407,8 +339,7 @@ function submitManualOrder() {
 
   closeModal('modalPunchOrder');
   renderFloorPlan();
-  selectInspectorTable(table);
-  showToast('Order #' + kotId + ' dispatched for Table ' + table);
+  showToast('Order #' + kotId + ' sent to kitchen!');
 }
 
 function closeModal(modalId) {
@@ -417,19 +348,18 @@ function closeModal(modalId) {
 
 function renderCRM() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
-  const crmMap = new Map();
+  const map = new Map();
 
   orders.forEach(o => {
     const phone = o.customerPhone || 'N/A';
     const name = o.customerName || 'Guest';
     if (phone !== 'N/A' && phone.length > 5) {
-      if (!crmMap.has(phone)) {
-        crmMap.set(phone, { name, phone, visits: 1, spend: o.total, lastTable: o.table });
-      } else {
-        const record = crmMap.get(phone);
-        record.visits++;
-        record.spend += o.total;
-        record.lastTable = o.table;
+      if (!map.has(phone)) map.set(phone, { name, phone, count: 1, spend: o.total, lastTable: o.table });
+      else {
+        const r = map.get(phone);
+        r.count++;
+        r.spend += o.total;
+        r.lastTable = o.table;
       }
     }
   });
@@ -438,32 +368,30 @@ function renderCRM() {
   if (!tbody) return;
   tbody.innerHTML = '';
 
-  if (crmMap.size === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">No customer CRM records captured yet. Place orders to populate.</td></tr>';
+  if (map.size === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">No customer CRM records captured yet.</td></tr>';
     return;
   }
 
-  crmMap.forEach(guest => {
+  map.forEach(g => {
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td><strong>${guest.name}</strong></td>
-      <td><span style="font-family:monospace; color:#60a5fa;">${guest.phone}</span></td>
-      <td>${guest.visits} visit(s)</td>
-      <td><strong>₹${guest.spend}</strong></td>
-      <td>Table ${guest.lastTable}</td>
-      <td><a href="https://wa.me/${guest.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(guest.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!%20Enjoy%2015%25%20off%20on%20your%20next%20visit." target="_blank" class="btn-primary" style="font-size:0.75rem; padding:4px 8px; text-decoration:none; display:inline-flex;">💬 WhatsApp</a></td>
+      <td><strong>${g.name}</strong></td>
+      <td>${g.phone}</td>
+      <td>${g.count} visit(s)</td>
+      <td><strong>₹${g.spend}</strong></td>
+      <td>Table ${g.lastTable}</td>
+      <td><a href="https://wa.me/${g.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(g.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!" target="_blank" class="btn-punch-order" style="font-size:0.75rem; padding:4px 8px; text-decoration:none; display:inline-flex;">💬 WhatsApp</a></td>
     `;
     tbody.appendChild(row);
   });
-
-  document.getElementById('crmLeadsBadge').innerText = crmMap.size;
 }
 
 function exportCrmCsv() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
-  let csvContent = 'data:text/csv;charset=utf-8,Guest Name,Mobile Number,Total Orders,Total Spent\n';
-
+  let csv = 'data:text/csv;charset=utf-8,Name,Phone,Total Orders,Total Spent\n';
   const map = new Map();
+
   orders.forEach(o => {
     const phone = o.customerPhone || 'Walk-in';
     const name = o.customerName || 'Guest';
@@ -476,13 +404,13 @@ function exportCrmCsv() {
   });
 
   map.forEach(g => {
-    csvContent += `"${g.name}","${g.phone}",${g.count},${g.total}\n`;
+    csv += `"${g.name}","${g.phone}",${g.count},${g.total}\n`;
   });
 
-  const encodedUri = encodeURI(csvContent);
+  const encoded = encodeURI(csv);
   const link = document.createElement('a');
-  link.setAttribute('href', encodedUri);
-  link.setAttribute('download', 'restaurant_crm_customers.csv');
+  link.setAttribute('href', encoded);
+  link.setAttribute('download', 'crm_customers.csv');
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -491,81 +419,39 @@ function exportCrmCsv() {
 
 function renderAnalytics() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
-  let totalSales = 0;
-  orders.forEach(o => totalSales += o.total);
+  let total = 0;
+  orders.forEach(o => total += o.total);
 
-  const aov = orders.length > 0 ? Math.round(totalSales / orders.length) : 0;
-  const gst = Math.round(totalSales * 0.05);
+  const aov = orders.length > 0 ? Math.round(total / orders.length) : 0;
+  const gst = Math.round(total * 0.05);
 
-  document.getElementById('analyticRevenue').innerText = '₹' + totalSales;
-  document.getElementById('analyticTablesCount').innerText = orders.length;
-  document.getElementById('analyticAov').innerText = '₹' + aov;
-  document.getElementById('analyticGst').innerText = '₹' + gst;
-
-  const upiTotal = Math.round(totalSales * 0.75);
-  const cashTotal = totalSales - upiTotal;
-
-  document.getElementById('tenderUpiAmount').innerText = '₹' + upiTotal;
-  document.getElementById('tenderCashAmount').innerText = '₹' + cashTotal;
+  if (document.getElementById('analyticRevenue')) document.getElementById('analyticRevenue').innerText = '₹' + total;
+  if (document.getElementById('analyticTablesCount')) document.getElementById('analyticTablesCount').innerText = orders.length;
+  if (document.getElementById('analyticAov')) document.getElementById('analyticAov').innerText = '₹' + aov;
+  if (document.getElementById('analyticGst')) document.getElementById('analyticGst').innerText = '₹' + gst;
 }
 
 function printDailyZReport() {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
-  let totalSales = 0;
-  orders.forEach(o => totalSales += o.total);
-  const gst = Math.round(totalSales * 0.05);
+  let total = 0;
+  orders.forEach(o => total += o.total);
 
   const win = window.open('', '', 'width=380,height=550');
   win.document.write(`
     <html>
-    <head>
-      <title>Daily Z-Report</title>
-      <style>body { font-family: monospace; padding: 20px; font-size: 14px; } .center { text-align: center; } .line { border-top: 1px dashed #000; margin: 8px 0; } .row { display: flex; justify-content: space-between; margin: 4px 0; }</style>
-    </head>
+    <head><title>Z-Report</title><style>body { font-family: monospace; padding: 20px; font-size: 13px; } .center { text-align: center; } .line { border-top: 1px dashed #000; margin: 8px 0; } .row { display: flex; justify-content: space-between; margin: 4px 0; }</style></head>
     <body>
-      <div class="center">
-        <h2>THE GRAND ESTATE BISTRO</h2>
-        <h3>DAILY CLOSING Z-REPORT</h3>
-        <div>Date: ${new Date().toLocaleDateString()} | Time: ${new Date().toLocaleTimeString()}</div>
-      </div>
+      <div class="center"><h2>THE GRAND ESTATE</h2><h3>DAILY CLOSING Z-REPORT</h3><div>${new Date().toLocaleString()}</div></div>
       <div class="line"></div>
       <div class="row"><span>Total Orders:</span><span>${orders.length}</span></div>
-      <div class="row"><span>Gross Sales:</span><span>₹${totalSales}</span></div>
-      <div class="row"><span>GST Collected (5%):</span><span>₹${gst}</span></div>
-      <div class="line"></div>
-      <div class="row"><span>UPI / Digital:</span><span>₹${Math.round(totalSales * 0.75)}</span></div>
-      <div class="row"><span>Cash in Drawer:</span><span>₹${totalSales - Math.round(totalSales * 0.75)}</span></div>
+      <div class="row"><span>Gross Sales:</span><span>₹${total}</span></div>
+      <div class="row"><span>GST (5%):</span><span>₹${Math.round(total * 0.05)}</span></div>
       <div class="line"></div>
       <div class="center"><strong>*** REGISTER BALANCED & CLOSED ***</strong></div>
-    </body>
-    </html>
+    </body></html>
   `);
   win.document.close();
   win.print();
-}
-
-function renderAdminStandees() {
-  const container = document.getElementById('adminStandeesGrid');
-  if (!container) return;
-  container.innerHTML = '';
-  const baseUrl = 'https://divflow.pages.dev';
-
-  for (let i = 1; i <= 8; i++) {
-    const TOKENS = {"1":"T1_9e8a7b4f","2":"T2_4c5d6e1a","3":"T3_7f8a9b2c","4":"T4_1a2b3c9d","5":"T5_8d9e0f5e","6":"T6_3c4d5e8a","7":"T7_6f7a8b1c","8":"T8_2a3b4c7d"};
-      const targetUrl = `${baseUrl}/?t=${TOKENS[i]}`;
-    const encoded = encodeURIComponent(targetUrl);
-    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encoded}&margin=4`;
-
-    const card = document.createElement('div');
-    card.className = 'admin-standee-card';
-    card.innerHTML = `
-      <div style="font-weight:800; font-size:1.1rem; text-transform:uppercase;">THE GRAND ESTATE</div>
-      <div style="font-size:0.75rem; color:#64748b; margin-bottom:12px;">Digital Dining Table QR</div>
-      <img src="${qrApiUrl}" style="width:160px; height:160px; margin-bottom:12px;">
-      <div style="background:#0f172a; color:#fff; font-weight:800; padding:6px 14px; border-radius:6px; font-size:1.1rem;">TABLE ${i}</div>
-    `;
-    container.appendChild(card);
-  }
 }
 
 function printTableTaxInvoice() {
@@ -584,34 +470,50 @@ function printTableTaxInvoice() {
   const win = window.open('', '', 'width=380,height=550');
   win.document.write(`
     <html>
-    <head>
-      <title>GST Invoice — Table ${activeSelectedTable}</title>
-      <style>body { font-family: monospace; padding: 20px; font-size: 13px; } .center { text-align: center; } .line { border-top: 1px dashed #000; margin: 8px 0; } .row { display: flex; justify-content: space-between; margin: 4px 0; }</style>
-    </head>
+    <head><title>Invoice Table ${activeSelectedTable}</title><style>body { font-family: monospace; padding: 20px; font-size: 13px; } .center { text-align: center; } .line { border-top: 1px dashed #000; margin: 8px 0; } .row { display: flex; justify-content: space-between; margin: 4px 0; }</style></head>
     <body>
-      <div class="center">
-        <h2>THE GRAND ESTATE BISTRO</h2>
-        <div>GSTIN: 27AABCT3518Q1Z4</div>
-        <h3>TAX INVOICE — TABLE ${activeSelectedTable}</h3>
-        <div>Date: ${new Date().toLocaleDateString()} | Time: ${new Date().toLocaleTimeString()}</div>
-      </div>
+      <div class="center"><h2>THE GRAND ESTATE BISTRO</h2><div>GSTIN: 27AABCT3518Q1Z4</div><h3>TAX INVOICE — TABLE ${activeSelectedTable}</h3><div>${new Date().toLocaleString()}</div></div>
       <div class="line"></div>
       ${tableOrders.map(o => o.items.map(i => `<div class="row"><span>${i.qty}x ${i.name}</span><span>₹${i.price * i.qty}</span></div>`).join('')).join('')}
       <div class="line"></div>
       <div class="row"><span>Subtotal:</span><span>₹${subtotal}</span></div>
-      <div class="row"><span>CGST (2.5%):</span><span>₹${tax / 2}</span></div>
-      <div class="row"><span>SGST (2.5%):</span><span>₹${tax / 2}</span></div>
+      <div class="row"><span>GST (5%):</span><span>₹${tax}</span></div>
       <div class="line"></div>
       <div class="row" style="font-size:16px;"><strong>TOTAL:</strong><strong>₹${total}</strong></div>
       <div class="line"></div>
-      <div class="center"><div>Thank you for dining with us!</div></div>
-    </body>
-    </html>
+      <div class="center"><div>Thank you!</div></div>
+    </body></html>
   `);
   win.document.close();
   win.print();
 }
 
+function renderAdminStandees() {
+  const container = document.getElementById('adminStandeesGrid');
+  if (!container) return;
+  container.innerHTML = '';
+  const baseUrl = 'https://divflow.pages.dev';
+
+  for (let i = 1; i <= 8; i++) {
+    const targetUrl = `${baseUrl}/?table=${i}`;
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(targetUrl)}&margin=4`;
+
+    const card = document.createElement('div');
+    card.className = 'admin-standee-card';
+    card.innerHTML = `
+      <div style="font-weight:800; font-size:1rem; text-transform:uppercase;">THE GRAND ESTATE</div>
+      <div style="font-size:0.75rem; color:#64748b; margin-bottom:8px;">Table Standee</div>
+      <img src="${qrApiUrl}" style="width:140px; height:140px; margin-bottom:8px;">
+      <div style="background:#0f172a; color:#fff; font-weight:800; padding:6px 12px; border-radius:6px; font-size:1rem;">TABLE ${i}</div>
+    `;
+    container.appendChild(card);
+  }
+}
+
+function printStandeesClean() {
+  switchTab('qr');
+  setTimeout(() => window.print(), 100);
+}
 
 function saveOrderLocal(order) {
   const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
@@ -635,7 +537,6 @@ function loadOrdersInitial() {
   renderCRM();
   renderAnalytics();
 
-  // Pull cloud stream history
   fetch('https://ntfy.sh/' + SYNC_TOPIC + '/json?poll=1')
     .then(r => r.text())
     .then(text => {
@@ -656,7 +557,6 @@ function loadOrdersInitial() {
       renderFloorPlan();
       renderCRM();
       renderAnalytics();
-      selectInspectorTable(activeSelectedTable);
     })
     .catch(() => {});
 }
@@ -677,7 +577,6 @@ function setupRealtimeSSE() {
           renderFloorPlan();
           renderCRM();
           renderAnalytics();
-          selectInspectorTable(activeSelectedTable);
         }
       } catch(err) {}
     };
@@ -685,18 +584,11 @@ function setupRealtimeSSE() {
 }
 
 function showToast(msg) {
-  const toast = document.getElementById('adminToast');
-  if (!toast) return;
-  toast.innerText = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2500);
+  const t = document.getElementById('adminToast');
+  if (!t) return;
+  t.innerText = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-window.onload = () => { init(); setInterval(loadOrdersInitial, 2500); };
-
-function printStandeesClean() {
-  switchTab('qr');
-  setTimeout(() => {
-    window.print();
-  }, 100);
-}
+window.onload = init;
