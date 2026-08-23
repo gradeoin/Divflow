@@ -6,205 +6,224 @@
   <meta http-equiv="Expires" content="0">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Restro-OS — Cashier & Manager POS</title>
+  <title>Restro-OS Enterprise POS — The Grand Estate</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=v1787503568662">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css?v=v1787503768923">
 </head>
 <body>
 
-  <div class="pos-layout">
-    <!-- Top Header Bar -->
-    <header class="pos-header">
-      <div class="header-left">
-        <div class="logo-badge">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+  <!-- App Header -->
+  <header class="enterprise-header">
+    <div class="header-main-group">
+      <div class="brand-badge">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <div class="hotel-name">THE GRAND ESTATE <span class="edition-tag">ENTERPRISE POS</span></div>
+        <div class="sync-status"><span class="pulse-dot"></span> Real-Time Cloud Sync Active</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="pos-top-nav">
+      <button class="nav-tab active" onclick="switchView('floor', this)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Floor & Tables</span>
+        <span class="nav-counter" id="activeTablesCountBadge">0</span>
+      </button>
+
+      <button class="nav-tab" onclick="switchView('menu', this)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+        <span>Menu & Catalog</span>
+      </button>
+
+      <button class="nav-tab" onclick="switchView('crm', this)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Guest CRM</span>
+      </button>
+
+      <button class="nav-tab" onclick="switchView('analytics', this)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+        <span>Sales & Z-Report</span>
+      </button>
+
+      <button class="nav-tab" onclick="switchView('qr', this)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM17 17h4v4h-4z"/></svg>
+        <span>Table QR Studio</span>
+      </button>
+    </nav>
+
+    <!-- Header Quick Actions -->
+    <div class="header-action-group">
+      <button class="btn-primary-action" onclick="openNewOrderModal()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <span>+ Punch Order</span>
+      </button>
+      <a href="kitchen.html" target="_blank" class="btn-outline-action">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <span>Kitchen KDS</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="pos-main-container">
+
+    <!-- VIEW 1: Floor Plan & Tables -->
+    <section class="pos-subview active" id="viewFloor">
+      <!-- Floor Filter & KPI Bar -->
+      <div class="floor-kpi-bar">
+        <div class="kpi-filter-group">
+          <button class="kpi-chip active" onclick="filterFloorTables('all', this)">All (12)</button>
+          <button class="kpi-chip vacant" onclick="filterFloorTables('vacant', this)">
+            <span class="chip-dot"></span> Available (<span id="countVacant">0</span>)
+          </button>
+          <button class="kpi-chip cooking" onclick="filterFloorTables('cooking', this)">
+            <span class="chip-dot"></span> In Kitchen (<span id="countCooking">0</span>)
+          </button>
+          <button class="kpi-chip served" onclick="filterFloorTables('served', this)">
+            <span class="chip-dot"></span> Dining / Served (<span id="countServed">0</span>)
+          </button>
         </div>
+
+        <div class="kpi-sales-group">
+          <span class="sales-label">Today's Revenue:</span>
+          <span class="sales-val" id="floorTodaySales">₹0</span>
+        </div>
+      </div>
+
+      <!-- Tables Grid -->
+      <div class="industry-tables-grid" id="floorTablesGrid">
+        <!-- Injected dynamically via admin.js -->
+      </div>
+    </section>
+
+    <!-- VIEW 2: Menu Catalog & Price Studio -->
+    <section class="pos-subview" id="viewMenu">
+      <div class="subview-header">
         <div>
-          <h1 class="pos-title">THE GRAND ESTATE</h1>
-          <span class="pos-subtitle">CASHIER & MANAGER TERMINAL</span>
+          <h2>Menu Catalog & Live Price Studio</h2>
+          <p>Real-time pricing adjustments and 1-tap stock availability toggling (86ing).</p>
         </div>
+        <button class="btn-primary-action" onclick="openAddDishModal()">+ Add New Dish</button>
       </div>
 
-      <!-- Main Navigation Tabs -->
-      <nav class="pos-nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('floor', this)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          <span>Floor Map</span>
-          <span class="badge" id="activeTablesCountBadge">0</span>
-        </button>
+      <div class="menu-catalog-grid" id="menuEditorGrid"></div>
+    </section>
 
-        <button class="tab-btn" onclick="switchTab('menu', this)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
-          <span>Menu & Prices</span>
-        </button>
-
-        <button class="tab-btn" onclick="switchTab('crm', this)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span>Customers (CRM)</span>
-        </button>
-
-        <button class="tab-btn" onclick="switchTab('analytics', this)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
-          <span>Sales & Z-Report</span>
-        </button>
-
-        <button class="tab-btn" onclick="switchTab('qr', this)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM17 17h4v4h-4z"/></svg>
-          <span>QR Standees</span>
-        </button>
-      </nav>
-
-      <div class="header-right">
-        <button class="btn-punch-order" onclick="openNewOrderModal()">
-          + Punch Order
-        </button>
-        <a href="kitchen.html" target="_blank" class="btn-kds-link">
-          Open Kitchen (KDS) ➔
-        </a>
-      </div>
-    </header>
-
-    <!-- Main Viewport Content -->
-    <main class="pos-content">
-
-      <!-- TAB 1: Spacious Floor Map -->
-      <section class="pos-view active" id="viewFloor">
-        <div class="floor-summary-bar">
-          <div class="summary-left">
-            <span class="status-legend"><span class="dot vacant"></span> <span id="countVacant">0</span> Vacant</span>
-            <span class="status-legend"><span class="dot cooking"></span> <span id="countCooking">0</span> Cooking</span>
-            <span class="status-legend"><span class="dot served"></span> <span id="countServed">0</span> Food on Table</span>
-          </div>
-          <div class="summary-right">
-            <span>Today's Total Sales:</span>
-            <strong id="floorTodaySales">₹0</strong>
-          </div>
-        </div>
-
-        <div class="tables-grid" id="floorTablesGrid">
-          <!-- Injected dynamically -->
-        </div>
-      </section>
-
-      <!-- TAB 2: Menu Catalog & Prices -->
-      <section class="pos-view" id="viewMenu">
-        <div class="view-header">
-          <div>
-            <h2>Menu Catalog & Live Pricing</h2>
-            <p>Edit prices or toggle In Stock / Sold Out in 1 click.</p>
-          </div>
-          <button class="btn-punch-order" onclick="openAddDishModal()">+ Add New Dish</button>
-        </div>
-        <div class="menu-grid" id="menuEditorGrid"></div>
-      </section>
-
-      <!-- TAB 3: Customers (CRM) -->
-      <section class="pos-view" id="viewCrm">
-        <div class="view-header">
-          <div>
-            <h2>Guest CRM Database</h2>
-            <p>Customer contact records captured from table orders.</p>
-          </div>
-          <button class="btn-secondary" onclick="exportCrmCsv()">📥 Download Excel (CSV)</button>
-        </div>
-        <div class="crm-table-box">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>GUEST NAME</th>
-                <th>PHONE NUMBER</th>
-                <th>TOTAL VISITS</th>
-                <th>LIFETIME SPEND</th>
-                <th>LAST TABLE</th>
-                <th>ACTION</th>
-              </tr>
-            </thead>
-            <tbody id="crmTableBody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- TAB 4: Daily Sales & Z-Report -->
-      <section class="pos-view" id="viewAnalytics">
-        <div class="view-header">
-          <div>
-            <h2>Daily Sales & Register Z-Report</h2>
-            <p>End-of-day register closure and tax summary.</p>
-          </div>
-          <button class="btn-secondary" onclick="printDailyZReport()">🖨️ Print Daily Z-Report</button>
-        </div>
-        <div class="metrics-grid">
-          <div class="metric-box">
-            <span>TOTAL SALES TODAY</span>
-            <strong id="analyticRevenue">₹0</strong>
-          </div>
-          <div class="metric-box">
-            <span>COMPLETED COVERS / ORDERS</span>
-            <strong id="analyticTablesCount">0</strong>
-          </div>
-          <div class="metric-box">
-            <span>AVERAGE ORDER VALUE</span>
-            <strong id="analyticAov">₹0</strong>
-          </div>
-          <div class="metric-box">
-            <span>ESTIMATED GST (5%)</span>
-            <strong id="analyticGst">₹0</strong>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 5: QR Standees Studio -->
-      <section class="pos-view" id="viewQr">
-        <div class="view-header">
-          <div>
-            <h2>Table QR Standee Studio</h2>
-            <p>High-resolution printable standees for Tables 1 to 8.</p>
-          </div>
-          <div style="display:flex; gap:10px;">
-            <a href="qr.html" target="_blank" class="btn-secondary" style="text-decoration:none;">📄 Standalone Page</a>
-            <button class="btn-punch-order" onclick="printStandeesClean()">🖨️ Print All Standees</button>
-          </div>
-        </div>
-        <div class="standees-grid" id="adminStandeesGrid"></div>
-      </section>
-    </main>
-  </div>
-
-  <!-- Slide-Out Table Checkout & Billing Modal -->
-  <div class="table-modal-overlay" id="tableModalOverlay" style="display:none;" onclick="closeTableModal(event)">
-    <div class="table-modal-sheet" onclick="event.stopPropagation()">
-      <div class="sheet-header">
+    <!-- VIEW 3: Customer CRM -->
+    <section class="pos-subview" id="viewCrm">
+      <div class="subview-header">
         <div>
-          <h2 id="sheetTableTitle">TABLE 4</h2>
-          <span class="sheet-status-tag" id="sheetStatusTag">VACANT</span>
+          <h2>Guest CRM & Dining History</h2>
+          <p>Contact records collected automatically from mobile table orders.</p>
         </div>
-        <button class="sheet-close-btn" onclick="closeTableModal()">✕</button>
+        <button class="btn-outline-action" onclick="exportCrmCsv()">📥 Export to CSV / Excel</button>
       </div>
 
-      <div class="sheet-guest-info">
-        <div><span>Guest:</span> <strong id="sheetGuestName">Walk-in</strong></div>
-        <div><span>Phone:</span> <span id="sheetGuestPhone">N/A</span></div>
+      <div class="enterprise-table-wrapper">
+        <table class="enterprise-table">
+          <thead>
+            <tr>
+              <th>GUEST NAME</th>
+              <th>MOBILE NUMBER</th>
+              <th>VISITS</th>
+              <th>LIFETIME SPEND</th>
+              <th>LAST SEATED</th>
+              <th>WHATSAPP CAMPAIGN</th>
+            </tr>
+          </thead>
+          <tbody id="crmTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VIEW 4: Daily Sales & Z-Report -->
+    <section class="pos-subview" id="viewAnalytics">
+      <div class="subview-header">
+        <div>
+          <h2>Day-End Closing Z-Report & Sales Ledger</h2>
+          <p>Official tax calculation, transaction totals, and cash vs digital payment split.</p>
+        </div>
+        <button class="btn-primary-action" onclick="printDailyZReport()">🖨️ Print Closing Z-Report</button>
       </div>
 
-      <div class="sheet-items-scroll" id="sheetItemsList">
+      <div class="executive-metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">GROSS SALES TODAY</span>
+          <strong class="metric-number" id="analyticRevenue">₹0</strong>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">TOTAL COVERS SERVED</span>
+          <strong class="metric-number" id="analyticTablesCount">0</strong>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">AVERAGE TABLE VALUE (ATV)</span>
+          <strong class="metric-number" id="analyticAov">₹0</strong>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">GST COLLECTED (5%)</span>
+          <strong class="metric-number" id="analyticGst">₹0</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: Printable Table QR Standees -->
+    <section class="pos-subview" id="viewQr">
+      <div class="subview-header">
+        <div>
+          <h2>Table Standee Studio</h2>
+          <p>Printable high-resolution QR standees for Tables 1 to 8.</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a href="qr.html" target="_blank" class="btn-outline-action" style="text-decoration:none;">📄 Standalone Page</a>
+          <button class="btn-primary-action" onclick="printStandeesClean()">🖨️ Quick Print Standees</button>
+        </div>
+      </div>
+      <div class="standees-grid" id="adminStandeesGrid"></div>
+    </section>
+
+  </main>
+
+  <!-- Industry Standard Slide-Out Register Drawer -->
+  <div class="register-drawer-overlay" id="tableModalOverlay" style="display:none;" onclick="closeTableModal(event)">
+    <div class="register-drawer-sheet" onclick="event.stopPropagation()">
+      <div class="register-head">
+        <div>
+          <div class="register-table-num" id="sheetTableTitle">TABLE 04</div>
+          <span class="register-status-badge" id="sheetStatusTag">VACANT</span>
+        </div>
+        <button class="btn-close-register" onclick="closeTableModal()">✕</button>
+      </div>
+
+      <div class="register-guest-card">
+        <div class="guest-field"><span>Guest:</span> <strong id="sheetGuestName">Walk-in</strong></div>
+        <div class="guest-field"><span>Phone:</span> <span id="sheetGuestPhone">N/A</span></div>
+      </div>
+
+      <!-- Itemized Bill List -->
+      <div class="register-items-pane" id="sheetItemsList">
         <!-- Injected dynamically -->
       </div>
 
-      <div class="sheet-footer">
-        <div class="sheet-bill-summary">
-          <div class="bill-row"><span>Subtotal</span><span id="sheetSubtotal">₹0</span></div>
-          <div class="bill-row"><span>GST (5%)</span><span id="sheetTax">₹0</span></div>
-          <div class="bill-row total"><strong>Grand Total</strong><strong id="sheetTotal">₹0</strong></div>
+      <!-- Billing Breakdown -->
+      <div class="register-billing-dock">
+        <div class="bill-summary-line"><span>Subtotal:</span> <span id="sheetSubtotal">₹0</span></div>
+        <div class="bill-summary-line"><span>CGST (2.5%):</span> <span id="sheetCgst">₹0</span></div>
+        <div class="bill-summary-line"><span>SGST (2.5%):</span> <span id="sheetSgst">₹0</span></div>
+        <div class="bill-summary-line grand-total">
+          <strong>TOTAL PAYABLE:</strong>
+          <strong id="sheetTotal">₹0</strong>
         </div>
 
-        <div class="sheet-actions-grid">
-          <button class="action-btn invoice" onclick="printTableTaxInvoice()">
+        <div class="register-actions-row">
+          <button class="btn-print-bill" onclick="printTableTaxInvoice()">
             🖨️ Print GST Bill
           </button>
-          <button class="action-btn settle" onclick="settleAndClearCurrentTable()">
-            ✓ Mark Paid & Clear Table
+          <button class="btn-settle-table" onclick="settleAndClearCurrentTable()">
+            ✓ Mark Paid & Clear
           </button>
         </div>
       </div>
@@ -213,13 +232,13 @@
 
   <!-- Modal: Manual Punch Order -->
   <div class="modal-backdrop" id="modalPunchOrder" style="display:none;">
-    <div class="admin-modal">
-      <div class="admin-modal-head">
-        <h3>Punch Manual Table Order</h3>
-        <button class="close-btn" onclick="closeModal('modalPunchOrder')">✕</button>
+    <div class="industry-modal-box">
+      <div class="modal-head">
+        <h3>+ Punch Table Order</h3>
+        <button class="btn-close-modal" onclick="closeModal('modalPunchOrder')">✕</button>
       </div>
       <div class="modal-form">
-        <div class="input-row">
+        <div class="form-group">
           <label>Select Table</label>
           <select id="punchTableSelect">
             <option value="1">Table 1</option>
@@ -232,40 +251,40 @@
             <option value="8">Table 8</option>
           </select>
         </div>
-        <div class="input-row">
+        <div class="form-group">
           <label>Guest Name</label>
           <input type="text" id="punchGuestName" placeholder="e.g. Rahul Sharma" value="Walk-in Guest">
         </div>
-        <div class="input-row">
+        <div class="form-group">
           <label>Select Dish</label>
           <select id="punchDishSelect"></select>
         </div>
-        <div class="input-row">
+        <div class="form-group">
           <label>Quantity</label>
           <input type="number" id="punchQty" value="1" min="1">
         </div>
-        <button class="btn-punch-order btn-block" onclick="submitManualOrder()">Dispatch to Kitchen</button>
+        <button class="btn-primary-action btn-full" onclick="submitManualOrder()">Dispatch to Kitchen</button>
       </div>
     </div>
   </div>
 
   <!-- Modal: Add New Dish -->
   <div class="modal-backdrop" id="modalAddDish" style="display:none;">
-    <div class="admin-modal">
-      <div class="admin-modal-head">
-        <h3>+ Add New Menu Item</h3>
-        <button class="close-btn" onclick="closeModal('modalAddDish')">✕</button>
+    <div class="industry-modal-box">
+      <div class="modal-head">
+        <h3>+ Add Menu Item</h3>
+        <button class="btn-close-modal" onclick="closeModal('modalAddDish')">✕</button>
       </div>
       <div class="modal-form">
-        <div class="input-row">
+        <div class="form-group">
           <label>Dish Name *</label>
-          <input type="text" id="addDishName" placeholder="e.g. Truffle Risotto" required>
+          <input type="text" id="addDishName" placeholder="e.g. Truffle Mushroom Risotto" required>
         </div>
-        <div class="input-row">
+        <div class="form-group">
           <label>Price (₹) *</label>
           <input type="number" id="addDishPrice" placeholder="e.g. 380" required>
         </div>
-        <div class="input-row">
+        <div class="form-group">
           <label>Category</label>
           <select id="addDishCategory">
             <option value="starters">Starters & Appetizers</option>
@@ -276,21 +295,21 @@
             <option value="desserts">Desserts</option>
           </select>
         </div>
-        <div class="input-row">
-          <label>Dietary Type</label>
+        <div class="form-group">
+          <label>Dietary Indicator</label>
           <select id="addDishVeg">
             <option value="true">🟢 Pure Vegetarian</option>
             <option value="false">🔴 Non-Vegetarian</option>
           </select>
         </div>
-        <button class="btn-punch-order btn-block" onclick="submitNewDish()">Save Dish</button>
+        <button class="btn-primary-action btn-full" onclick="submitNewDish()">Save to Menu</button>
       </div>
     </div>
   </div>
 
-  <!-- Non-blocking Toast -->
-  <div class="admin-toast" id="adminToast">Action completed</div>
+  <!-- Non-blocking Toast Notification -->
+  <div class="enterprise-toast" id="adminToast">Action completed successfully</div>
 
-  <script src="admin.js?v=v1787503568662"></script>
+  <script src="admin.js?v=v1787503768923"></script>
 </body>
 </html>

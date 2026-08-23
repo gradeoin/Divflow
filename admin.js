@@ -5,6 +5,7 @@ const LOCAL_STORAGE_MENU = 'divflow_custom_menu_v1';
 
 let activeSelectedTable = '4';
 let currentMenu = [];
+let activeFloorFilter = 'all';
 
 const INITIAL_MENU = [
   { id: 'st1', name: 'Charcoal Smoked Paneer Tikka', category: 'starters', price: 280, isVeg: true, inStock: true, img: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80' },
@@ -25,13 +26,20 @@ function init() {
   setInterval(loadOrdersInitial, 2500);
 }
 
-function switchTab(viewId, btnElement) {
-  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.pos-view').forEach(el => el.classList.remove('active'));
+function switchView(viewId, btnElement) {
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.pos-subview').forEach(el => el.classList.remove('active'));
 
   if (btnElement) btnElement.classList.add('active');
   const target = document.getElementById('view' + viewId.charAt(0).toUpperCase() + viewId.slice(1));
   if (target) target.classList.add('active');
+}
+
+function filterFloorTables(filterState, btnElement) {
+  activeFloorFilter = filterState;
+  document.querySelectorAll('.kpi-chip').forEach(el => el.classList.remove('active'));
+  if (btnElement) btnElement.classList.add('active');
+  renderFloorPlan();
 }
 
 function loadMenuData() {
@@ -71,7 +79,7 @@ function renderFloorPlan() {
   for (let i = 1; i <= 12; i++) {
     const tableOrders = orders.filter(o => o.table == i && o.status !== 'Paid');
     let state = 'Vacant';
-    let guestName = 'Vacant Table';
+    let guestName = 'Available Table';
     let info = 'Ready for seating';
     let total = 0;
 
@@ -100,21 +108,29 @@ function renderFloorPlan() {
       vacant++;
     }
 
+    // Apply Filter Chip
+    if (activeFloorFilter === 'vacant' && state !== 'Vacant') continue;
+    if (activeFloorFilter === 'cooking' && state !== 'Cooking') continue;
+    if (activeFloorFilter === 'served' && state !== 'Served') continue;
+
     const card = document.createElement('div');
-    card.className = `pos-table-card state-${state}`;
-    card.onclick = () => openTableCheckoutSheet(i);
+    card.className = `industry-table-card state-${state}`;
+    card.onclick = () => openTableRegister(i);
     card.innerHTML = `
-      <div class="card-top">
-        <span class="card-num">TABLE ${i}</span>
-        <span class="card-pill">${state.toUpperCase()}</span>
+      <div class="table-card-header">
+        <div class="table-title-box">
+          <span class="table-number">TABLE ${i < 10 ? '0' + i : i}</span>
+          <span class="table-section">Main Dining • 4 Pax</span>
+        </div>
+        <span class="status-badge-pill">${state}</span>
       </div>
-      <div class="card-mid">
-        <div class="card-guest">${guestName}</div>
-        <div class="card-info">${info}</div>
+      <div class="table-card-body">
+        <div class="guest-name-text">${guestName}</div>
+        <div class="order-summary-text">${info}</div>
       </div>
-      <div class="card-bot">
-        <span class="card-total">${total > 0 ? '₹' + total : 'FREE'}</span>
-        <span class="card-hint">Tap to Settle ➔</span>
+      <div class="table-card-footer">
+        <span class="running-bill-amount">${total > 0 ? '₹' + total : '₹0'}</span>
+        <span class="settle-action-hint">Settle Bill ➔</span>
       </div>
     `;
     grid.appendChild(card);
@@ -129,12 +145,12 @@ function renderFloorPlan() {
   if (document.getElementById('floorTodaySales')) document.getElementById('floorTodaySales').innerText = '₹' + todaySales;
 }
 
-function openTableCheckoutSheet(tableNum) {
+function openTableRegister(tableNum) {
   activeSelectedTable = String(tableNum);
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
   const tableOrders = orders.filter(o => o.table == activeSelectedTable && o.status !== 'Paid');
 
-  document.getElementById('sheetTableTitle').innerText = 'TABLE ' + activeSelectedTable;
+  document.getElementById('sheetTableTitle').innerText = 'TABLE ' + (Number(activeSelectedTable) < 10 ? '0' + activeSelectedTable : activeSelectedTable);
 
   let guestName = 'Walk-in Guest';
   let guestPhone = 'Not provided';
@@ -146,43 +162,46 @@ function openTableCheckoutSheet(tableNum) {
 
   if (tableOrders.length > 0) {
     const isAllServed = tableOrders.every(o => o.status === 'Served');
-    statusText = isAllServed ? 'SERVED' : 'COOKING';
+    statusText = isAllServed ? 'FOOD SERVED' : 'COOKING IN KITCHEN';
     guestName = tableOrders[0].customerName || 'Guest';
     guestPhone = tableOrders[0].customerPhone || 'N/A';
 
     tableOrders.forEach(o => {
       subtotal += o.subtotal;
       const orderBox = document.createElement('div');
-      orderBox.className = 'sheet-order-card';
+      orderBox.className = 'itemized-order-block';
       orderBox.innerHTML = `
-        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#60a5fa; font-weight:700; margin-bottom:6px;">
+        <div class="order-block-header">
           <span>#${o.id} • ${o.timestamp}</span>
-          <span style="color:${o.status === 'Served' ? '#4ade80' : '#fbbf24'};">${o.status.toUpperCase()}</span>
+          <span style="color:${o.status === 'Served' ? '#16a34a' : '#d97706'};">${o.status.toUpperCase()}</span>
         </div>
         ${o.items.map(i => `
-          <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin:2px 0;">
+          <div class="item-line-row">
             <span>${i.qty}x ${i.name}</span>
-            <span>₹${i.price * i.qty}</span>
+            <strong>₹${i.price * i.qty}</strong>
           </div>
         `).join('')}
       `;
       list.appendChild(orderBox);
     });
   } else {
-    list.innerHTML = '<div style="text-align:center; padding:40px 20px; color:#94a3b8; font-size:0.9rem;">Table is currently vacant and clean.</div>';
+    list.innerHTML = '<div style="text-align:center; padding:50px 20px; color:#94a3b8; font-size:0.9rem;">Table is currently available for seating.</div>';
   }
 
   const statusTag = document.getElementById('sheetStatusTag');
   statusTag.innerText = statusText;
   if (statusText === 'VACANT') {
-    statusTag.style.background = 'rgba(34, 197, 94, 0.2)';
-    statusTag.style.color = '#4ade80';
-  } else if (statusText === 'SERVED') {
-    statusTag.style.background = 'rgba(59, 130, 246, 0.25)';
-    statusTag.style.color = '#60a5fa';
+    statusTag.style.background = '#f0fdf4';
+    statusTag.style.color = '#16a34a';
+    statusTag.style.border = '1px solid #bbf7d0';
+  } else if (statusText === 'FOOD SERVED') {
+    statusTag.style.background = '#eff6ff';
+    statusTag.style.color = '#2563eb';
+    statusTag.style.border = '1px solid #bfdbfe';
   } else {
-    statusTag.style.background = 'rgba(245, 158, 11, 0.25)';
-    statusTag.style.color = '#fbbf24';
+    statusTag.style.background = '#fffbeb';
+    statusTag.style.color = '#d97706';
+    statusTag.style.border = '1px solid #fde68a';
   }
 
   document.getElementById('sheetGuestName').innerText = guestName;
@@ -192,7 +211,8 @@ function openTableCheckoutSheet(tableNum) {
   const total = subtotal + tax;
 
   document.getElementById('sheetSubtotal').innerText = '₹' + subtotal;
-  document.getElementById('sheetTax').innerText = '₹' + tax;
+  document.getElementById('sheetCgst').innerText = '₹' + (tax / 2);
+  document.getElementById('sheetSgst').innerText = '₹' + (tax / 2);
   document.getElementById('sheetTotal').innerText = '₹' + total;
 
   document.getElementById('tableModalOverlay').style.display = 'flex';
@@ -220,7 +240,7 @@ function settleAndClearCurrentTable() {
   renderFloorPlan();
   renderCRM();
   renderAnalytics();
-  showToast('Table ' + activeSelectedTable + ' marked Paid & Cleared!');
+  showToast('Table ' + activeSelectedTable + ' settled & marked Available!');
 }
 
 function renderMenuEditor() {
@@ -230,15 +250,15 @@ function renderMenuEditor() {
 
   currentMenu.forEach(item => {
     const card = document.createElement('div');
-    card.className = 'menu-item-row';
+    card.className = 'catalog-item-card';
     card.innerHTML = `
-      <img src="${item.img}" class="menu-item-thumb" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
-      <div style="flex:1;">
-        <div style="font-weight:700; font-size:0.9rem; margin-bottom:2px;">${item.name}</div>
-        <span>₹<input type="number" value="${item.price}" style="background:#0f172a; border:1px solid #334155; color:#fff; width:65px; border-radius:4px; padding:2px 6px; font-weight:700;" onchange="updateItemPrice('${item.id}', this.value)"></span>
+      <img src="${item.img}" class="catalog-thumb" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+      <div class="catalog-meta">
+        <div class="catalog-title">${item.name}</div>
+        <span>₹ <input type="number" value="${item.price}" class="catalog-price-input" onchange="updateItemPrice('${item.id}', this.value)"></span>
       </div>
-      <button class="btn-secondary" style="${item.inStock ? 'color:#4ade80;' : 'color:#f87171;'}" onclick="toggleItemStock('${item.id}')">
-        ${item.inStock ? '✓ In Stock' : '✕ Sold Out'}
+      <button class="stock-toggle-btn ${item.inStock ? 'in-stock' : ''}" onclick="toggleItemStock('${item.id}')">
+        ${item.inStock ? '✓ In Stock' : '✕ 86ed (Sold Out)'}
       </button>
     `;
     grid.appendChild(card);
@@ -250,7 +270,7 @@ function updateItemPrice(id, newPrice) {
   if (item) {
     item.price = Number(newPrice);
     saveMenuData();
-    showToast('Price updated to ₹' + newPrice);
+    showToast('Updated ' + item.name + ' to ₹' + newPrice);
   }
 }
 
@@ -259,7 +279,7 @@ function toggleItemStock(id) {
   if (item) {
     item.inStock = !item.inStock;
     saveMenuData();
-    showToast(item.name + (item.inStock ? ' In Stock' : ' Sold Out'));
+    showToast(item.name + (item.inStock ? ' In Stock' : ' marked Sold Out (86ed)'));
   }
 }
 
@@ -274,7 +294,7 @@ function submitNewDish() {
   const isVeg = document.getElementById('addDishVeg').value === 'true';
 
   if (!name || !price) {
-    showToast('Enter dish name and price');
+    showToast('Please enter dish name and price');
     return;
   }
 
@@ -292,7 +312,7 @@ function submitNewDish() {
   closeModal('modalAddDish');
   document.getElementById('addDishName').value = '';
   document.getElementById('addDishPrice').value = '';
-  showToast(name + ' added to menu!');
+  showToast(name + ' added to catalog!');
 }
 
 function openNewOrderModal() {
@@ -319,7 +339,7 @@ function submitManualOrder() {
     customerName: guestName,
     customerPhone: 'Walk-in',
     items: [{ name: dish.name, qty, price: dish.price }],
-    specialNotes: 'Punched at Counter',
+    specialNotes: 'Punched at POS Terminal',
     subtotal,
     tax,
     total,
@@ -369,7 +389,7 @@ function renderCRM() {
   tbody.innerHTML = '';
 
   if (map.size === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">No customer CRM records captured yet.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:36px; color:#94a3b8;">No customer CRM records captured yet.</td></tr>';
     return;
   }
 
@@ -377,11 +397,11 @@ function renderCRM() {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><strong>${g.name}</strong></td>
-      <td>${g.phone}</td>
+      <td><span style="font-family:monospace; color:#2563eb;">${g.phone}</span></td>
       <td>${g.count} visit(s)</td>
       <td><strong>₹${g.spend}</strong></td>
       <td>Table ${g.lastTable}</td>
-      <td><a href="https://wa.me/${g.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(g.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!" target="_blank" class="btn-punch-order" style="font-size:0.75rem; padding:4px 8px; text-decoration:none; display:inline-flex;">💬 WhatsApp</a></td>
+      <td><a href="https://wa.me/${g.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(g.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!" target="_blank" class="btn-primary-action" style="font-size:0.75rem; padding:5px 10px; text-decoration:none; display:inline-flex;">💬 Send WhatsApp Offer</a></td>
     `;
     tbody.appendChild(row);
   });
@@ -477,11 +497,12 @@ function printTableTaxInvoice() {
       ${tableOrders.map(o => o.items.map(i => `<div class="row"><span>${i.qty}x ${i.name}</span><span>₹${i.price * i.qty}</span></div>`).join('')).join('')}
       <div class="line"></div>
       <div class="row"><span>Subtotal:</span><span>₹${subtotal}</span></div>
-      <div class="row"><span>GST (5%):</span><span>₹${tax}</span></div>
+      <div class="row"><span>CGST (2.5%):</span><span>₹${tax / 2}</span></div>
+      <div class="row"><span>SGST (2.5%):</span><span>₹${tax / 2}</span></div>
       <div class="line"></div>
       <div class="row" style="font-size:16px;"><strong>TOTAL:</strong><strong>₹${total}</strong></div>
       <div class="line"></div>
-      <div class="center"><div>Thank you!</div></div>
+      <div class="center"><div>Thank you for dining with us!</div></div>
     </body></html>
   `);
   win.document.close();
@@ -501,17 +522,17 @@ function renderAdminStandees() {
     const card = document.createElement('div');
     card.className = 'admin-standee-card';
     card.innerHTML = `
-      <div style="font-weight:800; font-size:1rem; text-transform:uppercase;">THE GRAND ESTATE</div>
-      <div style="font-size:0.75rem; color:#64748b; margin-bottom:8px;">Table Standee</div>
-      <img src="${qrApiUrl}" style="width:140px; height:140px; margin-bottom:8px;">
-      <div style="background:#0f172a; color:#fff; font-weight:800; padding:6px 12px; border-radius:6px; font-size:1rem;">TABLE ${i}</div>
+      <div style="font-weight:800; font-size:1.05rem; text-transform:uppercase;">THE GRAND ESTATE</div>
+      <div style="font-size:0.75rem; color:#64748b; margin-bottom:10px;">Digital Dining QR Standee</div>
+      <img src="${qrApiUrl}" style="width:140px; height:140px; margin-bottom:10px;">
+      <div style="background:#0f172a; color:#fff; font-weight:800; padding:6px 14px; border-radius:6px; font-size:1.05rem;">TABLE ${i}</div>
     `;
     container.appendChild(card);
   }
 }
 
 function printStandeesClean() {
-  switchTab('qr');
+  switchView('qr');
   setTimeout(() => window.print(), 100);
 }
 
