@@ -126,6 +126,7 @@ function loadOrdersFromStorage() {
   }
 
   
+  
   [...activeOrders].reverse().forEach(order => {
     const isServed = order.status === 'Served';
     const card = document.createElement('div');
@@ -138,13 +139,12 @@ function loadOrdersFromStorage() {
       <div class="ticket-body">
         ${order.items.map(i => `
           <div class="ticket-item">
-            <span><span class="ticket-qty">${i.qty}x</span> <strong>${i.name}</strong></span>
-            <span>₹${i.price * i.qty}</span>
+            <span><span class="ticket-qty">${i.qty}x</span> <strong style="font-size:1.05rem;">${i.name}</strong></span>
           </div>
         `).join('')}
         ${order.specialNotes && order.specialNotes !== 'None' ? `
           <div class="ticket-notes">
-            <strong>CHEF NOTES:</strong> ${order.specialNotes}
+            <strong>⚠️ CHEF INSTRUCTIONS:</strong> ${order.specialNotes}
           </div>
         ` : ''}
       </div>
@@ -158,13 +158,14 @@ function loadOrdersFromStorage() {
             ✓ SERVED TO TABLE
           </div>
         `}
-        <button class="ticket-action-btn btn-print" onclick="printKOT('${order.id}')" title="Print KOT Slip">
-          PRINT
+        <button class="ticket-action-btn btn-print" onclick="printKOT('${order.id}')" title="Print Kitchen Slip">
+          PRINT KOT
         </button>
       </div>
     `;
     grid.appendChild(card);
   });
+
 
 }
 
@@ -194,6 +195,7 @@ function broadcastStatusUpdate(orderId, newStatus) {
   } catch(e) {}
 }
 
+
 function printKOT(id) {
   const orders = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ORDERS) || '[]');
   const order = orders.find(o => o.id === id);
@@ -205,34 +207,31 @@ function printKOT(id) {
     <head>
       <title>KOT #${order.id}</title>
       <style>
-        body { font-family: monospace; padding: 20px; font-size: 13px; }
+        body { font-family: monospace; padding: 20px; font-size: 14px; }
         .center { text-align: center; }
-        .line { border-top: 1px dashed #000; margin: 8px 0; }
-        .item { display: flex; justify-content: space-between; margin: 4px 0; }
+        .line { border-top: 1px dashed #000; margin: 10px 0; }
+        .item { font-size: 16px; font-weight: bold; margin: 8px 0; }
       </style>
     </head>
     <body>
       <div class="center">
-        <h2>THE GRAND ESTATE</h2>
-        <h3>KITCHEN ORDER TICKET (KOT)</h3>
+        <h2>KITCHEN ORDER TICKET (KOT)</h2>
         <h1>TABLE ${order.table}</h1>
-        <div>Guest: ${order.customerName || 'Walk-in'} (${order.customerPhone || 'N/A'})</div>
+        <div>Guest: ${order.customerName || 'Walk-in'}</div>
         <div>#${order.id} | ${order.timestamp}</div>
       </div>
       <div class="line"></div>
-      ${order.items.map(i => `<div class="item"><span>${i.qty}x ${i.name}</span><span>₹${i.price * i.qty}</span></div>`).join('')}
+      ${order.items.map(i => `<div class="item"><span>${i.qty}x ${i.name}</span></div>`).join('')}
       <div class="line"></div>
-      <div><strong>Special Instructions:</strong> ${order.specialNotes}</div>
-      <div class="line"></div>
-      <div class="item"><strong>SUBTOTAL:</strong><span>₹${order.subtotal}</span></div>
-      <div class="item"><strong>GST (5%):</strong><span>₹${order.tax}</span></div>
-      <div class="item"><strong>TOTAL:</strong><strong>₹${order.total}</strong></div>
+      ${order.specialNotes && order.specialNotes !== 'None' ? `<div><strong>Instructions:</strong> ${order.specialNotes}</div><div class="line"></div>` : ''}
+      <div class="center"><strong>*** DISPATCH WHEN READY ***</strong></div>
     </body>
     </html>
   `);
   printWin.document.close();
   printWin.print();
 }
+
 
 function clearAllOrders() {
   if (confirm('Clear active kitchen display tickets?')) {
