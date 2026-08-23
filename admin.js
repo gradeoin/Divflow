@@ -29,8 +29,8 @@ function init() {
 }
 
 function switchView(viewId, btnElement) {
-  document.querySelectorAll('.nav-item-btn').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.pos-tab-view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.header-tab-btn').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.pos-content-view').forEach(el => el.classList.remove('active'));
 
   if (btnElement) btnElement.classList.add('active');
   const target = document.getElementById('view' + viewId.charAt(0).toUpperCase() + viewId.slice(1));
@@ -39,7 +39,7 @@ function switchView(viewId, btnElement) {
 
 function filterFloorTables(filterState, btnElement) {
   activeFloorFilter = filterState;
-  document.querySelectorAll('.bold-chip').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.solid-chip').forEach(el => el.classList.remove('active'));
   if (btnElement) btnElement.classList.add('active');
   renderFloorPlan();
 }
@@ -120,7 +120,6 @@ function renderFloorPlan() {
       vacant++;
     }
 
-    // Filter check
     if (activeFloorFilter === 'vacant' && state !== 'Vacant') continue;
     if (activeFloorFilter === 'occupied' && state !== 'Occupied') continue;
     if (activeFloorFilter === 'cooking' && state !== 'Cooking') continue;
@@ -128,20 +127,20 @@ function renderFloorPlan() {
 
     const isSelected = String(i) === activeSelectedTable;
     const card = document.createElement('div');
-    card.className = `table-pos-card state-${state} ${isSelected ? 'selected-active-table' : ''}`;
+    card.className = `floor-pos-card state-${state} ${isSelected ? 'selected-active-table' : ''}`;
     card.onclick = () => inspectTableOnRightSidebar(i);
     card.innerHTML = `
-      <div class="card-head-row">
-        <span class="table-name-txt">TABLE ${i < 10 ? '0' + i : i}</span>
-        <span class="card-status-badge badge-${state.toLowerCase()}">${state.toUpperCase()}</span>
+      <div class="card-top-row">
+        <span class="table-card-num">TABLE ${i < 10 ? '0' + i : i}</span>
+        <span class="status-pill-solid badge-${state.toLowerCase()}">${state.toUpperCase()}</span>
       </div>
-      <div class="card-center-row">
-        <div class="guest-label-txt">${guestName}</div>
-        <div class="order-desc-txt">${info}</div>
+      <div class="card-mid-row">
+        <div class="guest-name-txt">${guestName}</div>
+        <div class="order-summary-txt">${info}</div>
       </div>
-      <div class="card-foot-row">
-        <span class="bill-amount-txt">${total > 0 ? '₹' + total : (state === 'Occupied' ? 'SEATED' : 'FREE')}</span>
-        <span class="action-cue-txt">View Bill ➔</span>
+      <div class="card-bot-row">
+        <span class="running-total-txt">${total > 0 ? '₹' + total : (state === 'Occupied' ? 'SEATED' : 'FREE')}</span>
+        <span class="settle-cue-txt">View Bill ➔</span>
       </div>
     `;
     grid.appendChild(card);
@@ -185,14 +184,14 @@ function inspectTableOnRightSidebar(tableNum) {
     tableOrders.forEach(o => {
       subtotal += o.subtotal;
       const orderBox = document.createElement('div');
-      orderBox.className = 'itemized-order-box';
+      orderBox.className = 'stream-order-box';
       orderBox.innerHTML = `
-        <div class="order-header-line">
+        <div class="stream-order-head">
           <span>#${o.id} • ${o.timestamp}</span>
           <span style="color:${o.status === 'Served' ? '#4ade80' : '#fbbf24'};">${o.status.toUpperCase()}</span>
         </div>
         ${o.items.map(i => `
-          <div class="order-dish-line">
+          <div class="stream-dish-row">
             <span>${i.qty}x ${i.name}</span>
             <strong>₹${i.price * i.qty}</strong>
           </div>
@@ -208,7 +207,7 @@ function inspectTableOnRightSidebar(tableNum) {
     list.innerHTML = `
       <div style="text-align:center; padding:30px 14px; color:#94a3b8; font-size:0.85rem;">
         Table is currently vacant.
-        <button class="btn-bold-primary" style="margin-top:14px; width:100%;" onclick="seatGuestsOnTable('${activeSelectedTable}')">
+        <button class="btn-solid-blue" style="margin-top:14px; width:100%;" onclick="seatGuestsOnTable('${activeSelectedTable}')">
           🪑 Seat Guests Here
         </button>
       </div>
@@ -217,7 +216,7 @@ function inspectTableOnRightSidebar(tableNum) {
 
   const statusTag = document.getElementById('sheetStatusTag');
   statusTag.innerText = statusText;
-  statusTag.className = 'bold-status-badge';
+  statusTag.className = 'solid-state-badge';
   if (statusText === 'VACANT') statusTag.classList.add('badge-vacant');
   else if (statusText === 'OCCUPIED') statusTag.classList.add('badge-occupied');
   else if (statusText === 'FOOD SERVED') statusTag.classList.add('badge-served');
@@ -380,7 +379,7 @@ function renderCRM() {
       <td>${g.count} visit(s)</td>
       <td><strong>₹${g.spend}</strong></td>
       <td>Table ${g.lastTable}</td>
-      <td><a href="https://wa.me/${g.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(g.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!" target="_blank" class="btn-bold-primary" style="font-size:0.75rem; padding:4px 8px; text-decoration:none; display:inline-flex;">💬 WhatsApp</a></td>
+      <td><a href="https://wa.me/${g.phone.replace(/[^0-9]/g, '')}?text=Hi%20${encodeURIComponent(g.name)},%20thank%20you%20for%20dining%20at%20The%20Grand%20Estate!" target="_blank" class="btn-solid-blue" style="font-size:0.75rem; padding:4px 8px; text-decoration:none; display:inline-flex;">💬 WhatsApp</a></td>
     `;
     tbody.appendChild(row);
   });

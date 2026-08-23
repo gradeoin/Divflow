@@ -10,118 +10,110 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=v1787504120066">
+  <link rel="stylesheet" href="admin.css?v=v1787504353577">
 </head>
 <body>
 
-  <div class="pos-enterprise-shell">
-
-    <!-- PANE 1: Fixed Left Navigation Sidebar -->
-    <aside class="pos-left-sidebar">
-      <div class="sidebar-brand-box">
-        <div class="brand-square">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        </div>
-        <div class="brand-text-block">
-          <h2>RESTRO-OS</h2>
-          <span>CASHIER POS</span>
-        </div>
+  <!-- Top Enterprise Header with Navigation Tabs -->
+  <header class="pos-top-header">
+    <div class="header-brand-group">
+      <div class="brand-emblem-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       </div>
-
-      <nav class="sidebar-nav-list">
-        <button class="nav-item-btn active" onclick="switchView('floor', this)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          <span>Floor & Tables</span>
-          <span class="nav-count-badge" id="activeTablesCountBadge">0</span>
-        </button>
-
-        <button class="nav-item-btn" onclick="switchView('menu', this)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
-          <span>Menu & Prices</span>
-        </button>
-
-        <button class="nav-item-btn" onclick="switchView('crm', this)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span>Guest CRM</span>
-        </button>
-
-        <button class="nav-item-btn" onclick="switchView('analytics', this)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
-          <span>Sales & Z-Report</span>
-        </button>
-
-        <button class="nav-item-btn" onclick="switchView('qr', this)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM17 17h4v4h-4z"/></svg>
-          <span>Table Standees</span>
-        </button>
-      </nav>
-
-      <div class="sidebar-status-footer">
-        <span class="status-indicator-dot"></span>
-        <span>Real-Time Sync Active</span>
+      <div>
+        <div class="brand-title">RESTRO-OS <span class="venue-name">• THE GRAND ESTATE</span></div>
+        <div class="sync-status-row"><span class="pulse-dot"></span> Real-Time Cloud Sync Active</div>
       </div>
-    </aside>
+    </div>
 
-    <!-- PANE 2: Middle Main Workspace -->
-    <main class="pos-middle-workspace">
-      <!-- Top Bar -->
-      <header class="workspace-header">
-        <div>
-          <h1 class="hotel-title">THE GRAND ESTATE BISTRO</h1>
-          <span class="hotel-subtitle">Floor Management & Cashier Register</span>
-        </div>
-        <div class="today-revenue-pill">
-          <span>Today's Total Sales:</span>
-          <strong id="floorTodaySales">₹0</strong>
-        </div>
-      </header>
+    <!-- Center Navigation Tabs -->
+    <nav class="header-nav-tabs">
+      <button class="header-tab-btn active" onclick="switchView('floor', this)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Floor & Tables</span>
+        <span class="tab-counter" id="activeTablesCountBadge">0</span>
+      </button>
+
+      <button class="header-tab-btn" onclick="switchView('menu', this)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+        <span>Menu & Prices</span>
+      </button>
+
+      <button class="header-tab-btn" onclick="switchView('crm', this)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Guest CRM</span>
+      </button>
+
+      <button class="header-tab-btn" onclick="switchView('analytics', this)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+        <span>Sales & Z-Report</span>
+      </button>
+
+      <button class="header-tab-btn" onclick="switchView('qr', this)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM17 17h4v4h-4z"/></svg>
+        <span>Table Standees</span>
+      </button>
+    </nav>
+
+    <!-- Right Summary Metric -->
+    <div class="header-right-kpi">
+      <span>Today's Total Sales:</span>
+      <strong id="floorTodaySales">₹0</strong>
+    </div>
+  </header>
+
+  <!-- App Body: Main Workspace + Fixed Right Billing Sidebar -->
+  <div class="pos-app-body">
+
+    <!-- Left/Middle Main Workspace -->
+    <main class="pos-workspace-pane">
 
       <!-- VIEW 1: Floor Map -->
-      <section class="pos-tab-view active" id="viewFloor">
-        <div class="floor-filter-toolbar">
-          <button class="bold-chip active" onclick="filterFloorTables('all', this)">All Tables (12)</button>
-          <button class="bold-chip vacant" onclick="filterFloorTables('vacant', this)">
-            <span class="chip-color-dot vacant"></span> Available (<span id="countVacant">0</span>)
+      <section class="pos-content-view active" id="viewFloor">
+        <div class="floor-filter-bar">
+          <button class="solid-chip active" onclick="filterFloorTables('all', this)">All Tables (12)</button>
+          <button class="solid-chip vacant" onclick="filterFloorTables('vacant', this)">
+            <span class="dot vacant"></span> Available (<span id="countVacant">0</span>)
           </button>
-          <button class="bold-chip occupied" onclick="filterFloorTables('occupied', this)">
-            <span class="chip-color-dot occupied"></span> Occupied (<span id="countOccupied">0</span>)
+          <button class="solid-chip occupied" onclick="filterFloorTables('occupied', this)">
+            <span class="dot occupied"></span> Occupied (<span id="countOccupied">0</span>)
           </button>
-          <button class="bold-chip cooking" onclick="filterFloorTables('cooking', this)">
-            <span class="chip-color-dot cooking"></span> In Kitchen (<span id="countCooking">0</span>)
+          <button class="solid-chip cooking" onclick="filterFloorTables('cooking', this)">
+            <span class="dot cooking"></span> In Kitchen (<span id="countCooking">0</span>)
           </button>
-          <button class="bold-chip served" onclick="filterFloorTables('served', this)">
-            <span class="chip-color-dot served"></span> Food on Table (<span id="countServed">0</span>)
+          <button class="solid-chip served" onclick="filterFloorTables('served', this)">
+            <span class="dot served"></span> Food on Table (<span id="countServed">0</span>)
           </button>
         </div>
 
-        <div class="tables-cards-grid" id="floorTablesGrid">
+        <div class="floor-tables-layout" id="floorTablesGrid">
           <!-- Injected dynamically via admin.js -->
         </div>
       </section>
 
-      <!-- VIEW 2: Menu Catalog -->
-      <section class="pos-tab-view" id="viewMenu">
-        <div class="tab-header-box">
+      <!-- VIEW 2: Menu & Price Studio -->
+      <section class="pos-content-view" id="viewMenu">
+        <div class="view-title-bar">
           <div>
             <h2>Menu Catalog & Price Studio</h2>
             <p>Update dish prices live or toggle In Stock / Sold Out (86ing).</p>
           </div>
-          <button class="btn-bold-primary" onclick="openAddDishModal()">+ Add New Dish</button>
+          <button class="btn-solid-blue" onclick="openAddDishModal()">+ Add New Dish</button>
         </div>
         <div class="menu-items-grid" id="menuEditorGrid"></div>
       </section>
 
       <!-- VIEW 3: Guest CRM -->
-      <section class="pos-tab-view" id="viewCrm">
-        <div class="tab-header-box">
+      <section class="pos-content-view" id="viewCrm">
+        <div class="view-title-bar">
           <div>
-            <h2>Guest CRM & Dining History</h2>
+            <h2>Guest CRM & Dining Records</h2>
             <p>Customer contact records collected automatically from table orders.</p>
           </div>
-          <button class="btn-bold-secondary" onclick="exportCrmCsv()">📥 Download CSV / Excel</button>
+          <button class="btn-solid-slate" onclick="exportCrmCsv()">📥 Download CSV / Excel</button>
         </div>
-        <div class="solid-table-wrapper">
-          <table class="solid-data-table">
+        <div class="crm-table-container">
+          <table class="crm-data-table">
             <thead>
               <tr>
                 <th>GUEST NAME</th>
@@ -129,7 +121,7 @@
                 <th>TOTAL VISITS</th>
                 <th>LIFETIME SPEND</th>
                 <th>LAST TABLE</th>
-                <th>ACTION</th>
+                <th>WHATSAPP</th>
               </tr>
             </thead>
             <tbody id="crmTableBody"></tbody>
@@ -138,28 +130,28 @@
       </section>
 
       <!-- VIEW 4: Sales Analytics & Z-Report -->
-      <section class="pos-tab-view" id="viewAnalytics">
-        <div class="tab-header-box">
+      <section class="pos-content-view" id="viewAnalytics">
+        <div class="view-title-bar">
           <div>
             <h2>Day-End Closing Z-Report & Sales Ledger</h2>
             <p>Official tax calculations and payment breakdown.</p>
           </div>
-          <button class="btn-bold-primary" onclick="printDailyZReport()">🖨️ Print Closing Z-Report</button>
+          <button class="btn-solid-blue" onclick="printDailyZReport()">🖨️ Print Closing Z-Report</button>
         </div>
-        <div class="kpi-metrics-grid">
-          <div class="kpi-metric-box">
+        <div class="kpi-cards-grid">
+          <div class="kpi-stat-box">
             <span>GROSS SALES TODAY</span>
             <strong id="analyticRevenue">₹0</strong>
           </div>
-          <div class="kpi-metric-box">
+          <div class="kpi-stat-box">
             <span>TOTAL TABLES SERVED</span>
             <strong id="analyticTablesCount">0</strong>
           </div>
-          <div class="kpi-metric-box">
+          <div class="kpi-stat-box">
             <span>AVERAGE TABLE VALUE</span>
             <strong id="analyticAov">₹0</strong>
           </div>
-          <div class="kpi-metric-box">
+          <div class="kpi-stat-box">
             <span>ESTIMATED GST (5%)</span>
             <strong id="analyticGst">₹0</strong>
           </div>
@@ -167,53 +159,53 @@
       </section>
 
       <!-- VIEW 5: Table QR Standees -->
-      <section class="pos-tab-view" id="viewQr">
-        <div class="tab-header-box">
+      <section class="pos-content-view" id="viewQr">
+        <div class="view-title-bar">
           <div>
             <h2>Table QR Standee Studio</h2>
             <p>Printable standees for Tables 1 to 8.</p>
           </div>
           <div style="display:flex; gap:10px;">
-            <a href="qr.html" target="_blank" class="btn-bold-secondary" style="text-decoration:none;">📄 Standalone Page</a>
-            <button class="btn-bold-primary" onclick="printStandeesClean()">🖨️ Print All Standees</button>
+            <a href="qr.html" target="_blank" class="btn-solid-slate" style="text-decoration:none;">📄 Standalone Page</a>
+            <button class="btn-solid-blue" onclick="printStandeesClean()">🖨️ Print All Standees</button>
           </div>
         </div>
-        <div class="standees-cards-grid" id="adminStandeesGrid"></div>
+        <div class="standees-grid-container" id="adminStandeesGrid"></div>
       </section>
     </main>
 
-    <!-- PANE 3: Fixed Permanent Right Billing Sidebar -->
-    <aside class="pos-right-sidebar" id="fixedBillingSidebar">
-      <div class="right-sidebar-header">
-        <div class="table-title-large" id="sheetTableTitle">TABLE 01</div>
-        <span class="bold-status-badge badge-vacant" id="sheetStatusTag">VACANT</span>
+    <!-- Fixed Right Billing Sidebar -->
+    <aside class="pos-fixed-billing-sidebar" id="fixedBillingSidebar">
+      <div class="sidebar-top-title">
+        <div class="large-table-heading" id="sheetTableTitle">TABLE 01</div>
+        <span class="solid-state-badge badge-vacant" id="sheetStatusTag">VACANT</span>
       </div>
 
-      <div class="guest-details-card">
-        <div class="guest-row"><span>Guest:</span> <strong id="sheetGuestName">Walk-in</strong></div>
-        <div class="guest-row"><span>Phone:</span> <span id="sheetGuestPhone">N/A</span></div>
+      <div class="sidebar-guest-box">
+        <div class="guest-info-line"><span>Guest:</span> <strong id="sheetGuestName">Walk-in</strong></div>
+        <div class="guest-info-line"><span>Phone:</span> <span id="sheetGuestPhone">N/A</span></div>
       </div>
 
-      <!-- Itemized Order Stream -->
-      <div class="order-items-scroll-pane" id="sheetItemsList">
+      <!-- Itemized Order Items Stream -->
+      <div class="sidebar-items-stream" id="sheetItemsList">
         <!-- Injected dynamically -->
       </div>
 
       <!-- Billing Dock -->
-      <div class="billing-dock-bottom">
-        <div class="bill-line"><span>Subtotal:</span> <span id="sheetSubtotal">₹0</span></div>
-        <div class="bill-line"><span>CGST (2.5%):</span> <span id="sheetCgst">₹0</span></div>
-        <div class="bill-line"><span>SGST (2.5%):</span> <span id="sheetSgst">₹0</span></div>
-        <div class="bill-line total-line">
+      <div class="sidebar-billing-dock">
+        <div class="dock-row-line"><span>Subtotal:</span> <span id="sheetSubtotal">₹0</span></div>
+        <div class="dock-row-line"><span>CGST (2.5%):</span> <span id="sheetCgst">₹0</span></div>
+        <div class="dock-row-line"><span>SGST (2.5%):</span> <span id="sheetSgst">₹0</span></div>
+        <div class="dock-row-line total-highlight">
           <strong>TOTAL PAYABLE:</strong>
           <strong id="sheetTotal">₹0</strong>
         </div>
 
-        <div class="billing-action-buttons">
-          <button class="btn-print-invoice" onclick="printTableTaxInvoice()">
+        <div class="dock-button-grid">
+          <button class="btn-dock-print" onclick="printTableTaxInvoice()">
             🖨️ Print GST Bill
           </button>
-          <button class="btn-settle-paid" onclick="settleAndClearCurrentTable()">
+          <button class="btn-dock-settle" onclick="settleAndClearCurrentTable()">
             ✓ Mark Paid
           </button>
         </div>
@@ -224,7 +216,7 @@
 
   <!-- Modal: Add New Dish -->
   <div class="modal-backdrop" id="modalAddDish" style="display:none;">
-    <div class="solid-modal-box">
+    <div class="dark-modal-box">
       <div class="modal-title-row">
         <h3>+ Add Menu Item</h3>
         <button class="modal-close-btn" onclick="closeModal('modalAddDish')">✕</button>
@@ -256,14 +248,14 @@
             <option value="false">🔴 Non-Vegetarian</option>
           </select>
         </div>
-        <button class="btn-bold-primary btn-block" onclick="submitNewDish()">Save to Menu</button>
+        <button class="btn-solid-blue btn-block" onclick="submitNewDish()">Save to Menu</button>
       </div>
     </div>
   </div>
 
-  <!-- Non-blocking Toast -->
-  <div class="solid-pos-toast" id="adminToast">Action completed</div>
+  <!-- Floating Toast -->
+  <div class="pos-action-toast" id="adminToast">Action completed</div>
 
-  <script src="admin.js?v=v1787504120066"></script>
+  <script src="admin.js?v=v1787504353577"></script>
 </body>
 </html>
