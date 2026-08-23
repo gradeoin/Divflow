@@ -1,0 +1,24 @@
+{
+  "name": "divflow",
+  "version": "1.0.0",
+  "description": "> **Modern, Zero-Cost AI Automation Engine & Workflow Hub**   > Built for local execution, n8n orchestration, autonomous AI agents, and omnichannel messaging (WhatsApp, Telegram, Discord, Gmail, Chatwoot).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gradeoin/Divflow.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/gradeoin/Divflow/issues"
+  },
+  "homepage": "https://github.com/gradeoin/Divflow#readme",
+  "dependencies": {
+    "n8n": "^2.35.7"
+  }
+}
