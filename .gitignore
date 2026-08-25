@@ -1,23 +1,10 @@
-# Environment & Secrets
-.env
-*.env.local
-credentials.json
-
-# Local n8n data
-.n8n/
-n8n_data/
-*.sqlite
-
-# Logs & OS Files
-*.log
-logs/
+node_modules/
+dist/
 .DS_Store
 Thumbs.db
-
-# Node dependencies
-node_modules/
+*.log
 npm-debug.log*
-
-# Binaries & Executables
-*.exe
-scripts/*.exe
+yarn-debug.log*
+yarn-error.log*
+.env
+.cache/
